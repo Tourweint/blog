@@ -1,0 +1,239 @@
+---
+import "../styles/index.css";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import MainLayout from "../layouts/mainlayout.astro";
+
+const posts = await getCollection("posts");
+posts.sort(
+  (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
+    b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+
+const categories = [
+  "全部",
+  ...new Set(
+    posts.flatMap((p) => (p.data.tags?.length ? p.data.tags : ["未分类"]))
+  ),
+];
+---
+
+<MainLayout title="大音希声，大象无形。" description="多鸣的个人博客" wide={true}>
+
+  <div class="app-container">
+      <aside>
+        <div class="profile-card">
+          <div class="avatar"></div>
+          <div class="profile-name">多鸣的博客</div>
+          <div class="profile-bio">多元发声，掷地有声</div>
+          <div class="profile-bio">心有热爱，必有回响</div>
+        </div>
+
+        <div class="search-box">
+          <div class="nav-title">搜索文章</div>
+          <label for="search-input">搜索文章</label>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="搜索标题、描述或分类..."
+            id="search-input"
+          />
+        </div>
+
+        <nav class="category-nav">
+          <div class="nav-title">文章分类</div>
+          <div id="category-list">
+            {
+              categories.map((cat) => (
+                <button
+                  class={`filter-btn${cat === "全部" ? " active" : ""}`}
+                  data-category={cat}
+                >
+                  {cat}
+                </button>
+              ))
+            }
+          </div>
+        </nav>
+      </aside>
+
+      <main>
+        <h2 id="list-title">最新文章</h2>
+        <div
+          class="search-results-info"
+          id="results-info"
+          style="display: none;"
+        >
+          共 {posts.length} 篇文章
+        </div>
+        {
+          posts.length > 0 ? (
+            <div class="post-grid">
+              {posts.map((post: CollectionEntry<"posts">) => (
+                <article
+                  class="post-card"
+                  data-title={post.data.title.toLowerCase()}
+                  data-desc={(post.data.description || "").toLowerCase()}
+                  data-tags={(post.data.tags || ["未分类"])
+                    .join(",")
+                    .toLowerCase()}
+                >
+                  <div class="card-meta">
+                    <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
+                    <div class="card-tags">
+                      {post.data.tags?.map((t: string) => (
+                        <span class="card-tag">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <a href={`/posts/${post.slug}`} class="post-title">
+                    {post.data.title}
+                  </a>
+                  {post.data.description && (
+                    <p class="post-desc">{post.data.description}</p>
+                  )}
+                  <a href={`/posts/${post.slug}`} class="read-more">
+                    阅读全文 →
+                  </a>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div class="no-results">
+              暂无文章，请在 <code>src/content/posts</code> 中添加 Markdown
+              文件。
+            </div>
+          )
+        }
+        <div class="no-results" id="filter-no-results" style="display: none;">
+          未找到符合条件的文章，尝试调整搜索或分类。
+        </div>
+        <!-- 主页底部区域 -->
+        <footer class="site-footer">
+          <div class="footer-col">
+            <h3>关于本站</h3>
+            <p>
+              这里是我记录学习和生活的地方，没有复杂的算法推荐，只有纯粹的文字和代码，如有侵权立即联系我以删除。
+            </p>
+          </div>
+
+          <div class="footer-col">
+            <h3>友情链接 / 社交</h3>
+            <div class="footer-links">
+              <a href="https://github.com/Tourweint" target="_blank"
+                >GitHub (我的代码仓库)</a
+              >
+              <a href="mailto:647575404@qq.com"
+                >Email：647575404@qq.com (联系我)</a
+              >
+              <a href="https://developer.mozilla.org/zh-CN/" target="_blank"
+                >MDN Web 文档</a
+              >
+            </div>
+          </div>
+
+          <div class="copyright">
+            &copy; 2025 Tourweint's Static Blog. All rights reserved.
+          </div>
+        </footer>
+      </main>
+    </div>
+</MainLayout>
+
+<script>
+  // 使用大括号创建一个局部作用域，防止变量污染全局
+  {
+    const searchInput = document.getElementById("search-input");
+    const categoryList = document.getElementById("category-list");
+    const listTitle = document.getElementById("list-title");
+    const resultsInfo = document.getElementById("results-info");
+    const noResults = document.getElementById("filter-no-results");
+    
+    // 获取所有的卡片元素
+    const cards = document.querySelectorAll(".post-card");
+
+    // 只有当页面上存在搜索框时才运行逻辑（防止在无搜索框的页面报错）
+    if (searchInput && categoryList && listTitle && resultsInfo && noResults) {
+      
+      let activeCategory = "全部";
+      let keyword = "";
+
+      const normalize = (value: string) => value.trim().toLowerCase();
+
+      // 定义核心筛选函数
+      const applyFilter = () => {
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          // 在 Astro script 中，确保元素是 HTMLElement 才能访问 dataset
+          if (!(card instanceof HTMLElement)) return;
+
+          const title = card.dataset.title || "";
+          const desc = card.dataset.desc || "";
+          const tags = card.dataset.tags || "";
+
+          const matchCategory =
+            activeCategory === "全部" ||
+            tags.includes(activeCategory.toLowerCase());
+          
+          const matchKeyword =
+            !keyword ||
+            title.includes(keyword) ||
+            desc.includes(keyword) ||
+            tags.includes(keyword);
+
+          const show = matchCategory && matchKeyword;
+          card.style.display = show ? "" : "none";
+          
+          if (show) visibleCount += 1;
+        });
+
+        // 更新 UI 显示状态
+        const isSearching = !!keyword; // 转换为布尔值
+        
+        noResults.style.display =
+          visibleCount === 0 && (isSearching || activeCategory !== "全部") ? "block" : "none";
+        
+        resultsInfo.style.display = isSearching ? "block" : "none";
+        resultsInfo.textContent =
+          `共 ${visibleCount} 篇文章` +
+          (keyword ? ` · 关键词：${keyword}` : "");
+          
+        listTitle.textContent = keyword
+          ? "筛选结果"
+          : activeCategory !== "全部"
+            ? activeCategory
+            : "最新文章";
+      };
+
+      // 绑定分类点击事件
+      categoryList.addEventListener("click", (event) => {
+        const target = event.target;
+        // 类型检查：确保点击的是带 data-category 的 HTML 元素
+        if (!(target instanceof HTMLElement) || !target.dataset.category)
+          return;
+
+        activeCategory = target.dataset.category;
+
+        // 切换按钮的高亮状态
+        const buttons = categoryList.querySelectorAll(".filter-btn");
+        buttons.forEach((btn) => btn.classList.remove("active"));
+        target.classList.add("active");
+
+        applyFilter();
+      });
+
+      // 绑定搜索框输入事件
+      searchInput.addEventListener("input", (event) => {
+        // 类型检查：确保 target 是输入框
+        if (event.target instanceof HTMLInputElement) {
+          keyword = normalize(event.target.value);
+          applyFilter();
+        }
+      });
+
+      // 初始化运行一次
+      applyFilter();
+    }
+  }
+</script>

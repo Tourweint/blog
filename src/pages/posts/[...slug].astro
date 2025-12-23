@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Postslayout from '../../layouts/mainlayout.astro';
+import '../../styles/posts.css';
+
+// 1. 生成所有文章的路径
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('posts');
+  return blogEntries.map(entry => ({
+    params: { slug: entry.slug }, 
+    props: { entry },
+  }));
+}
+
+// 2. 获取文章内容
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+
+
+<Postslayout title={entry.data.title} description={entry.data.description}>
+  <article class="post-detail">
+    <h1 class="post-title">{entry.data.title}</h1>
+
+    <div class="meta">
+            <span>发布于</span>
+            <span id="reading-date">{entry.data.pubDate.toLocaleDateString('zh-cn')}</span>
+            <span>分类</span>
+            <div class="meta-categories" id="categories">
+              {entry.data.tags && entry.data.tags.length > 0 ? (
+                entry.data.tags.map(tag => (
+                  <span class="category-tag">{tag}</span>
+                ))
+              ) : (
+                <span class="category-tag">未分类</span>
+              )}
+            </div>
+    </div>
+    
+    <div class="content">
+      <Content />
+    </div>
+    
+    
+  </article>
+</Postslayout>
