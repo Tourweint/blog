@@ -33,23 +33,7 @@ article {
     margin-bottom: 30px;
 }
 
-/* 标题层级样式 */
-h1 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 2rem;
-    color: #111;
-}
-h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-}
-h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-size: 1.2rem;
-}
+
 
 /* 元信息区块 */
 .meta {
@@ -87,6 +71,137 @@ h3 {
     box-shadow: 0 2px 5px rgba(0, 102, 204, 0.2);
 }
 
+
+/* src/styles/posts.css */
+
+/* =========================================
+   容器基础设置
+   ========================================= */
+.content {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 16px; /* 正文基础字号 */
+  line-height: 1.8; /* 舒适的阅读行高 */
+  color: #333;      /* 正文颜色：深灰比纯黑更护眼 */
+  word-wrap: break-word;
+}
+
+/* =========================================
+   标题 (Heading) - 对应 #, ##, ###
+   ========================================= */
+.content h1, 
+.content h2, 
+.content h3, 
+.content h4, 
+.content h5, 
+.content h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #111; /* 标题颜色更深一点 */
+}
+
+.content h1 { font-size: 2.25em; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+.content h2 { font-size: 1.75em; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+.content h3 { font-size: 1.5em; }
+.content h4 { font-size: 1.25em; }
+
+/* =========================================
+   段落 (Paragraph)
+   ========================================= */
+.content p {
+  margin-bottom: 16px;
+}
+
+/* =========================================
+   引用 (Blockquote) - 对应 >
+   ========================================= */
+.content blockquote {
+  padding: 0 1em;
+  margin: 0 0 16px;
+  color: #6a737d; /* 引用文字变灰 */
+  border-left: 0.25em solid #dfe2e5; /* 左侧那条灰色的竖线 */
+  background-color: #f9f9f9; /* 可选：给引用加个淡淡的背景 */
+}
+
+.content blockquote em {
+  font-style: italic;
+  color: #333; /* 颜色深一点，突出感性 */
+  display: block; /* 让它自成一行 */
+}
+
+/* =========================================
+   列表 (List) - 对应 -, 1.
+   ========================================= */
+.content ul, 
+.content ol {
+  padding-left: 2em;
+  margin-bottom: 16px;
+}
+
+/* =========================================
+   代码 (Code)
+   ========================================= */
+/* 行内代码 `code` */
+.content code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: #f6f8fa; /* 浅灰背景 */
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* 代码块 ``` ``` (会被解析为 pre > code) */
+.content pre {
+  padding: 16px;
+  overflow: auto; /* 代码太长时显示滚动条 */
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.content pre code {
+  background-color: transparent; /* 代码块里的 code 不需要背景色，pre 已经有了 */
+  padding: 0;
+}
+
+/* =========================================
+   图片 (Image) - 对应 ![]()
+   ========================================= */
+.content img {
+  max-width: 100%; /* 核心！防止图片超出屏幕 */
+  height: auto;
+  display: block;
+  margin: 24px auto; /* 图片居中，上下留白 */
+  border-radius: 8px; /* 图片圆角 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* 可选：给图片加点阴影，更有质感 */
+}
+
+
+/* =========================================
+   分割线 (Horizontal Rule) - 对应 ---
+   ========================================= */
+.content hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: #e1e4e8;
+  border: 0;
+}
+
+/* =========================================
+   强调 (Strong/Em) - 对应 **, *
+   ========================================= */
+.content strong {
+  font-weight: 600;
+  color: #000;
+}
+
+
+
 /* 内容样式 */
 .content {
     text-align: justify;
@@ -116,16 +231,12 @@ pre code {
 
 /* 中文正文段落样式 */
 .content p {
-    text-indent: 0em;
     text-align: justify;
     line-height: 2;
     margin-bottom: 1em;
 }
 
-/* 特定段落不缩进 */
-.content p.no-indent {
-    text-indent: 0;
-}
+
 
 /* 列表样式 */
 ul, ol {
@@ -143,17 +254,6 @@ blockquote {
     margin-bottom: 20px;
 }
 
-/* 特殊引用样式 - 用于诗句等 */
-.quote-special {
-    border-left: 3px solid #ccc;
-    background: #f8f9fa;
-    color: #666;
-    padding: 15px 20px;
-    margin: 20px 0;
-    border-radius: 4px;
-    font-style: italic;
-    line-height: 1.6;
-}
 
 /* 链接样式 */
 .content a {
@@ -199,57 +299,6 @@ blockquote {
     font-weight: bold;
 }
 
-/* 速记卡样式 */
-.quick-card {
-    background: #f5f5f5;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    padding: 12px;
-    margin: 8px 0;
-}
-
-.quick-card h3 {
-    margin: 0 0 8px 0;
-    color: #000000;
-    font-size: 1.2rem;
-}
-
-.quick-card p {
-    margin-bottom: 8px;
-}
-
-.quick-card p:last-child {
-    margin-bottom: 0;
-}
-
-.quick-card .example {
-    font-size: 12px;
-    color: #666;
-}
-
-/* 阅读统计模块 */
-.reading-stats {
-    display: inline-flex;
-    align-items: center;
-    gap: 20px;
-    font-size: 0.85rem;
-    color: #666;
-}
-
-.stat-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.stat-icon {
-    font-size: 0.9rem;
-}
-
-.stat-value {
-    font-weight: 400;
-    color: #666;
-}
 
 /* 移动端适配 */
 @media (max-width: 600px) {
@@ -269,37 +318,6 @@ blockquote {
     }
 }
 
-/* 底部文章导航样式 */
-.post-nav {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #eaeaea;
-    font-size: 0.95rem;
-}
-.post-nav a {
-    text-decoration: none;
-    color: #555;
-    max-width: 45%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    transition: color 0.2s;
-}
-.post-nav a:hover { 
-    color: #0066cc; 
-}
-.nav-label { 
-    font-size: 0.8rem; 
-    color: #999; 
-    margin-bottom: 4px; 
-    display: block; 
-}
-.nav-next { 
-    text-align: right; 
-    margin-left: auto; 
-}
 
 /* 移动端适配 */
 @media (max-width: 600px) {

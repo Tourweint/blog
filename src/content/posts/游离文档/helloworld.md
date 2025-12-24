@@ -4,7 +4,7 @@ pubDate: 2025-12-23
 description: "我已经把HTML博客迁移到Astro了"
 author: "多鸣"
 image: "/public/头像.png"
-tags: ["astro", "碎碎念"]
+tags: ["生活随笔"]
 ---
 
 ## 为什么
