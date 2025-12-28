@@ -32,29 +32,25 @@ const categories = [
         <div class="profile-bio">心有热爱，必有回响</div>
       </div>
 
-      <div class="search-box">
-        <div class="nav-title">搜索文章</div>
-        <label for="search-input">搜索文章</label>
-        <input
-          type="text"
-          class="search-input"
-          placeholder="搜索标题、描述或分类..."
-          id="search-input"
-        />
-      </div>
-
       <nav class="category-nav">
         <div class="nav-title">文章分类</div>
         <div id="category-list">
           {
-            categories.map((cat) => (
-              <button
-                class={`filter-btn${cat === "全部" ? " active" : ""}`}
-                data-category={cat}
-              >
-                {cat}
-              </button>
-            ))
+            categories.map((cat) => {
+              const count =
+                cat === "全部"
+                  ? posts.length
+                  : posts.filter((p) => p.data.tags?.includes(cat)).length;
+              return (
+                <button
+                  class={`filter-btn${cat === "全部" ? " active" : ""}`}
+                  data-category={cat}
+                >
+                  <span>{cat}</span>
+                  <span class="category-badge">{count}</span>
+                </button>
+              );
+            })
           }
         </div>
       </nav>
@@ -62,9 +58,6 @@ const categories = [
 
     <main>
       <h2 id="list-title">最新文章</h2>
-      <div class="search-results-info" id="results-info" style="display: none;">
-        共 {posts.length} 篇文章
-      </div>
       {
         posts.length > 0 ? (
           <div class="post-grid">
@@ -112,50 +105,24 @@ const categories = [
         class="pagination-container"
         style="display: none;"
       >
-        <button id="first-btn" class="page-btn" disabled>第一页</button>
-        <button id="prev-btn" class="page-btn" disabled>上一页</button>
-        <span id="page-info">第 1 / 1 页</span>
-        <button id="next-btn" class="page-btn">下一页</button>
-        <button id="last-btn" class="page-btn">最后一页</button>
+        <button id="first-btn" class="page-btn" aria-label="第一页" disabled>
+          ⏮
+        </button>
+        <button id="prev-btn" class="page-btn" aria-label="上一页" disabled>
+          ◀
+        </button>
+        <span id="page-info">1/1</span>
+        <button id="next-btn" class="page-btn" aria-label="下一页">▶</button>
+        <button id="last-btn" class="page-btn" aria-label="最后一页">⏭</button>
       </div>
-
-      <footer class="site-footer">
-        <div class="footer-col">
-          <h3>关于本站</h3>
-          <p>
-            这里是我记录学习和生活的地方，没有复杂的算法推荐，只有纯粹的文字和代码，如有侵权立即联系我以删除。
-          </p>
-        </div>
-
-        <div class="footer-col">
-          <h3>友情链接 / 社交</h3>
-          <div class="footer-links">
-            <a href="https://github.com/Tourweint" target="_blank"
-              >GitHub (我的代码仓库)</a
-            >
-            <a href="mailto:647575404@qq.com"
-              >Email：647575404@qq.com (联系我)</a
-            >
-            <a href="https://developer.mozilla.org/zh-CN/" target="_blank"
-              >MDN Web 文档</a
-            >
-          </div>
-        </div>
-
-        <div class="copyright">
-          &copy; 2025 Tourweint's Static Blog. All rights reserved.
-        </div>
-      </footer>
     </main>
   </div>
 </MainLayout>
 
 <script>
   {
-    const searchInput = document.getElementById("search-input");
     const categoryList = document.getElementById("category-list");
     const listTitle = document.getElementById("list-title");
-    const resultsInfo = document.getElementById("results-info");
     const noResults = document.getElementById("filter-no-results");
 
     // 分页相关 DOM
@@ -169,10 +136,8 @@ const categories = [
     const cards = document.querySelectorAll(".post-card");
 
     if (
-      searchInput &&
       categoryList &&
       listTitle &&
-      resultsInfo &&
       noResults &&
       paginationControls &&
       prevBtn &&
@@ -183,14 +148,11 @@ const categories = [
     ) {
       // 状态变量
       let activeCategory = "全部";
-      let keyword = "";
 
       // 分页变量
-      const itemsPerPage = 10; // 每页显示 10 篇
+      const itemsPerPage = 8; // 每页显示 10 篇
       let currentPage = 1;
       let visibleCards: HTMLElement[] = []; // 存储当前符合筛选条件的所有卡片
-
-      const normalize = (value: string) => value.trim().toLowerCase();
 
       // 更新分页 UI
       const updatePaginationUI = () => {
@@ -202,7 +164,7 @@ const categories = [
           paginationControls.style.display = "none";
         } else {
           paginationControls.style.display = "flex";
-          pageInfo.textContent = `第 ${currentPage} / ${totalPages} 页`;
+          pageInfo.textContent = `${currentPage}/${totalPages}`;
 
           // 设置按钮状态
           const prevEl = prevBtn as HTMLButtonElement;
@@ -245,54 +207,36 @@ const categories = [
 
       // 核心筛选函数
       const applyFilter = (resetPage = true) => {
-        // 如果是新的搜索或分类，重置回第一页
+        // 如果是新的分类，重置回第一页
         if (resetPage) currentPage = 1;
 
         visibleCards = []; // 清空之前的筛选结果
 
-        // 第一步：找出所有符合条件的卡片
+        // 找出所有符合条件的卡片
         cards.forEach((card) => {
           if (!(card instanceof HTMLElement)) return;
 
-          const title = card.dataset.title || "";
-          const desc = card.dataset.desc || "";
           const tags = card.dataset.tags || "";
 
           const matchCategory =
             activeCategory === "全部" ||
             tags.includes(activeCategory.toLowerCase());
 
-          const matchKeyword =
-            !keyword ||
-            title.includes(keyword) ||
-            desc.includes(keyword) ||
-            tags.includes(keyword);
-
-          if (matchCategory && matchKeyword) {
+          if (matchCategory) {
             visibleCards.push(card);
           }
         });
 
-        // 更新搜索结果提示
-        const isSearching = !!keyword;
+        // 更新无结果提示
         noResults.style.display =
-          visibleCards.length === 0 &&
-          (isSearching || activeCategory !== "全部")
+          visibleCards.length === 0 && activeCategory !== "全部"
             ? "block"
             : "none";
 
-        resultsInfo.style.display = isSearching ? "block" : "none";
-        resultsInfo.textContent =
-          `共 ${visibleCards.length} 篇文章` +
-          (keyword ? ` · 关键词：${keyword}` : "");
+        listTitle.textContent =
+          activeCategory !== "全部" ? activeCategory : "最新文章";
 
-        listTitle.textContent = keyword
-          ? "筛选结果"
-          : activeCategory !== "全部"
-            ? activeCategory
-            : "最新文章";
-
-        // 第二步：执行分页渲染
+        // 执行分页渲染
         renderCurrentPage();
       };
 
@@ -329,25 +273,18 @@ const categories = [
 
       // 绑定分类点击事件
       categoryList.addEventListener("click", (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLElement) || !target.dataset.category)
-          return;
+        const target = event.target as HTMLElement;
+        const button = target.closest(".filter-btn") as HTMLElement | null;
 
-        activeCategory = target.dataset.category;
+        if (!button || !button.dataset.category) return;
+
+        activeCategory = button.dataset.category;
 
         const buttons = categoryList.querySelectorAll(".filter-btn");
         buttons.forEach((btn) => btn.classList.remove("active"));
-        target.classList.add("active");
+        button.classList.add("active");
 
         applyFilter(true); // 切换分类时重置页码
-      });
-
-      // 绑定搜索框输入事件
-      searchInput.addEventListener("input", (event) => {
-        if (event.target instanceof HTMLInputElement) {
-          keyword = normalize(event.target.value);
-          applyFilter(true); // 搜索时重置页码
-        }
       });
 
       // 初始化

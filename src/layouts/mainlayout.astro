@@ -7,6 +7,7 @@ import "../styles/global.css";
 <html lang="zh-cn">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
     <link
       rel="alternate icon"
@@ -22,12 +23,23 @@ import "../styles/global.css";
     <title>{title}</title>
   </head>
   <body>
-    <header class="navbar">
+    <header class="navbar" id="site-navbar">
       <nav class="nav-container">
         <a href="/" class="logo">
-          <span class="logo-icon">🚀</span>
-          <span class="logo-text">MyBlog</span>
+          <span class="logo-text">Tourweint</span>
         </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="打开导航菜单"
+          aria-controls="mobile-drawer"
+          aria-expanded="false"
+          data-nav-toggle
+        >
+          <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+        </button>
+
         <ul class="nav-links">
           <li><a href="/">首页</a></li>
           <li><a href="/archive">归档</a></li>
@@ -36,8 +48,150 @@ import "../styles/global.css";
       </nav>
     </header>
 
+    <div class="drawer-overlay" data-drawer-overlay hidden></div>
+    <aside
+      class="mobile-drawer"
+      id="mobile-drawer"
+      aria-label="站点导航"
+      hidden
+    >
+      <nav class="drawer-nav">
+        <a class="drawer-link" href="/">首页</a>
+        <a class="drawer-link" href="/archive">归档</a>
+        <a class="drawer-link" href="/about">关于</a>
+      </nav>
+    </aside>
+
     <main class="page-content">
       <slot />
     </main>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-col">
+          <h3>关于本站</h3>
+          <p>
+            这里是我记录学习和生活的地方，没有复杂的算法推荐，只有纯粹的文字和代码，如有侵权立即联系我以删除。
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h3>友情链接 / 社交</h3>
+          <div class="footer-links">
+            <a href="https://github.com/Tourweint" target="_blank"
+              >GitHub (我的代码仓库)</a
+            >
+            <a href="mailto:647575404@qq.com"
+              >Email：647575404@qq.com (联系我)</a
+            >
+            <a href="https://developer.mozilla.org/zh-CN/" target="_blank"
+              >MDN Web 文档</a
+            >
+          </div>
+        </div>
+
+        <div class="copyright">
+          &copy; 2025 Tourweint's Static Blog. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      {
+        const navbar = document.getElementById(
+          "site-navbar"
+        ) as HTMLElement | null;
+        const toggle = document.querySelector(
+          "[data-nav-toggle]"
+        ) as HTMLButtonElement | null;
+        const drawer = document.getElementById(
+          "mobile-drawer"
+        ) as HTMLElement | null;
+        const overlay = document.querySelector(
+          "[data-drawer-overlay]"
+        ) as HTMLElement | null;
+
+        if (navbar) {
+          let lastY = window.scrollY;
+          let ticking = false;
+          const threshold = 8;
+
+          const onScroll = () => {
+            const currentY = window.scrollY;
+            const delta = currentY - lastY;
+
+            // 抽屉打开时，保持导航栏可见
+            if (document.body.classList.contains("drawer-open")) {
+              navbar.classList.remove("navbar--hidden");
+              lastY = currentY;
+              return;
+            }
+
+            if (Math.abs(delta) > threshold) {
+              if (delta > 0 && currentY > 80) {
+                navbar.classList.add("navbar--hidden");
+              } else if (delta < 0) {
+                navbar.classList.remove("navbar--hidden");
+              }
+              lastY = currentY;
+            }
+          };
+
+          window.addEventListener(
+            "scroll",
+            () => {
+              if (!ticking) {
+                window.requestAnimationFrame(() => {
+                  onScroll();
+                  ticking = false;
+                });
+                ticking = true;
+              }
+            },
+            { passive: true }
+          );
+        }
+
+        const openDrawer = () => {
+          if (!toggle || !drawer || !overlay) return;
+          document.body.classList.add("drawer-open");
+          drawer.hidden = false;
+          overlay.hidden = false;
+          toggle.setAttribute("aria-expanded", "true");
+        };
+
+        const closeDrawer = () => {
+          if (!toggle || !drawer || !overlay) return;
+          document.body.classList.remove("drawer-open");
+          toggle.setAttribute("aria-expanded", "false");
+
+          // 等动画结束再 hidden，避免闪烁
+          window.setTimeout(() => {
+            if (!document.body.classList.contains("drawer-open")) {
+              drawer.hidden = true;
+              overlay.hidden = true;
+            }
+          }, 220);
+        };
+
+        if (toggle && drawer && overlay) {
+          toggle.addEventListener("click", () => {
+            const isOpen = document.body.classList.contains("drawer-open");
+            isOpen ? closeDrawer() : openDrawer();
+          });
+
+          overlay.addEventListener("click", closeDrawer);
+
+          window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeDrawer();
+          });
+
+          drawer.addEventListener("click", (e) => {
+            const target = e.target;
+            if (target instanceof HTMLAnchorElement) closeDrawer();
+          });
+        }
+      }
+    </script>
   </body>
 </html>

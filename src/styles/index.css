@@ -17,11 +17,9 @@
             background-color: var(--bg-body);
             color: var(--text-main);
             line-height: 1.6;
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
             min-height: 100vh;
             scrollbar-gutter: stable;
+            padding-top: var(--nav-height);
         }
 
         .app-container {
@@ -30,6 +28,7 @@
             gap: 40px;
             width: 100%;
             max-width: 1100px;
+            margin: 0 auto;
         }
 
         /* --- 左侧侧边栏 --- */
@@ -77,9 +76,10 @@
         }
 
         .filter-btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             width: 100%;
-            text-align: left;
             background: none;
             border: none;
             padding: 10px 15px;
@@ -94,45 +94,17 @@
         .filter-btn:hover { background-color: #f0f0f0; color: var(--primary); }
         .filter-btn.active { background-color: var(--primary); color: #fff; font-weight: 500; }
 
-        /* --- 搜索功能样式 --- */
-        .search-box {
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
+        .category-badge {
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            min-width: 24px;
+            text-align: center;
         }
 
-        .search-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background: #fff;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
-        }
-
-        .search-results-info {
-            font-size: 0.9rem;
-            color: var(--text-sub);
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 3px solid var(--accent);
-        }
-
-        .search-highlight {
-            background: #fff3cd;
-            padding: 1px 2px;
-            border-radius: 2px;
+        .filter-btn.active .category-badge {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .no-results {
@@ -270,47 +242,19 @@
             font-weight: 600;
         }
 
-        /* --- 新增：主页底部 Footer --- */
-        .site-footer {
-            margin-top: auto; /* 推到底部 */
-            padding-top: 40px;
-            border-top: 1px solid #e1e4e8;
-            color: #888;
-            font-size: 0.9rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .footer-col h3 {
-            font-size: 1rem;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .footer-links a {
-            display: block;
-            color: #666;
-            text-decoration: none;
-            margin-bottom: 8px;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover { color: var(--accent); }
-
-        .copyright {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-
         /* 移动端适配 */
         @media (max-width: 768px) {
             .app-container { grid-template-columns: 1fr; gap: 20px; }
             aside { position: static; }
             .filter-btn { display: inline-block; width: auto; margin-right: 5px; }
-            .site-footer { grid-template-columns: 1fr; }
             .post-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            body { line-height: 1.55; }
+            .profile-card { padding: 20px; }
+            .category-nav { padding: 16px; }
+            .search-box { padding: 16px; }
+            .post-card { padding: 18px; }
+            .card-meta { gap: 10px; align-items: flex-start; flex-wrap: wrap; }
         }
