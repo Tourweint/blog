@@ -5,7 +5,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     line-height: 1.8;
     color: #333;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 35px 20px;
     background-color: #f9f9f9;
@@ -42,6 +42,24 @@ article {
     margin-bottom: 30px;
     border-bottom: 1px solid #eee;
     padding-bottom: 20px;
+}
+
+.meta-stars-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
+}
+
+.meta-stars {
+    display: inline-flex;
+    gap: 2px;
+    color: #d0d5dd;
+    font-size: 0.9rem;
+}
+
+.meta-stars .star--filled {
+    color: #f5a623;
 }
 
 /* 分类标签容器 */
