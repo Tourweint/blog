@@ -171,6 +171,12 @@
             box-shadow: none;
         }
 
+        .post-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
         .post-card {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -181,9 +187,10 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            height: 100%;
         }
 
-        .post-card:hover {
+        .post-card-link:hover .post-card {
             transform: translateY(-4px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             border-color: var(--accent);
@@ -216,7 +223,6 @@
             font-size: 1.15rem;
             margin-bottom: 10px;
             color: var(--primary);
-            text-decoration: none;
             font-weight: 700;
             display: block;
         }
@@ -238,8 +244,8 @@
         .read-more {
             font-size: 0.85rem;
             color: var(--accent);
-            text-decoration: none;
             font-weight: 600;
+            display: inline-block;
         }
 
         /* 移动端适配 */

@@ -75,13 +75,73 @@ article {
     margin-bottom: 30px;
     border-bottom: 1px solid #eee;
     padding-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 日期标签样式 */
+.meta .date-tag {
+    display: inline-block;
+    background: #eef2f7;
+    color: #0066cc;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.meta .date-tag:hover {
+    background: #0066cc;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 102, 204, 0.2);
+}
+
+.meta .author-link {
+    display: inline-block;
+    background: #eef2f7;
+    color: #0066cc;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.meta .author-link:hover {
+    background: #0066cc;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 102, 204, 0.2);
+}
+
+.meta .author-name {
+    display: inline-block;
+    background: #eef2f7;
+    color: #0066cc;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.meta .author-name:hover {
+    background: #0066cc;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 102, 204, 0.2);
 }
 
 .meta-stars-group {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-left: 12px;
 }
 
 .meta-stars {
@@ -100,7 +160,6 @@ article {
     display: inline-flex;
     gap: 8px;
     flex-wrap: wrap;
-    margin-left: 5px;
 }
 
 .category-tag {

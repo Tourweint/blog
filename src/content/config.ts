@@ -6,7 +6,13 @@ const posts = defineCollection({
     title: z.string(),
     description: z.string().optional(),
     pubDate: z.coerce.date(),
-    author: z.string().optional(),
+    author: z.union([
+      z.string(),
+      z.object({
+        name: z.string(),
+        url: z.string().optional(),
+      }),
+    ]).optional(),
     image: z.string().optional(),
     tags: z.array(z.string()).default([]),
     rereadStars: z.number().int().min(0).max(5).default(0),

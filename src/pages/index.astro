@@ -62,32 +62,31 @@ const categories = [
         posts.length > 0 ? (
           <div class="post-grid">
             {posts.map((post: CollectionEntry<"posts">) => (
-              <article
-                class="post-card"
+              <a
+                href={`/posts/${post.slug}`}
+                class="post-card-link"
                 data-title={post.data.title.toLowerCase()}
                 data-desc={(post.data.description || "").toLowerCase()}
                 data-tags={(post.data.tags || ["未分类"])
                   .join(",")
                   .toLowerCase()}
               >
-                <div class="card-meta">
-                  <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
-                  <div class="card-tags">
-                    {post.data.tags?.map((t: string) => (
-                      <span class="card-tag">{t}</span>
-                    ))}
+                <article class="post-card">
+                  <div class="card-meta">
+                    <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
+                    <div class="card-tags">
+                      {post.data.tags?.map((t: string) => (
+                        <span class="card-tag">{t}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <a href={`/posts/${post.slug}`} class="post-title">
-                  {post.data.title}
-                </a>
-                {post.data.description && (
-                  <p class="post-desc">{post.data.description}</p>
-                )}
-                <a href={`/posts/${post.slug}`} class="read-more">
-                  阅读全文 →
-                </a>
-              </article>
+                  <h3 class="post-title">{post.data.title}</h3>
+                  {post.data.description && (
+                    <p class="post-desc">{post.data.description}</p>
+                  )}
+                  <span class="read-more">阅读全文 →</span>
+                </article>
+              </a>
             ))}
           </div>
         ) : (
@@ -133,7 +132,7 @@ const categories = [
     const lastBtn = document.getElementById("last-btn");
     const pageInfo = document.getElementById("page-info");
 
-    const cards = document.querySelectorAll(".post-card");
+    const cards = document.querySelectorAll(".post-card-link");
 
     if (
       categoryList &&
