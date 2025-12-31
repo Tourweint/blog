@@ -1,5 +1,4 @@
 .about-page-bg {
-  background-color: #f4f6f8;
   min-height: calc(100vh - var(--nav-height, 60px));
 }
 

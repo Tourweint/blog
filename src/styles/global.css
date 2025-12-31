@@ -1,6 +1,12 @@
 /* 全局基础设置 */
 :root {
   --nav-height: 64px;
+  --bg-body: #f4f6f8;
+  --bg-card: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -10,6 +16,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: var(--bg-body);
 }
 
 /* 导航栏主体 */
@@ -36,7 +43,7 @@ body {
 
 /* 容器限制宽度 */
 .nav-container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   width: 100%;
   padding: 0 1.5rem;

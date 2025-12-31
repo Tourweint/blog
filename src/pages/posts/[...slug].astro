@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import Postslayout from "../../layouts/mainlayout.astro";
+import TableOfContents from "../../components/TableOfContents.astro";
 import "../../styles/posts.css";
 
 const pageSize = 8; // 与分页设置保持一致
@@ -21,13 +22,29 @@ export async function getStaticPaths() {
       entry,
       // 计算文章在第几页
       pageNumber: Math.floor(index / 8) + 1,
+      // 上一篇（更新的文章）
+      prevPost:
+        index > 0
+          ? {
+              slug: blogEntries[index - 1].slug,
+              title: blogEntries[index - 1].data.title,
+            }
+          : null,
+      // 下一篇（更旧的文章）
+      nextPost:
+        index < blogEntries.length - 1
+          ? {
+              slug: blogEntries[index + 1].slug,
+              title: blogEntries[index + 1].data.title,
+            }
+          : null,
     },
   }));
 }
 
 // 2. 获取文章内容
-const { entry, pageNumber } = Astro.props;
-const { Content } = await entry.render();
+const { entry, pageNumber, prevPost, nextPost } = Astro.props;
+const { Content, headings } = await entry.render();
 const maxStars = 5;
 const rereadStars = Math.min(
   Math.max(entry.data.rereadStars ?? 0, 0),
@@ -50,81 +67,178 @@ const backUrl =
   pageNumber === 1
     ? `/?scrollTo=${entry.slug}`
     : `/page/${pageNumber}?scrollTo=${entry.slug}`;
+
+// 计算阅读时间
+const content = entry.body;
+// 统计中文字符和英文单词
+const chineseChars = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
+const englishWords = (content.match(/[a-zA-Z]+/g) || []).length;
+// 中文阅读速度约 300-500 字/分钟，英文约 200 词/分钟，取中间值
+const wordsPerMinute = 350;
+const totalWords = chineseChars + englishWords;
+const readingTime = Math.max(1, Math.ceil(totalWords / wordsPerMinute));
 ---
 
-<Postslayout title={entry.data.title} description={entry.data.description}>
-  <nav class="nav-bar">
-    <a href={backUrl} class="back-link" id="back-home">← 返回首页</a>
-  </nav>
-  <article class="post-detail">
-    <h1 class="post-title">{entry.data.title}</h1>
+<Postslayout
+  title={`${entry.data.title} - 多鸣的博客`}
+  description={entry.data.description || entry.data.title}
+  type="article"
+  publishedTime={entry.data.pubDate}
+  tags={entry.data.tags}
+  image={entry.data.image}
+>
+  <div class="post-layout">
+    <div class="post-sidebar">
+      <TableOfContents headings={headings} />
+    </div>
+    <div class="post-main">
+      <nav class="nav-bar">
+        <a href={backUrl} class="back-link" id="back-home">← 返回首页</a>
+      </nav>
+      <article class="post-detail">
+        <h1 class="post-title">{entry.data.title}</h1>
 
-    <div class="meta">
-      <span class="date-tag"
-        >{entry.data.pubDate.toLocaleDateString("zh-cn")}</span
-      >
-      {
-        author && (
-          <>
-            {author.url ? (
+        <div class="meta">
+          <span class="date-tag"
+            >{entry.data.pubDate.toLocaleDateString("zh-cn")}</span
+          >
+          <span class="reading-time">
+            <span class="reading-icon">📖</span>
+            <span>{readingTime} 分钟阅读</span>
+            <span class="word-count">· 约 {totalWords} 字</span>
+          </span>
+          {
+            author && (
+              <>
+                {author.url ? (
+                  <a
+                    href={author.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="author-link"
+                  >
+                    {author.name}
+                  </a>
+                ) : (
+                  <span class="author-name">{author.name}</span>
+                )}
+              </>
+            )
+          }
+          <div class="meta-categories" id="categories">
+            {
+              entry.data.tags && entry.data.tags.length > 0 ? (
+                entry.data.tags.map((tag) => (
+                  <a
+                    href={`/category/${encodeURIComponent(tag)}`}
+                    class="category-tag"
+                  >
+                    {tag}
+                  </a>
+                ))
+              ) : (
+                <a href="/category/未分类" class="category-tag">
+                  未分类
+                </a>
+              )
+            }
+          </div>
+          {
+            rereadStars > 0 && (
+              <div class="meta-stars-group">
+                <span>推荐星级 :</span>
+                <div
+                  class="meta-stars"
+                  id="reread-stars"
+                  role="img"
+                  aria-label={`推荐星级 ${rereadStars} / ${maxStars}`}
+                >
+                  {starStates.map((filled, index) => (
+                    <span
+                      class={`star${filled ? " star--filled" : ""}`}
+                      aria-hidden="true"
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+        </div>
+
+        <div class="content">
+          <Content />
+        </div>
+
+        <!-- 上一篇/下一篇导航 -->
+        <nav class="post-nav">
+          {
+            prevPost ? (
               <a
-                href={author.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="author-link"
+                href={`/posts/${prevPost.slug}`}
+                class="post-nav-link post-nav-prev"
               >
-                {author.name}
+                <span class="post-nav-label">← 上一篇</span>
+                <span class="post-nav-title">{prevPost.title}</span>
               </a>
             ) : (
-              <span class="author-name">{author.name}</span>
-            )}
-          </>
-        )
-      }
-      <div class="meta-categories" id="categories">
-        {
-          entry.data.tags && entry.data.tags.length > 0 ? (
-            entry.data.tags.map((tag) => (
+              <div class="post-nav-placeholder" />
+            )
+          }
+          {
+            nextPost ? (
               <a
-                href={`/category/${encodeURIComponent(tag)}`}
-                class="category-tag"
+                href={`/posts/${nextPost.slug}`}
+                class="post-nav-link post-nav-next"
               >
-                {tag}
+                <span class="post-nav-label">下一篇 →</span>
+                <span class="post-nav-title">{nextPost.title}</span>
               </a>
-            ))
-          ) : (
-            <a href="/category/未分类" class="category-tag">
-              未分类
-            </a>
-          )
-        }
-      </div>
-      {
-        rereadStars > 0 && (
-          <div class="meta-stars-group">
-            <span>推荐星级 :</span>
-            <div
-              class="meta-stars"
-              id="reread-stars"
-              role="img"
-              aria-label={`推荐星级 ${rereadStars} / ${maxStars}`}
-            >
-              {starStates.map((filled, index) => (
-                <span
-                  class={`star${filled ? " star--filled" : ""}`}
-                  aria-hidden="true"
-                >
-                  ★
-                </span>
-              ))}
-            </div>
-          </div>
-        )
-      }
+            ) : (
+              <div class="post-nav-placeholder" />
+            )
+          }
+        </nav>
+      </article>
     </div>
+  </div>
 
-    <div class="content">
-      <Content />
-    </div>
-  </article>
+  <!-- 返回顶部按钮 -->
+  <button
+    class="back-to-top"
+    id="back-to-top"
+    aria-label="返回顶部"
+    title="返回顶部"
+  >
+    <span class="back-to-top-icon">↑</span>
+  </button>
 </Postslayout>
+
+<script>
+  // 返回顶部按钮逻辑
+  document.addEventListener("DOMContentLoaded", () => {
+    const backToTopBtn = document.getElementById("back-to-top");
+    if (!backToTopBtn) return;
+
+    // 监听滚动显示/隐藏按钮
+    const toggleVisibility = () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add("visible");
+      } else {
+        backToTopBtn.classList.remove("visible");
+      }
+    };
+
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
+    toggleVisibility(); // 初始检查
+
+    // 点击返回顶部
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
+  });
+</script>
