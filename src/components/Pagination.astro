@@ -1,0 +1,98 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  getPageUrl: (page: number) => string;
+}
+
+const { currentPage, totalPages, getPageUrl } = Astro.props;
+
+// 生成要显示的页码数组
+function generatePageNumbers(
+  current: number,
+  total: number
+): (number | "...")[] {
+  const pages: (number | "...")[] = [];
+
+  if (total <= 7) {
+    // 总页数少于等于7页，全部显示
+    for (let i = 1; i <= total; i++) {
+      pages.push(i);
+    }
+  } else {
+    // 始终显示第一页
+    pages.push(1);
+
+    if (current <= 4) {
+      // 当前页靠近开头: 1 2 3 4 5 ... 10
+      for (let i = 2; i <= 5; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(total);
+    } else if (current >= total - 3) {
+      // 当前页靠近结尾: 1 ... 6 7 8 9 10
+      pages.push("...");
+      for (let i = total - 4; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      // 当前页在中间: 1 ... 4 5 6 ... 10
+      pages.push("...");
+      for (let i = current - 1; i <= current + 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(total);
+    }
+  }
+
+  return pages;
+}
+
+const pageNumbers = generatePageNumbers(currentPage, totalPages);
+const prevUrl = currentPage > 1 ? getPageUrl(currentPage - 1) : null;
+const nextUrl = currentPage < totalPages ? getPageUrl(currentPage + 1) : null;
+---
+
+{
+  totalPages > 1 && (
+    <nav class="pagination-container" aria-label="分页导航">
+      {/* 上一页按钮 */}
+      <a
+        href={prevUrl || "#"}
+        class={`page-btn ${!prevUrl ? "disabled" : ""}`}
+        aria-label="上一页"
+        aria-disabled={!prevUrl}
+      >
+        ◀
+      </a>
+
+      {/* 页码 */}
+      {pageNumbers.map((p) =>
+        p === "..." ? (
+          <span class="page-ellipsis">...</span>
+        ) : (
+          <a
+            href={getPageUrl(p)}
+            class={`page-btn ${p === currentPage ? "active" : ""}`}
+            aria-label={`第${p}页`}
+            aria-current={p === currentPage ? "page" : undefined}
+          >
+            {p}
+          </a>
+        )
+      )}
+
+      {/* 下一页按钮 */}
+      <a
+        href={nextUrl || "#"}
+        class={`page-btn ${!nextUrl ? "disabled" : ""}`}
+        aria-label="下一页"
+        aria-disabled={!nextUrl}
+      >
+        ▶
+      </a>
+    </nav>
+  )
+}

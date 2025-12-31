@@ -1,15 +1,22 @@
 ---
-import "../styles/index.css";
+import "../../styles/index.css";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import MainLayout from "../layouts/mainlayout.astro";
-import Pagination from "../components/Pagination.astro";
+import type { GetStaticPaths } from "astro";
+import MainLayout from "../../layouts/mainlayout.astro";
+import Pagination from "../../components/Pagination.astro";
 
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getCollection("posts");
+  posts.sort(
+    (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
+      b.data.pubDate.getTime() - a.data.pubDate.getTime()
+  );
+  return paginate(posts, { pageSize: 8 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
 const posts = await getCollection("posts");
-posts.sort(
-  (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
-    b.data.pubDate.getTime() - a.data.pubDate.getTime()
-);
 
 const categories = [
   "全部",
@@ -20,14 +27,8 @@ const categories = [
   ).sort((a, b) => a.localeCompare(b, "zh-CN")),
 ];
 
-// 分页参数
-const pageSize = 8;
-const totalPages = Math.ceil(posts.length / pageSize);
-const currentPage = 1;
-const paginatedPosts = posts.slice(0, pageSize);
-
 // 分页URL生成函数
-const getPageUrl = (page: number) => (page === 1 ? "/" : `/page/${page}`);
+const getPageUrl = (p: number) => (p === 1 ? "/" : `/page/${p}`);
 ---
 
 <MainLayout
@@ -76,9 +77,9 @@ const getPageUrl = (page: number) => (page === 1 ? "/" : `/page/${page}`);
     <main>
       <h2 id="list-title">最新文章</h2>
       {
-        paginatedPosts.length > 0 ? (
+        page.data.length > 0 ? (
           <div class="post-grid">
-            {paginatedPosts.map((post: CollectionEntry<"posts">) => (
+            {page.data.map((post: CollectionEntry<"posts">) => (
               <a
                 href={`/posts/${post.slug}`}
                 class="post-card-link"
@@ -114,8 +115,8 @@ const getPageUrl = (page: number) => (page === 1 ? "/" : `/page/${page}`);
       }
 
       <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
+        currentPage={page.currentPage}
+        totalPages={page.lastPage}
         getPageUrl={getPageUrl}
       />
     </main>
