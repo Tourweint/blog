@@ -1,0 +1,248 @@
+---
+import MainLayout from "./mainlayout.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import type { CollectionEntry } from "astro:content";
+import "../styles/conversations.css";
+
+interface Props {
+  post: CollectionEntry<"conversations">;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await post.render();
+const { data } = post;
+
+// 为编者按和金句准备样式类
+const hasEditorNote = data.editorNote;
+const guestNames = data.guests.map((g) => g.name).join(" × ");
+const guestRoles = data.guests
+  .filter((g) => g.role)
+  .map((g) => g.role)
+  .join(" / ");
+---
+
+<MainLayout
+  title={data.title}
+  description={data.description}
+  type="article"
+  publishedTime={data.pubDate}
+  tags={data.tags}
+>
+  <article class="conversation-article">
+    <!-- 文章头部 -->
+    <header class="article-header">
+      <div class="header-meta">
+        <div class="participants-bar">
+          <span class="participant-label">对话嘉宾</span>
+          <span class="participants-list">
+            {
+              data.interviewer && (
+                <>
+                  <span class="interviewer">{data.interviewer}</span>
+                  <span class="separator">×</span>
+                </>
+              )
+            }
+            {guestNames}
+          </span>
+        </div>
+        {guestRoles && <div class="guest-roles">{guestRoles}</div>}
+      </div>
+
+      <h1 class="article-title">{data.title}</h1>
+
+      <div class="article-meta">
+        <span class="source-link">
+          来源：
+          {
+            data.sourceUrl ? (
+              <a
+                href={data.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {data.source}
+                <svg
+                  class="external-icon"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7z" />
+                  <path d="M11 3v2h3.59L9 12.59 10.41 14 17 7.41V11h2V3z" />
+                </svg>
+              </a>
+            ) : (
+              <span>{data.source}</span>
+            )
+          }
+        </span>
+        <span class="pub-date">
+          {
+            new Date(data.pubDate).toLocaleDateString("zh-CN", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          }
+        </span>
+        {
+          data.readingTime && (
+            <span class="reading-time">约 {data.readingTime} 分钟阅读</span>
+          )
+        }
+      </div>
+
+      {
+        data.pullQuote && (
+          <blockquote class="featured-quote">
+            <p>{data.pullQuote}</p>
+          </blockquote>
+        )
+      }
+    </header>
+
+    <div class="article-layout">
+      <!-- 主内容区 -->
+      <div class="article-content">
+        {
+          hasEditorNote && (
+            <div class="editor-note">
+              <h3 class="note-title">📝 编者按</h3>
+              <div class="note-content">{data.editorNote}</div>
+            </div>
+          )
+        }
+
+        <!-- 正文内容 -->
+        <div class="markdown-body content">
+          <Content />
+        </div>
+
+        <!-- 文章底部信息 -->
+        <footer class="article-footer">
+          <div class="footer-content">
+            {
+              data.sourceUrl && (
+                <div class="original-link">
+                  <strong>原文链接：</strong>
+                  <a
+                    href={data.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {data.sourceUrl}
+                  </a>
+                </div>
+              )
+            }
+
+            {
+              data.tags && data.tags.length > 0 && (
+                <div class="article-tags">
+                  <strong>相关话题：</strong>
+                  <div class="tags-list">
+                    {data.tags.map((tag) => (
+                      <a href={`/conversations/?tag=${tag}`} class="tag-link">
+                        {tag}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )
+            }
+          </div>
+        </footer>
+      </div>
+
+      <!-- 侧边栏：嘉宾信息和目录 -->
+      <aside class="article-sidebar">
+        <!-- 嘉宾卡片 -->
+        {
+          data.guests && data.guests.length > 0 && (
+            <section class="guests-section">
+              <h3>对话嘉宾</h3>
+              <div class="guests-list">
+                {data.guests.map((guest, idx) => (
+                  <div class="guest-card">
+                    {guest.image && (
+                      <img
+                        src={guest.image}
+                        alt={guest.name}
+                        class="guest-photo"
+                      />
+                    )}
+                    <div class="guest-info">
+                      <h4 class="guest-name">{guest.name}</h4>
+                      {guest.role && <p class="guest-role">{guest.role}</p>}
+                      {guest.bio && <p class="guest-bio">{guest.bio}</p>}
+                      {guest.url && (
+                        <a
+                          href={guest.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="guest-link"
+                        >
+                          了解更多 →
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <TableOfContents headings={headings} />
+
+        <!-- 分享按钮 -->
+        <section class="share-section">
+          <h3>分享</h3>
+          <div class="share-buttons">
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(Astro.url.href)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="share-btn twitter"
+              title="分享到 Twitter"
+            >
+              𝕏
+            </a>
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(Astro.url.href)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="share-btn facebook"
+              title="分享到 Facebook"
+            >
+              f
+            </a>
+            <button
+              class="share-btn copy"
+              onclick="navigator.clipboard.writeText(window.location.href); alert('链接已复制')"
+              title="复制链接"
+            >
+              🔗
+            </button>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </article>
+</MainLayout>
+
+<style is:global>
+  /* 确保 Q&A 样式在正文中工作 */
+  .conversation-article .markdown-body strong {
+    font-weight: 700;
+  }
+
+  .conversation-article .markdown-body strong:first-child {
+    /* Q: 或 A: 的样式 */
+  }
+
+  /* 提问的段落 */
+  .conversation-article .markdown-body p:has(> strong:first-child)::before {
+    content: attr(data-q);
+  }
+</style>

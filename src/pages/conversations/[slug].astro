@@ -1,0 +1,21 @@
+---
+import { getCollection } from "astro:content";
+import ConversationLayout from "../../layouts/conversationlayout.astro";
+
+export async function getStaticPaths() {
+  const conversations = await getCollection("conversations");
+
+  return conversations.map((conversation) => ({
+    params: { slug: conversation.slug },
+    props: { post: conversation },
+  }));
+}
+
+interface Props {
+  post: any;
+}
+
+const { post } = Astro.props;
+---
+
+<ConversationLayout post={post} />

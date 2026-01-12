@@ -134,7 +134,7 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
     width: 240px;
     background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* 更轻的阴影 */
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -144,9 +144,8 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 16px 18px 12px;
-    border-bottom: 1px solid #eef2f7;
-    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    padding: 14px 18px 10px;
+    background: #ffffff; /* 去除标题区域的背景装饰与边框 */
   }
 
   .toc-icon {
@@ -154,9 +153,10 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   }
 
   .toc-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #333;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #374151;
+    letter-spacing: 0.06em; /* 轻微字距提升层级感 */
   }
 
   .toc-nav {
@@ -224,7 +224,7 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
   .toc-link.active {
     color: #0066cc;
-    background: linear-gradient(90deg, #e8f4ff 0%, #f0f7ff 100%);
+    background: #eaf4ff; /* 更简洁的淡背景高亮 */
     border-left-color: #0066cc;
     font-weight: 600;
   }

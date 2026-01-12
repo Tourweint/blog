@@ -1,0 +1,272 @@
+---
+import MainLayout from "../layouts/mainlayout.astro";
+import "../styles/notes.css";
+import { getCollection } from "astro:content";
+
+const resolveDate = (data: any) => data.pubDate || data.date || new Date();
+
+const flatten = (text: string) =>
+  text
+    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+    .replace(/[#!>*`~_|>-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const createExcerpt = (note: any, max = 140) => {
+  const source = note.data.description || note.data.text || note.body || "";
+  const clean = flatten(source);
+  if (!clean) return "随手的一句短摘";
+  return clean.length > max ? `${clean.slice(0, max)}…` : clean;
+};
+
+const rawNotes = (await getCollection("notes")).sort(
+  (a, b) => resolveDate(b.data).getTime() - resolveDate(a.data).getTime()
+);
+
+const notes = await Promise.all(
+  rawNotes.map(async (note) => {
+    const { Content } = await note.render();
+    const resolvedDate = resolveDate(note.data);
+    const tags = note.data.tags?.length ? note.data.tags : ["未分类"];
+    const hook = createExcerpt(note);
+    const title = note.data.title || hook || "未命名短句";
+    return {
+      ...note,
+      Content,
+      hook,
+      title,
+      tags,
+      year: resolvedDate.getFullYear(),
+      date: resolvedDate,
+      source: note.data.source || "原创",
+    };
+  })
+);
+
+const tagFilters = ["全部", ...new Set(notes.flatMap((n) => n.tags))];
+const yearFilters = [
+  "全部",
+  ...Array.from(new Set(notes.map((n) => n.year))).sort((a, b) => b - a),
+];
+
+const ITEMS_PER_PAGE = 18;
+---
+
+<MainLayout title="句子簿 - Tourweint's Blog" description="轻量想法与摘抄">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Notes</p>
+      <h1>留住短句的力度</h1>
+    </div>
+    <button class="random-btn" id="random-note">
+      <span>🎲</span>
+      <span>随机一条</span>
+    </button>
+  </section>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">标签</span>
+      <div class="filter-chips">
+        {
+          tagFilters.map((t) => (
+            <button class="chip" data-tag={t}>
+              {t}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">年份</span>
+      <div class="filter-chips">
+        {
+          yearFilters.map((year) => (
+            <button class="chip" data-year={year}>
+              {year}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+      <div class="notes-stream" id="note-list">
+        {
+          notes.map((note) => {
+            const NoteContent = note.Content;
+            return (
+              <article
+                class="note-card"
+                data-tags={note.tags.join(",")}
+                data-year={note.year}
+              >
+                <div class="note-meta">
+                  <time datetime={note.date.toISOString().split("T")[0]}>
+                    {note.date.toLocaleDateString("zh-cn")}
+                  </time>
+                  <span>·</span>
+                  <span class="note-source">{note.source}</span>
+                </div>
+                <h2 class="note-title">{note.title}</h2>
+                <p class="note-hook">{note.hook}</p>
+                <div class="note-body content" hidden>
+                  <NoteContent />
+                </div>
+                <div class="note-footer">
+                  <div class="tag-row">
+                    {note.tags.map((tag) => (
+                      <span class="tag-pill">{tag}</span>
+                    ))}
+                  </div>
+                  <button
+                    class="toggle-body"
+                    data-label-open="展开"
+                    data-label-close="收起"
+                    aria-expanded="false"
+                  >
+                    展开
+                  </button>
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
+
+      <div class="load-more-container">
+        <button class="load-more-btn" id="load-more">加载更多</button>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  const ITEMS_PER_PAGE = 18;
+
+  const tagButtons = Array.from(document.querySelectorAll(".chip[data-tag]"));
+  const yearButtons = Array.from(document.querySelectorAll(".chip[data-year]"));
+  const cards = Array.from(document.querySelectorAll(".note-card"));
+  const randomBtn = document.getElementById("random-note");
+  const loadMoreBtn = document.getElementById("load-more");
+
+  let activeTag = "全部";
+  let activeYear = "全部";
+  let displayedCount = ITEMS_PER_PAGE;
+
+  const expandCard = (card: HTMLElement) => {
+    card.setAttribute("data-state", "open");
+    card.classList.add("expanded");
+    card.querySelector(".note-body")?.removeAttribute("hidden");
+    const toggle = card.querySelector(".toggle-body");
+    if (toggle) {
+      const toggleElement = toggle as HTMLElement;
+      toggleElement.textContent = toggleElement.dataset.labelClose || "收起";
+      toggleElement.setAttribute("aria-expanded", "true");
+    }
+  };
+
+  const collapseCard = (card: HTMLElement) => {
+    card.setAttribute("data-state", "closed");
+    card.classList.remove("expanded");
+    card.querySelector(".note-body")?.setAttribute("hidden", "true");
+    const toggle = card.querySelector(".toggle-body");
+    if (toggle) {
+      const toggleElement = toggle as HTMLElement;
+      toggleElement.textContent = toggleElement.dataset.labelOpen || "展开";
+      toggleElement.setAttribute("aria-expanded", "false");
+    }
+  };
+
+  const applyFilters = () => {
+    cards.forEach((card) => {
+      const tags =
+        (card as HTMLElement).dataset.tags?.split(",").filter(Boolean) || [];
+      const year = (card as HTMLElement).dataset.year;
+
+      const tagMatch = activeTag === "全部" || tags.includes(activeTag);
+      const yearMatch = activeYear === "全部" || year === activeYear;
+      const visible = tagMatch && yearMatch;
+
+      card.toggleAttribute("hidden", !visible);
+      if (!visible) {
+        collapseCard(card as HTMLElement);
+      }
+    });
+
+    displayedCount = ITEMS_PER_PAGE;
+    updatePagination();
+  };
+
+  const updatePagination = () => {
+    const visibleCards = cards.filter((card) => !card.hasAttribute("hidden"));
+    visibleCards.forEach((card, index) => {
+      if (index < displayedCount) {
+        (card as HTMLElement).style.display = "";
+      } else {
+        (card as HTMLElement).style.display = "none";
+      }
+    });
+
+    if (loadMoreBtn) {
+      loadMoreBtn.style.display =
+        visibleCards.length > displayedCount ? "block" : "none";
+    }
+  };
+
+  tagButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      tagButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeTag = (btn as HTMLElement).dataset.tag || "全部";
+      applyFilters();
+    });
+  });
+
+  yearButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      yearButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeYear = (btn as HTMLElement).dataset.year || "全部";
+      applyFilters();
+    });
+  });
+
+  const toggleButtons = Array.from(document.querySelectorAll(".toggle-body"));
+  toggleButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".note-card");
+      if (!card) return;
+      const isOpen = card.getAttribute("data-state") === "open";
+      isOpen
+        ? collapseCard(card as HTMLElement)
+        : expandCard(card as HTMLElement);
+    });
+  });
+
+  randomBtn?.addEventListener("click", () => {
+    const visible = cards.filter(
+      (card) =>
+        !card.hasAttribute("hidden") &&
+        (card as HTMLElement).style.display !== "none"
+    );
+    if (!visible.length) return;
+    const pick = visible[Math.floor(Math.random() * visible.length)];
+    expandCard(pick as HTMLElement);
+    (pick as HTMLElement).scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+    pick.classList.add("flash");
+    setTimeout(() => pick.classList.remove("flash"), 1200);
+  });
+
+  loadMoreBtn?.addEventListener("click", () => {
+    displayedCount += ITEMS_PER_PAGE;
+    updatePagination();
+  });
+
+  tagButtons[0]?.classList.add("active");
+  yearButtons[0]?.classList.add("active");
+  applyFilters();
+</script>

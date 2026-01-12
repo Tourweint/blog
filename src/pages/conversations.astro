@@ -1,0 +1,215 @@
+---
+import MainLayout from "../layouts/mainlayout.astro";
+import "../styles/conversations.css";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import ConversationCard from "../components/ConversationCard.astro";
+
+const conversations = (await getCollection("conversations")).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+
+// 提取所有话题标签
+const allTags = [
+  "全部",
+  ...Array.from(new Set(conversations.flatMap((c) => c.data.tags ?? []))).sort(
+    (a, b) => a.localeCompare(b, "zh-CN")
+  ),
+];
+
+// 分页设置
+const ITEMS_PER_PAGE = 12;
+const totalPages = Math.ceil(conversations.length / ITEMS_PER_PAGE);
+const paginatedConversations = conversations.slice(0, ITEMS_PER_PAGE);
+---
+
+<MainLayout
+  title="优质对话 - Tourweint's Blog"
+  description="真实访谈与虚构对话并行，为学习与思考提供灵感"
+>
+  <section class="conversations-hero">
+    <div>
+      <p class="eyebrow">Conversations</p>
+      <h1>优质对话库</h1>
+      <p class="sub">深度访谈、虚构对白、播客文字版与技术问答</p>
+      <p class="sub-desc">不只记录真实场景，也用想象力做思想实验，为灵感服务</p>
+    </div>
+  </section>
+
+  <!-- 标签过滤 -->
+  <div class="conversations-filters">
+    <div class="filter-header">
+      <span class="filter-label">按话题浏览</span>
+    </div>
+    <div class="filter-pills">
+      {
+        allTags.map((tag) => (
+          <button
+            class={`pill ${tag === "全部" ? "active" : ""}`}
+            data-tag={tag}
+          >
+            {tag}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- 对话卡片网格 -->
+  <div class="conversations-grid" id="conversations-grid">
+    {
+      paginatedConversations.map((conversation) => (
+        <div
+          class="conversation-item"
+          data-tags={(conversation.data.tags ?? []).join(",")}
+        >
+          <ConversationCard conversation={conversation} />
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- 加载更多按钮 -->
+  <div
+    class="load-more-container"
+    style="display: none;"
+    id="load-more-container"
+  >
+    <button class="load-more-btn" id="load-more"> 加载更多 </button>
+  </div>
+
+  <!-- 空状态 -->
+  <div class="empty-state" id="empty-state" style="display: none;">
+    <p>暂无对话，敬请期待。</p>
+  </div>
+
+  <!-- 说明区域 -->
+  <section class="conversations-info">
+    <h2>关于本栏目</h2>
+    <div class="info-content">
+      <div class="info-item">
+        <h3>📚 内容定位</h3>
+        <p>
+          收录高质量的真实与虚构对话：名人访谈、播客文字稿、思想实验式对白、技术问答等。区别于碎片化笔记，这里是激发灵感的集散地。
+        </p>
+      </div>
+      <div class="info-item">
+        <h3>🎯 核心价值</h3>
+        <p>
+          通过真实案例与虚构场景并置，窥见不同思维方式。每一段对话都附带编者按，说明它为什么值得反复阅读与联想。
+        </p>
+      </div>
+      <div class="info-item">
+        <h3>✨ 使用建议</h3>
+        <p>
+          选择感兴趣的话题，无论真实或想象，对照侧边栏目录快速浏览。先看编者按，找到切入角度，再细读正文。
+        </p>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style is:global>
+  .eyebrow {
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .sub-desc {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+  }
+</style>
+
+<script
+  define:vars={{ ITEMS_PER_PAGE, conversations: conversations.length, allTags }}
+>
+  const ITEMS_PER_PAGE_VALUE = ITEMS_PER_PAGE;
+
+  const pills = Array.from(document.querySelectorAll(".pill"));
+  const items = Array.from(document.querySelectorAll(".conversation-item"));
+  const loadMoreBtn = document.getElementById("load-more");
+  const loadMoreContainer = document.getElementById("load-more-container");
+  const emptyState = document.getElementById("empty-state");
+  const grid = document.getElementById("conversations-grid");
+
+  let activeTag = "全部";
+  let displayedCount = ITEMS_PER_PAGE_VALUE;
+
+  // 应用过滤
+  const applyFilter = () => {
+    items.forEach((item) => {
+      const tags = (item.dataset.tags || "").split(",").filter(Boolean);
+      const visible = activeTag === "全部" || tags.includes(activeTag);
+      item.style.display = visible ? "" : "none";
+    });
+
+    displayedCount = ITEMS_PER_PAGE_VALUE;
+    updatePagination();
+  };
+
+  // 更新分页显示
+  const updatePagination = () => {
+    const visibleItems = items.filter((item) => item.style.display !== "none");
+
+    visibleItems.forEach((item, index) => {
+      if (index < displayedCount) {
+        item.style.display = "";
+      } else {
+        item.style.display = "none";
+      }
+    });
+
+    // 显示/隐藏加载更多按钮
+    if (visibleItems.length > displayedCount) {
+      loadMoreContainer.style.display = "block";
+    } else {
+      loadMoreContainer.style.display = "none";
+    }
+
+    // 显示/隐藏空状态
+    if (visibleItems.length === 0) {
+      grid.style.display = "none";
+      emptyState.style.display = "block";
+    } else {
+      grid.style.display = "grid";
+      emptyState.style.display = "none";
+    }
+  };
+
+  // 标签点击
+  pills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      pills.forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      activeTag = pill.dataset.tag || "全部";
+      applyFilter();
+    });
+  });
+
+  // 加载更多
+  loadMoreBtn?.addEventListener("click", () => {
+    displayedCount += ITEMS_PER_PAGE_VALUE;
+    updatePagination();
+    // 平滑滚动
+    setTimeout(() => {
+      const visibleItems = items.filter(
+        (item) => item.style.display !== "none"
+      );
+      const nextItem = visibleItems[displayedCount - ITEMS_PER_PAGE_VALUE];
+      if (nextItem) {
+        nextItem.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 50);
+  });
+
+  // 初始化
+  pills[0]?.classList.add("active");
+  updatePagination();
+</script>
