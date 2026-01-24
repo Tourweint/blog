@@ -102,6 +102,7 @@ body {
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.15s ease;
+  text-decoration: none;
 }
 
 .chip:hover {
@@ -114,13 +115,67 @@ body {
   color: var(--notes-accent);
 }
 
+/* Timeline Headers */
+.timeline-year {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--notes-text);
+  margin: 40px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--notes-text);
+  letter-spacing: -0.02em;
+}
+
+.timeline-month {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--notes-muted);
+  margin: 24px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.month-link {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+}
+
+.month-link:hover {
+  color: var(--notes-accent);
+}
+
+.link-icon {
+  font-size: 0.8em;
+  opacity: 0;
+  transform: translate(-4px, 4px);
+  transition: all 0.2s ease;
+}
+
+.month-link:hover .link-icon {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.timeline-month::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--notes-border);
+}
+
 /* Notes Stream */
 .notes-stream {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   padding-top: 8px;
 }
+
 
 /* Note Card */
 .note-card {

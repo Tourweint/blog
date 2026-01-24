@@ -1,0 +1,139 @@
+---
+import MainLayout from "../layouts/mainlayout.astro";
+import "../styles/persons.css";
+import { getCollection } from "astro:content";
+import PersonCard from "../components/PersonCard.astro";
+
+const persons = (await getCollection("persons")).sort((a, b) => {
+  if (a.data.featured !== b.data.featured) {
+    return a.data.featured ? -1 : 1;
+  }
+  return a.data.name.localeCompare(b.data.name, "zh-CN");
+});
+
+const allTags = [
+  "全部",
+  ...Array.from(new Set(persons.flatMap((p) => p.data.tags ?? []))).sort(
+    (a, b) => a.localeCompare(b, "zh-CN")
+  ),
+];
+
+const ITEMS_PER_PAGE = 12;
+---
+
+<MainLayout
+  title="人物志 - Tourweint's Blog"
+  description="收录各领域有影响力的人物，包括科技领袖、思想家、教育家等"
+>
+  <section class="persons-hero">
+    <div>
+      <p class="eyebrow">Persons</p>
+      <h1>人物志</h1>
+      <p class="sub">收录各领域有影响力的人物</p>
+      <p class="sub-desc">科技领袖、思想家、教育家、创业者……他们的思想值得被记录</p>
+    </div>
+  </section>
+
+  <div class="persons-filters">
+    <div class="filter-header">
+      <span class="filter-label">按领域浏览</span>
+    </div>
+    <div class="filter-pills">
+      {
+        allTags.map((tag) => (
+          <button
+            class={`pill ${tag === "全部" ? "active" : ""}`}
+            data-tag={tag}
+          >
+            {tag}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="persons-grid" id="persons-grid">
+    {
+      persons.map((person) => (
+        <div
+          class="person-item"
+          data-tags={(person.data.tags ?? []).join(",")}
+        >
+          <PersonCard person={person} />
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="empty-state" id="empty-state" style="display: none;">
+    <p>暂无人物，敬请期待。</p>
+  </div>
+
+  <div
+    class="load-more-container"
+    id="load-more-container"
+    style="display: none;"
+  >
+    <button class="load-more-btn" id="load-more">加载更多</button>
+  </div>
+</MainLayout>
+
+<script define:vars={{ ITEMS_PER_PAGE, totalPersons: persons.length }}>
+  const pills = Array.from(document.querySelectorAll(".pill"));
+  const items = Array.from(document.querySelectorAll(".person-item"));
+  const loadMoreBtn = document.getElementById("load-more");
+  const loadMoreContainer = document.getElementById("load-more-container");
+  const emptyState = document.getElementById("empty-state");
+  const grid = document.getElementById("persons-grid");
+
+  let activeTag = "全部";
+  let displayedCount = ITEMS_PER_PAGE;
+
+  const applyFilter = () => {
+    items.forEach((item) => {
+      const tags = (item.dataset.tags || "").split(",").filter(Boolean);
+      const visible = activeTag === "全部" || tags.includes(activeTag);
+      item.style.display = visible ? "" : "none";
+    });
+    displayedCount = ITEMS_PER_PAGE;
+    updatePagination();
+  };
+
+  const updatePagination = () => {
+    const visibleItems = items.filter((item) => item.style.display !== "none");
+
+    visibleItems.forEach((item, index) => {
+      item.style.display = index < displayedCount ? "" : "none";
+    });
+
+    if (visibleItems.length > displayedCount) {
+      loadMoreContainer.style.display = "block";
+    } else {
+      loadMoreContainer.style.display = "none";
+    }
+
+    if (visibleItems.length === 0) {
+      grid.style.display = "none";
+      emptyState.style.display = "block";
+    } else {
+      grid.style.display = "grid";
+      emptyState.style.display = "none";
+    }
+  };
+
+  pills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      pills.forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      activeTag = pill.dataset.tag || "全部";
+      applyFilter();
+    });
+  });
+
+  loadMoreBtn?.addEventListener("click", () => {
+    displayedCount += ITEMS_PER_PAGE;
+    updatePagination();
+  });
+
+  updatePagination();
+</script>

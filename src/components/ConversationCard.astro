@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 
 interface Props {
   conversation: CollectionEntry<"conversations">;
@@ -7,16 +8,24 @@ interface Props {
 
 const { conversation } = Astro.props;
 const { data, slug } = conversation;
-const guestNames = data.guests.map((g) => g.name).join(" × ");
+
+// 通过 slug 查找人物信息
+const allPersons = await getCollection("persons");
+const guestPersons = (data.guests || [])
+  .map((guestSlug: string) => allPersons.find((p) => p.slug === guestSlug))
+  .filter(Boolean);
+
+const guestNames = guestPersons.map((p) => p?.data.name).join(" × ");
+const firstGuestAvatar = guestPersons[0]?.data.avatar;
 ---
 
 <article class="conversation-card">
   <!-- 卡片头部：嘉宾信息 -->
   <div class="card-header">
     {
-      data.guests[0]?.image && (
+      firstGuestAvatar && (
         <div class="guest-image">
-          <img src={data.guests[0].image} alt={data.guests[0].name} />
+          <img src={firstGuestAvatar} alt={guestPersons[0]?.data.name} />
         </div>
       )
     }
@@ -31,9 +40,9 @@ const guestNames = data.guests.map((g) => g.name).join(" × ");
           )
         }
         {
-          guestNames
-            .split(" × ")
-            .map((name) => <span class="role guest">{name}</span>)
+          guestPersons.map((person) => (
+            <span class="role guest">{person?.data.name}</span>
+          ))
         }
       </div>
       <p class="source-badge">{data.source}</p>

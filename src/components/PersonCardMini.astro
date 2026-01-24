@@ -1,0 +1,87 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  person: CollectionEntry<"persons">;
+}
+
+const { person } = Astro.props;
+const { data, slug } = person;
+---
+
+<div class="person-card-mini">
+  {data.avatar && (
+    <img src={data.avatar} alt={data.name} class="mini-avatar" loading="lazy" />
+  )}
+  <div class="mini-info">
+    <h4 class="mini-name">{data.name}</h4>
+    {data.role && <p class="mini-role">{data.role}</p>}
+    {data.bio && <p class="mini-bio">{data.bio}</p>}
+    <a href={`/persons/${slug}`} class="mini-link">
+      查看详情 →
+    </a>
+  </div>
+</div>
+
+<style>
+  .person-card-mini {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+  }
+
+  .mini-avatar {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-bg-tertiary, #f0f0f0);
+  }
+
+  .mini-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mini-name {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .mini-role {
+    margin: 0.2rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+  }
+
+  .mini-bio {
+    margin: 0.4rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-tertiary);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .mini-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #9a6b2f;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .mini-link:hover {
+    text-decoration: underline;
+  }
+</style>

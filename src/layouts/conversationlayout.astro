@@ -1,7 +1,9 @@
 ---
-import MainLayout from "./mainlayout.astro";
-import TableOfContents from "../components/TableOfContents.astro";
+import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
+import MainLayout from "./mainlayout.astro";
+import PersonCardMini from "../components/PersonCardMini.astro";
+import TableOfContents from "../components/TableOfContents.astro";
 import "../styles/conversations.css";
 
 interface Props {
@@ -14,10 +16,14 @@ const { data } = post;
 
 // 为编者按和金句准备样式类
 const hasEditorNote = data.editorNote;
-const guestNames = data.guests.map((g) => g.name).join(" × ");
-const guestRoles = data.guests
-  .filter((g) => g.role)
-  .map((g) => g.role)
+const allPersons = await getCollection("persons");
+const guestPersons = (data.guests || [])
+  .map((slug: string) => allPersons.find((p) => p.slug === slug))
+  .filter((p): p is CollectionEntry<"persons"> => p !== undefined);
+const guestNames = guestPersons.map((p) => p?.data.name).join(" × ");
+const guestRoles = guestPersons
+  .map((p) => p?.data.role)
+  .filter(Boolean)
   .join(" / ");
 ---
 
@@ -29,7 +35,16 @@ const guestRoles = data.guests
   tags={data.tags}
 >
   <article class="conversation-article">
+    <nav class="back-nav">
+      <a href="/conversations" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-icon">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        返回对话录
+      </a>
+    </nav>
     <!-- 文章头部 -->
+
     <header class="article-header">
       <div class="header-meta">
         <div class="participants-bar">
@@ -154,46 +169,26 @@ const guestRoles = data.guests
         </footer>
       </div>
 
-      <!-- 侧边栏：嘉宾信息和目录 -->
+      <!-- 侧边栏：嘉宾信息 -->
       <aside class="article-sidebar">
-        <!-- 嘉宾卡片 -->
         {
-          data.guests && data.guests.length > 0 && (
+          guestPersons.length > 0 && (
             <section class="guests-section">
               <h3>对话嘉宾</h3>
               <div class="guests-list">
-                {data.guests.map((guest, idx) => (
-                  <div class="guest-card">
-                    {guest.image && (
-                      <img
-                        src={guest.image}
-                        alt={guest.name}
-                        class="guest-photo"
-                      />
-                    )}
-                    <div class="guest-info">
-                      <h4 class="guest-name">{guest.name}</h4>
-                      {guest.role && <p class="guest-role">{guest.role}</p>}
-                      {guest.bio && <p class="guest-bio">{guest.bio}</p>}
-                      {guest.url && (
-                        <a
-                          href={guest.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="guest-link"
-                        >
-                          了解更多 →
-                        </a>
-                      )}
-                    </div>
-                  </div>
+                {guestPersons.map((person) => (
+                  <PersonCardMini person={person} />
                 ))}
               </div>
             </section>
           )
         }
 
-        <TableOfContents headings={headings} />
+        {headings && headings.length > 0 && (
+          <section class="toc-section">
+            <TableOfContents headings={headings} />
+          </section>
+        )}
 
         <!-- 分享按钮 -->
         <section class="share-section">

@@ -39,25 +39,35 @@ const conversations = defineCollection({
     title: z.string(),                          // 对话标题
     description: z.string().optional(),         // 描述
     pubDate: z.coerce.date(),                   // 发布日期
-    guests: z.array(z.object({                  // 嘉宾信息
-      name: z.string(),
-      role: z.string().optional(),              // 身份
-      bio: z.string().optional(),               // 简介
-      image: z.string().optional(),             // 嘉宾照片
-      url: z.string().optional(),               // 主页链接
-    })),
+    guests: z.array(z.string()).default([]),    // 嘉宾 slug 列表，人物页统一维护
     interviewer: z.string().optional(),         // 提问者
-    source: z.string(),                         // 来源（如：YC Podcast, 播客名称等）
+    source: z.string(),                         // 来源（如 YC Podcast）
     sourceUrl: z.string().optional(),           // 原文链接
     pullQuote: z.string().optional(),           // 金句
     readingTime: z.number().optional(),         // 阅读时间（分钟）
     tags: z.array(z.string()).default([]),      // 标签/话题
     editorNote: z.string().optional(),          // 编者按
-    toc: z.array(z.object({                     // 目录
-      title: z.string(),
-      id: z.string(),
-    })).default([]),                            // 目录项
+    // toc 移除：目录由正文自动生成
   }),
 });
 
-export const collections = { posts, notes, conversations };
+const persons = defineCollection({
+  type: 'content',
+  schema: z.object({
+    name: z.string(),                           // 姓名
+    nameEn: z.string().optional(),              // 英文名
+    avatar: z.string().optional(),              // 头像 URL
+    role: z.string().optional(),                // 身份/职位
+    bio: z.string().optional(),                 // 简介
+    tags: z.array(z.string()).default([]),      // 标签
+    links: z.object({                           // 社交/外部链接
+      website: z.string().optional(),
+      twitter: z.string().optional(),
+      linkedin: z.string().optional(),
+      github: z.string().optional(),
+    }).optional(),
+    featured: z.boolean().default(false),       // 是否推荐
+  }),
+});
+
+export const collections = { posts, notes, conversations, persons };

@@ -292,12 +292,40 @@
   padding: 0 1.5rem;
 }
 
+/* 返回按钮 */
+.back-nav {
+  margin-bottom: 2rem;
+  padding-top: 2rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.back-link:hover {
+  color: var(--color-accent);
+  transform: translateX(-4px);
+}
+
+.back-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
 .article-header {
   margin-bottom: 3rem;
-  padding-top: 4rem; /* 增加顶部留白 */
+  padding-top: 2rem; /* 调整顶部留白，因为有了返回按钮 */
   padding-bottom: 2rem;
   border-bottom: 1px solid var(--color-border); /* 弱化分隔线 */
 }
+
 
 .header-meta {
   margin-bottom: 1.5rem;
@@ -740,6 +768,14 @@
 }
 
 /* 目录导航 */
+.toc-section {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 90px;
+  max-height: calc(100vh - 120px);
+}
+
 .toc-nav ul {
   list-style: none;
   margin: 0;

@@ -107,6 +107,7 @@ const ogImage = image.startsWith("http")
           <li><a href="/">首页</a></li>
           <li><a href="/archive">归档</a></li>
           <li><a href="/conversations">对话</a></li>
+          <li><a href="/persons">人物</a></li>
           <li><a href="/notes">短句</a></li>
           <li><a href="/tools">工具</a></li>
           <li><a href="/about">关于</a></li>
@@ -125,6 +126,7 @@ const ogImage = image.startsWith("http")
         <a class="drawer-link" href="/">首页</a>
         <a class="drawer-link" href="/archive">归档</a>
         <a class="drawer-link" href="/conversations">对话</a>
+        <a class="drawer-link" href="/persons">人物</a>
         <a class="drawer-link" href="/notes">短句</a>
         <a class="drawer-link" href="/tools">工具</a>
         <a class="drawer-link" href="/about">关于</a>
@@ -168,16 +170,16 @@ const ogImage = image.startsWith("http")
     <script>
       {
         const navbar = document.getElementById(
-          "site-navbar"
+          "site-navbar",
         ) as HTMLElement | null;
         const toggle = document.querySelector(
-          "[data-nav-toggle]"
+          "[data-nav-toggle]",
         ) as HTMLButtonElement | null;
         const drawer = document.getElementById(
-          "mobile-drawer"
+          "mobile-drawer",
         ) as HTMLElement | null;
         const overlay = document.querySelector(
-          "[data-drawer-overlay]"
+          "[data-drawer-overlay]",
         ) as HTMLElement | null;
 
         if (navbar) {
@@ -217,7 +219,7 @@ const ogImage = image.startsWith("http")
                 ticking = true;
               }
             },
-            { passive: true }
+            { passive: true },
           );
         }
 

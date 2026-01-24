@@ -20,7 +20,26 @@ const createExcerpt = (note: any, max = 140) => {
 };
 
 const rawNotes = (await getCollection("notes")).sort(
-  (a, b) => resolveDate(b.data).getTime() - resolveDate(a.data).getTime()
+  (a, b) => resolveDate(b.data).getTime() - resolveDate(a.data).getTime(),
+);
+
+// Group notes by Year and Month for archive links
+const timelineGroups = rawNotes.reduce(
+  (acc: any, note) => {
+    const date = resolveDate(note.data);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const yKey = year.toString();
+    if (!acc[yKey]) acc[yKey] = {};
+    if (!acc[yKey][month]) acc[yKey][month] = [];
+    acc[yKey][month].push(note);
+    return acc;
+  },
+  {} as Record<string, Record<string, any[]>>,
+);
+
+const sortedYears = Object.keys(timelineGroups).sort(
+  (a, b) => parseInt(b) - parseInt(a),
 );
 
 const notes = await Promise.all(
@@ -37,17 +56,37 @@ const notes = await Promise.all(
       title,
       tags,
       year: resolvedDate.getFullYear(),
+      month: (resolvedDate.getMonth() + 1).toString().padStart(2, "0"),
       date: resolvedDate,
       source: note.data.source || "原创",
     };
-  })
+  }),
 );
 
 const tagFilters = ["全部", ...new Set(notes.flatMap((n) => n.tags))];
-const yearFilters = [
-  "全部",
-  ...Array.from(new Set(notes.map((n) => n.year))).sort((a, b) => b - a),
-];
+
+// Generate grouped structure for rendering
+const displayGroups: { type: 'year' | 'month' | 'note', value?: string, rawValue?: string, year?: string, note?: any }[] = [];
+let currentYear = 0;
+let currentMonth = "";
+
+notes.forEach(note => {
+  if (note.year !== currentYear) {
+    currentYear = note.year;
+    displayGroups.push({ type: 'year', value: currentYear.toString() });
+    currentMonth = ""; 
+  }
+  if (note.month !== currentMonth) {
+    currentMonth = note.month;
+    displayGroups.push({ 
+      type: 'month', 
+      value: `${currentMonth}月`,
+      rawValue: currentMonth,
+      year: currentYear.toString()
+    });
+  }
+  displayGroups.push({ type: 'note', note });
+});
 
 const ITEMS_PER_PAGE = 18;
 ---
@@ -77,67 +116,69 @@ const ITEMS_PER_PAGE = 18;
         }
       </div>
     </div>
-    <div class="filter-group">
-      <span class="filter-label">年份</span>
-      <div class="filter-chips">
-        {
-          yearFilters.map((year) => (
-            <button class="chip" data-year={year}>
-              {year}
-            </button>
-          ))
-        }
-      </div>
-    </div>
   </div>
 
-      <div class="notes-stream" id="note-list">
-        {
-          notes.map((note) => {
-            const NoteContent = note.Content;
-            return (
-              <article
-                class="note-card"
-                data-tags={note.tags.join(",")}
-                data-year={note.year}
-              >
-                <div class="note-meta">
-                  <time datetime={note.date.toISOString().split("T")[0]}>
-                    {note.date.toLocaleDateString("zh-cn")}
-                  </time>
-                  <span>·</span>
-                  <span class="note-source">{note.source}</span>
-                </div>
-                <h2 class="note-title">{note.title}</h2>
-                <p class="note-hook">{note.hook}</p>
-                <div class="note-body content" hidden>
-                  <NoteContent />
-                </div>
-                <div class="note-footer">
-                  <div class="tag-row">
-                    {note.tags.map((tag) => (
-                      <span class="tag-pill">{tag}</span>
-                    ))}
-                  </div>
-                  <button
-                    class="toggle-body"
-                    data-label-open="展开"
-                    data-label-close="收起"
-                    aria-expanded="false"
-                  >
-                    展开
-                  </button>
-                </div>
-              </article>
-            );
-          })
+  <div class="notes-stream" id="note-list">
+    {
+      displayGroups.map((item) => {
+        if (item.type === 'year') {
+          return <h2 class="timeline-year" data-type="year-header">{item.value}</h2>;
         }
-      </div>
+        if (item.type === 'month') {
+          return (
+            <h3 class="timeline-month" data-type="month-header">
+              <a href={`/notes/${item.year}/${item.rawValue}`} class="month-link">
+                {item.value}
+                <span class="link-icon">↗</span>
+              </a>
+            </h3>
+          );
+        }
+        
+        const note = item.note;
+        const NoteContent = note.Content;
+        return (
+          <article
+            class="note-card"
+            data-tags={note.tags.join(",")}
+            data-year={note.year}
+            data-month={note.month}
+          >
+            <div class="note-meta">
+              <time datetime={note.date.toISOString().split("T")[0]}>
+                {note.date.toLocaleDateString("zh-cn")}
+              </time>
+              <span>·</span>
+              <span class="note-source">{note.source}</span>
+            </div>
+            <h2 class="note-title">{note.title}</h2>
+            <p class="note-hook">{note.hook}</p>
+            <div class="note-body content" hidden>
+              <NoteContent />
+            </div>
+            <div class="note-footer">
+              <div class="tag-row">
+                {note.tags.map((tag) => (
+                  <span class="tag-pill">{tag}</span>
+                ))}
+              </div>
+              <button
+                class="toggle-body"
+                data-label-open="展开"
+                data-label-close="收起"
+                aria-expanded="false"
+              >
+                展开
+              </button>
+            </div>
+          </article>
+        );
+      })
+    }
+  </div>
 
-      <div class="load-more-container">
-        <button class="load-more-btn" id="load-more">加载更多</button>
-      </div>
-    </div>
+  <div class="load-more-container">
+    <button class="load-more-btn" id="load-more">加载更多</button>
   </div>
 </MainLayout>
 
@@ -145,13 +186,12 @@ const ITEMS_PER_PAGE = 18;
   const ITEMS_PER_PAGE = 18;
 
   const tagButtons = Array.from(document.querySelectorAll(".chip[data-tag]"));
-  const yearButtons = Array.from(document.querySelectorAll(".chip[data-year]"));
   const cards = Array.from(document.querySelectorAll(".note-card"));
+  const headers = Array.from(document.querySelectorAll("[data-type$='-header']"));
   const randomBtn = document.getElementById("random-note");
   const loadMoreBtn = document.getElementById("load-more");
 
   let activeTag = "全部";
-  let activeYear = "全部";
   let displayedCount = ITEMS_PER_PAGE;
 
   const expandCard = (card: HTMLElement) => {
@@ -182,14 +222,11 @@ const ITEMS_PER_PAGE = 18;
     cards.forEach((card) => {
       const tags =
         (card as HTMLElement).dataset.tags?.split(",").filter(Boolean) || [];
-      const year = (card as HTMLElement).dataset.year;
 
       const tagMatch = activeTag === "全部" || tags.includes(activeTag);
-      const yearMatch = activeYear === "全部" || year === activeYear;
-      const visible = tagMatch && yearMatch;
-
-      card.toggleAttribute("hidden", !visible);
-      if (!visible) {
+      
+      card.toggleAttribute("hidden", !tagMatch);
+      if (!tagMatch) {
         collapseCard(card as HTMLElement);
       }
     });
@@ -200,12 +237,29 @@ const ITEMS_PER_PAGE = 18;
 
   const updatePagination = () => {
     const visibleCards = cards.filter((card) => !card.hasAttribute("hidden"));
+    
+    // Show/hide cards based on pagination
     visibleCards.forEach((card, index) => {
       if (index < displayedCount) {
         (card as HTMLElement).style.display = "";
       } else {
         (card as HTMLElement).style.display = "none";
       }
+    });
+
+    // Handle headers visibility
+    // A header is visible only if at least one following card (before the next header of same or higher level) is visible
+    headers.forEach((header) => {
+      let next = header.nextElementSibling;
+      let hasVisibleChild = false;
+      while (next && !next.hasAttribute("data-type")) {
+        if (next.classList.contains("note-card") && !next.hasAttribute("hidden") && (next as HTMLElement).style.display !== "none") {
+          hasVisibleChild = true;
+          break;
+        }
+        next = next.nextElementSibling;
+      }
+      (header as HTMLElement).style.display = hasVisibleChild ? "" : "none";
     });
 
     if (loadMoreBtn) {
@@ -219,15 +273,6 @@ const ITEMS_PER_PAGE = 18;
       tagButtons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       activeTag = (btn as HTMLElement).dataset.tag || "全部";
-      applyFilters();
-    });
-  });
-
-  yearButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      yearButtons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      activeYear = (btn as HTMLElement).dataset.year || "全部";
       applyFilters();
     });
   });
@@ -248,7 +293,7 @@ const ITEMS_PER_PAGE = 18;
     const visible = cards.filter(
       (card) =>
         !card.hasAttribute("hidden") &&
-        (card as HTMLElement).style.display !== "none"
+        (card as HTMLElement).style.display !== "none",
     );
     if (!visible.length) return;
     const pick = visible[Math.floor(Math.random() * visible.length)];
@@ -267,6 +312,6 @@ const ITEMS_PER_PAGE = 18;
   });
 
   tagButtons[0]?.classList.add("active");
-  yearButtons[0]?.classList.add("active");
   applyFilters();
 </script>
+

@@ -2,12 +2,7 @@
 title: 通往通用人工智能的路径
 description: Lex Fridman 与 Sam Altman 的深度对谈，探讨 AGI 的未来与挑战
 pubDate: 2024-06-15
-guests:
-  - name: Sam Altman
-    role: OpenAI CEO
-    bio: OpenAI 首席执行官，推动 AI 民主化的践行者
-    image: https://n.sinaimg.cn/spider20230113/50/w1400h1050/20230113/1141-3448133ca28e750d991410132b3cd2f4.jpg
-    url: https://twitter.com/sama
+guests: [sam-altman]
 interviewer: Lex Fridman
 source: Lex Fridman Podcast
 sourceUrl: https://www.youtube.com/watch?v=L_Guz73e6fw

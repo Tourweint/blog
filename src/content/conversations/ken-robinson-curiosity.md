@@ -2,12 +2,7 @@
 title: 好奇心是如何被扼杀的
 description: 儿童教育心理学家与教育改革者的对话，关于如何保护和培养孩子的好奇心
 pubDate: 2024-05-20
-guests:
-  - name: 肯·罗宾逊
-    role: 教育改革家，TED 演讲人
-    bio: 国际教育创新专家，著有《让天赋自由》
-    image: https://ts3.tc.mm.bing.net/th/id/OIP-C.a8ndE0kAyv7F_PGz_3ieVwHaFj?rs=1&pid=ImgDetMain&o=7&rm=3
-    url: https://www.sirkenrobinson.com/
+guests: [ken-robinson]
 interviewer: 采访者
 source: 演讲与访谈文字版
 sourceUrl: https://example.com/ken-robinson-interview
@@ -15,17 +10,6 @@ pullQuote: 教育的目的不是填充大脑，而是点燃火焰。我们需要
 readingTime: 35
 tags: [教育, 创意, 儿童发展, 学习, 人生哲学]
 editorNote: 这是关于教育改革最深刻的对话之一。肯·罗宾逊在这次采访中深入讨论了为什么我们的教育系统压制而非培养创意，以及如何在家庭和学校中保护孩子的好奇心。每一位父母和教育工作者都应该读一遍。
-toc:
-  - title: 现代教育的危机
-    id: education-crisis
-  - title: 创意为什么被压制
-    id: creativity-suppression
-  - title: 发现天赋的过程
-    id: talent-discovery
-  - title: 父母和教师的角色
-    id: parent-role
-  - title: 个性化学习的未来
-    id: personalized-learning
 ---
 
 ## 关于嘉宾与来源
