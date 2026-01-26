@@ -1,0 +1,132 @@
+---
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import MainLayout from "../../layouts/mainlayout.astro";
+
+const posts = await getCollection("posts");
+const tagCounter = new Map<string, number>();
+
+posts.forEach((post: CollectionEntry<"posts">) => {
+  const tags = post.data.tags?.length ? post.data.tags : ["未分类"];
+  tags.forEach((tag) => tagCounter.set(tag, (tagCounter.get(tag) ?? 0) + 1));
+});
+
+const tags = Array.from(tagCounter.entries())
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+---
+
+<MainLayout
+  title="按主题阅读 - 多鸣的博客"
+  description="按主题筛选我的文章"
+  wide={true}
+>
+  <div class="category-index">
+    <header>
+      <p class="eyebrow">主题目录</p>
+      <h1>按主题阅读</h1>
+      <p class="lead">选一个主题直接跳转，或者返回摘录查看全部。</p>
+    </header>
+
+    <div class="tag-grid">
+      {
+        tags.length > 0 ? (
+          tags.map((tag) => (
+            <a
+              class="tag-card"
+              href={`/category/${encodeURIComponent(tag.name)}`}
+            >
+              <span class="tag-name">{tag.name}</span>
+              <span class="tag-count">{tag.count} 篇</span>
+            </a>
+          ))
+        ) : (
+          <p class="lead">暂无可用主题。</p>
+        )
+      }
+    </div>
+
+    <div class="back-link">
+      <a href="/excerpts">返回摘录列表 →</a>
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+  .category-index {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 1.5rem 80px;
+  }
+
+  .eyebrow {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+
+  h1 {
+    margin: 0 0 12px;
+  }
+
+  .lead {
+    color: #6b7280;
+    margin: 0 0 18px;
+  }
+
+  .tag-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin: 24px 0;
+  }
+
+  .tag-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .tag-card:hover {
+    transform: translateY(-2px);
+    border-color: #0f766e;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .tag-name {
+    font-weight: 700;
+  }
+
+  .tag-count {
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+  .back-link {
+    margin-top: 20px;
+  }
+
+  .back-link a {
+    color: #0f766e;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .back-link a:hover {
+    text-decoration: underline;
+  }
+</style>

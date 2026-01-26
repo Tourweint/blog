@@ -1,252 +1,107 @@
-# AGENTS.md - Codebase Guide for AI Agents
+﻿# AI Agent 工作手册（中文版）
 
-## Build Commands
+## 基本命令（构建/预览）
 
 ```bash
-npm run dev          # Start dev server with hot reload
-npm run build        # Production build (Astro static site)
-npm run preview      # Preview build locally
+npm run dev      # 本地开发热重载
+npm run build    # 生产构建（Astro 静态站点）
+npm run preview  # 预览已构建站点
 ```
 
-**No test commands configured** - This is a static blog without automated tests.
+当前项目无测试脚本；`npm run build` 会校验所有 frontmatter（依赖 Zod）。
 
-## Code Style Guidelines
+## 代码与内容规范
 
-### TypeScript & Types
-
-- **Strict mode**: `tsconfig.json` extends `astro/tsconfigs/strict`
-- **Never suppress errors**: No `@ts-ignore` or `as any`
-- **Zod schemas**: All frontmatter fields validated in `src/content/config.ts`
-- **CollectionEntry types**: Use `CollectionEntry<"posts">` etc. for type safety
+- 类型与严格模式：`tsconfig.json` 继承 `astro/tsconfigs/strict`，禁止使用 `@ts-ignore`、`as any`。
+- 前置数据校验：所有 frontmatter 经 `src/content/config.ts` 中的 Zod schema 校验。
+- 类型引用：内容集合请使用 `CollectionEntry<"posts">` 等类型，示例见下。
 
 ```astro
 import type { CollectionEntry } from "astro:content";
-
-const post: CollectionEntry<"posts"> = await getCollection("posts");
+const posts: CollectionEntry<"posts">[] = await getCollection("posts");
 ```
 
-### Component Naming
+- 命名约定：组件 PascalCase（如 `TableOfContents.astro`），页面小写（如 `index.astro`），布局 `{Name}Layout.astro`（如 `MainLayout.astro`）。
+- 导入顺序：
+  1. 第三方（`astro:content` 等）
+  2. 相对路径组件/布局
+  3. 样式
+  4. 类型导入
+- Astro 结构模板：按顺序放置导入、Props、数据获取、计算、模板、脚本、样式。
 
-- **Components**: PascalCase (`TableOfContents.astro`, `Pagination.astro`)
-- **Pages**: lowercase (`index.astro`, `notes.astro`)
-- **Layouts**: `{Name}Layout.astro` (`MainLayout.astro`, `ConversationLayout.astro`)
-
-### Import Patterns
-
-1. **Third-party imports first**: `import { getCollection } from "astro:content"`
-2. **Relative imports for components**: `import MainLayout from "../layouts/mainlayout.astro"`
-3. **Styles**: `import "../styles/global.css"`
-4. **Type imports**: `import type { CollectionEntry } from "astro:content"`
-
-### Astro Component Structure
+### 动态路由与渲染
 
 ```astro
----
-// 1. Imports (styles, components, types)
-import Component from "../components/Component.astro";
-
-// 2. Props interface (export if reusable)
-interface Props {
-  title: string;
-  active?: boolean;
-}
-
-// 3. Props extraction with defaults
-const { title, active = false } = Astro.props;
-
-// 4. Data fetching (async)
-const posts = await getCollection("posts");
-
-// 5. Data transformation/sorting
-posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
-
-// 6. Utility functions
-const formatDate = (date: Date) => date.toLocaleDateString("zh-CN");
----
-
-<!-- Template -->
-<Component title={title} active={active} />
-
-<!-- Client-side script -->
-<script>
-  // DOM manipulation, event listeners
-  document.addEventListener("DOMContentLoaded", () => { ... });
-</script>
-
-<!-- Scoped styles -->
-<style>
-  .component { ... }
-</style>
-```
-
-### Dynamic Routes
-
-```astro
----
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
   return posts.map((post) => ({
     params: { slug: post.slug },
-    props: { post, prevPost: ..., nextPost: ... }, // Compute derived data
+    props: { post },
   }));
 }
 
-const { post, prevPost, nextPost } = Astro.props;
+const { post } = Astro.props;
 const { Content, headings } = await post.render();
----
 ```
 
-### Content Frontmatter (Zod Schema)
-
-All content in `src/content/posts/`, `notes/`, `conversations/` follows schema in `src/content/config.ts`:
-
-**Posts**:
+### Frontmatter 规范（示例：posts）
 
 ```yaml
-title: "Required"
+title: "必填"
 pubDate: 2025-12-08
-description: "Optional summary"
-author: "Name" or { name: "Name", url: "..." }
+description: "可选摘要"
+author: "姓名" 或 { name: "姓名", url: "..." }
 tags: ["tag1", "tag2"]
-rereadStars: 0-5  # 0 = hidden, 1-5 = star rating
-image: "optional-image-url"
+rereadStars: 0-5  # 0 隐藏，1-5 评级
+image: "可选图片 URL"
 ```
 
-### Client-Side Interactivity
+### 客户端脚本与样式
 
-Use `<script>` tags (no build step needed):
+- 客户端交互直接写 `<script>`，可用 `define:vars` 传入服务器数据。
+- 样式默认作用域化；全局样式放在 `src/styles/` 或使用 `<style is:global>`。
+- CSS 变量定义在 `src/styles/global.css`（如 `--nav-height`, `--bg-body`）。
 
-```astro
-<script>
-  // Direct DOM access
-  const element = document.querySelector(".class");
+## 文件与技能分布（核心入口）
 
-  // Event listeners
-  element.addEventListener("click", () => { ... });
+- 内容模型与验证：`src/content/config.ts`
+- 文章内容：`src/content/posts/`
+- 短札/随记：`src/content/notes/`
+- 对话内容：`src/content/conversations/`
+- 组件：`src/components/`（卡片、目录、分页等）
+- 布局：`src/layouts/`（`MainLayout.astro`, `ConversationLayout.astro`）
+- 页面路由：`src/pages/`（含子目录 `category/`, `conversations/`, `notes/`, `posts/` 等）
+- 样式：`src/styles/`（按页面拆分，如 `home.css`, `notes.css`）
+- 公开资源：`public/`（favicon、静态图片）
 
-  // Use define:vars to pass server data
-</script>
-```
+## SEO 与可访问性
 
-**Pattern for server→client data**:
+- `MainLayout` 负责 OG、Twitter Card、canonical、meta description。
+- 语义标签：优先使用 `<nav>`, `<main>`, `<article>`, `<aside>`, `<footer>`。
+- 图片必须有 `alt` 文本；无文本交互元素需添加合适的 `aria-label`。
 
-```astro
-<script define:vars={{ CONSTANT_FROM_SERVER }}>
-  const clientVar = CONSTANT_FROM_SERVER;
-</script>
-```
+## 依赖与工具链
 
-### CSS Patterns
+- 主要依赖：`astro@5.16.6`、`@astrojs/sitemap`、`rehype-external-links`。
+- 无 ESLint/Prettier 配置，遵循 TypeScript 严格模式即可。
+- 构建同时校验内容：`npm run build`。
 
-- **Scoped styles**: Default in `.astro` files
-- **Global styles**: Use `<style is:global>` or import from `src/styles/`
-- **CSS Variables**: Defined in `src/styles/global.css` (`--nav-height`, `--bg-body`)
-- **Responsive**: Mobile-first with `@media` queries
-- **System fonts**: `font-family: system-ui, sans-serif`
+## 安全与执行规范（面向 AI 代理）
 
-### Error Handling
+### Git 操作禁令（必须遵守）
 
-Minimal explicit error handling. Astro throws build errors for:
+- AI 不得执行任何 Git 命令（`git reset/rebase/commit/push/stash/checkout` 等）。
+- 若需 Git 建议，只能提供用户手动执行的命令与风险说明，禁止自动运行。
+- 涉及历史改写的建议需明确风险、影响范围与回滚方案（如 `git reflog`）。
 
-- Invalid frontmatter (Zod validation)
-- Missing required fields
-- Type mismatches
+### 命令输出与编辑约束
 
-When adding error handling, use try/catch with meaningful error messages.
+- 输出命令时使用独立代码块，附简要目的/风险说明；可先给只读检查命令（如 `git status`）。
+- 允许修改仓库文件内容，但不得触发任何 Git 操作；说明变更仅保存在工作区。
 
-## File Structure
+### 交互流程（用户请求 Git 时）
 
-```
-src/
-├── content/
-│   ├── config.ts          # Zod schemas for collections
-│   ├── posts/            # Blog articles
-│   ├── notes/            # Short quotes
-│   └── conversations/    # Interview transcripts
-├── pages/
-│   ├── index.astro       # Homepage
-│   ├── posts/[...slug].astro  # Article pages
-│   └── ...
-├── components/           # Reusable Astro components
-├── layouts/              # Layout templates
-└── styles/               # CSS files
-```
-
-## SEO & Accessibility
-
-- **MainLayout** handles: Open Graph, Twitter Card, canonical URLs, meta description
-- **Use semantic HTML**: `<nav>`, `<main>`, `<article>`, `<aside>`, `<footer>`
-- **ARIA labels**: For interactive elements without text
-- **Alt text**: Required for images
-
-## Content Guidelines
-
-- **Chinese primary**: Content is in Chinese
-- **Date format**: `YYYY-MM-DD` in frontmatter
-- **Categories**: Use `tags` array for categorization
-- **File organization**: Group by category in subdirectories (e.g., `01_思维与认知方法/`)
-
-## Key Dependencies
-
-- `astro` - Framework (v5.16.6)
-- `@astrojs/sitemap` - Sitemap generation
-- `rehype-external-links` - External links open in new tab
-
-## Quick Reference
-
-- **Single test run**: No tests configured
-- **Linting**: No ESLint configured (follow TypeScript strict mode)
-- **Formatting**: No Prettier configured
-- **Content validation**: `npm run build` validates all frontmatter via Zod schemas
-
-## Agent Execution & Safety Rules
-
-### 禁止 Git 操作（强制）
-
-- 不得在任何情况下由 AI 执行 Git 相关操作（包括但不限于 `git reset`, `git rebase`, `git commit`, `git push`, `git stash`, `git checkout`，以及任何会更改仓库历史或工作区的命令）。
-- 不得调用任何终端工具以直接执行 Git 命令；需要进行 Git 变更时，AI 仅提供“用户手动复制粘贴”的命令建议与风险说明。
-- 涉及潜在破坏性历史变更（如重置、强推）的建议必须包含：影响范围、风险提示、可恢复方案（如 `git reflog`、撤销步骤）、以及“请手动确认后再执行”的明确提示。
-
-### 命令输出与执行策略
-
-- AI 输出命令时，使用独立代码块，保持可复制性与最少交互；绝不自动执行。
-- 为每一组命令提供简短说明：目的、影响、可撤销方式；必要时提供只读检查命令（如 `git status`, `git log --oneline`, `git reflog`）供用户先确认。
-- 优先推荐安全替代方案（如 `--force-with-lease` 而非 `--force`，使用 `git reset --soft` 而非 `--hard` 等）。
-
-### 文件编辑与代码更改
-
-- 允许通过文件编辑工具对仓库文件进行内容修改（如样式、页面逻辑），但不触发任何 Git 操作。
-- 对涉及破坏性影响的更改，需在说明中标明该更改仅保存到工作区，是否提交与推送由用户自行决定。
-
-### 示例模板（供用户手动执行）
-
-目的：移除最后一次提交记录，但保留改动（本地）
-
-```bash
-# 查看当前状态（只读）
-git status
-git log --oneline -5
-
-# 软回退：删除最近一次提交记录，但保留改动在暂存区
-git reset --soft HEAD~1
-
-# 可选：重新提交（如需合并改动到新的提交）
-git commit -m "整理：合并最近改动但不保留旧提交记录"
-
-# 可选：更新远端历史（风险较高，需确认）
-# 强烈建议使用 --force-with-lease 而不是 --force
-git push --force-with-lease
-```
-
-风险提示：
-
-- 任何历史变更都可能影响协作分支，请先与团队确认。
-- 若误操作，可尝试 `git reflog` 查找之前的游标位置并手动恢复。
-
-### 交互规范
-
-- 当用户请求执行 Git 操作时，AI 应：
-  - 提供只读检查命令，帮助用户确认当前状态；
-  - 列出可选方案及其风险与回滚路径；
-  - 输出命令但不执行，由用户复制粘贴运行；
-  - 在完成后提示用户再次用只读命令确认结果。
+- 先列只读检查命令；
+- 给出可选方案及回滚路径；
+- 提供命令但不执行，由用户复制；
+- 提醒用户操作后再次检查状态。

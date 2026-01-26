@@ -10,7 +10,7 @@ export const getStaticPaths = (async ({ paginate }) => {
   const posts = await getCollection("posts");
   posts.sort(
     (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
-      b.data.pubDate.getTime() - a.data.pubDate.getTime()
+      b.data.pubDate.getTime() - a.data.pubDate.getTime(),
   );
   return paginate(posts, { pageSize: 8 });
 }) satisfies GetStaticPaths;
@@ -22,25 +22,26 @@ const categories = [
   "全部",
   ...Array.from(
     new Set(
-      posts.flatMap((p) => (p.data.tags?.length ? p.data.tags : ["未分类"]))
-    )
+      posts.flatMap((p) => (p.data.tags?.length ? p.data.tags : ["未分类"])),
+    ),
   ).sort((a, b) => a.localeCompare(b, "zh-CN")),
 ];
 
 // 分页URL生成函数
-const getPageUrl = (p: number) => (p === 1 ? "/" : `/page/${p}`);
+const getPageUrl = (p: number) =>
+  p === 1 ? "/excerpts" : `/excerpts/page/${p}`;
 ---
 
 <MainLayout
   title="大音希声，大象无形。"
-  description="多鸣的个人博客"
+  description="多鸣"
   wide={true}
 >
   <div class="app-container">
     <aside>
       <div class="profile-card">
         <div class="avatar"></div>
-        <div class="profile-name">多鸣的博客</div>
+        <div class="profile-name">多鸣</div>
         <div class="profile-bio">多元发声，掷地有声</div>
         <div class="profile-bio">心有热爱，必有回响</div>
       </div>
@@ -58,7 +59,7 @@ const getPageUrl = (p: number) => (p === 1 ? "/" : `/page/${p}`);
                 <a
                   href={
                     cat === "全部"
-                      ? "/"
+                      ? "/excerpts"
                       : `/category/${encodeURIComponent(cat)}`
                   }
                   class={`filter-btn${cat === "全部" ? " active" : ""}`}
@@ -130,7 +131,7 @@ const getPageUrl = (p: number) => (p === 1 ? "/" : `/page/${p}`);
 
   if (scrollTarget) {
     const targetCard = document.querySelector(
-      `a.post-card-link[href="/posts/${scrollTarget}"]`
+      `a.post-card-link[href="/posts/${scrollTarget}"]`,
     ) as HTMLElement;
 
     if (targetCard) {

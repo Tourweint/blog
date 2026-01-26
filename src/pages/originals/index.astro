@@ -1,0 +1,77 @@
+---
+import "../../styles/originals.css";
+import MainLayout from "../../layouts/mainlayout.astro";
+---
+
+<MainLayout
+  title="原创 - 多鸣的博客"
+  description="思想地图：我的思考、片段与实验"
+  wide={true}
+>
+  <div class="originals-page">
+    {/* ① 顶部声明 */}
+    <section class="originals-header">
+      <h1 class="originals-title">思想地图</h1>
+      <blockquote class="originals-statement">
+        <p>这里是我自己的思考。</p>
+        <p>有些不成熟，有些只是阶段性结论，</p>
+        <p>但它们都只属于我。</p>
+      </blockquote>
+    </section>
+
+    {/* ② 原创分层 */}
+    <section class="originals-sections">
+      {/* 思考（长文）*/}
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <a href="/originals/systems" class="title-link"
+              >思考<span class="link-arrow">→</span></a
+            >
+          </h2>
+          <p class="section-subtitle">成体系的思考 / 社会 · 技术 · 自我</p>
+        </div>
+        <div class="section-placeholder">
+          <p class="placeholder-text">💭 想法还在酝酿中...</p>
+        </div>
+      </div>
+
+      {/* 片段（短）*/}
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <a href="/originals/fragments" class="title-link"
+              >片段<span class="link-arrow">→</span></a
+            >
+          </h2>
+          <p class="section-subtitle">灵感 / 未完成想法 / 一段判断</p>
+        </div>
+        <div class="section-placeholder">
+          <p class="placeholder-text">✨ 等待第一个灵感闪现...</p>
+        </div>
+      </div>
+
+      {/* 项目 / 实验 */}
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <a href="/originals/projects" class="title-link"
+              >项目 / 实验<span class="link-arrow">→</span></a
+            >
+          </h2>
+          <p class="section-subtitle">做了什么 / 为什么做 / 反思</p>
+        </div>
+        <div class="section-placeholder">
+          <p class="placeholder-text">🚀 新的实验正在筹备...</p>
+        </div>
+      </div>
+    </section>
+
+    {/* ③ 时间轴说明 */}
+    <section class="originals-note">
+      <p class="note-text">
+        💡 这不是按发布时间的动态流，而是<strong>认知的积累与沉淀</strong>。
+      </p>
+    </section>
+  </div>
+</MainLayout>

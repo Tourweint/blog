@@ -1,152 +1,124 @@
 ---
-import "../styles/index.css";
+import "../styles/home.css";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import MainLayout from "../layouts/mainlayout.astro";
-import Pagination from "../components/Pagination.astro";
 
 const posts = await getCollection("posts");
 posts.sort(
   (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
-    b.data.pubDate.getTime() - a.data.pubDate.getTime()
+    b.data.pubDate.getTime() - a.data.pubDate.getTime(),
 );
+const recentOriginals = posts.slice(0, 3);
 
-const categories = [
-  "全部",
-  ...Array.from(
-    new Set(
-      posts.flatMap((p) => (p.data.tags?.length ? p.data.tags : ["未分类"]))
-    )
-  ).sort((a, b) => a.localeCompare(b, "zh-CN")),
-];
+const notes = await getCollection("notes");
+const resolveNoteDate = (note: CollectionEntry<"notes">) =>
+  note.data.pubDate ?? note.data.date ?? null;
+const recentExcerpts = [...notes]
+  .sort((a, b) => {
+    const aDate = resolveNoteDate(a)?.getTime() ?? 0;
+    const bDate = resolveNoteDate(b)?.getTime() ?? 0;
+    return bDate - aDate;
+  })
+  .slice(0, 4);
 
-// 分页参数
-const pageSize = 8;
-const totalPages = Math.ceil(posts.length / pageSize);
-const currentPage = 1;
-const paginatedPosts = posts.slice(0, pageSize);
-
-// 分页URL生成函数
-const getPageUrl = (page: number) => (page === 1 ? "/" : `/page/${page}`);
+const pickExcerptText = (note: CollectionEntry<"notes">) =>
+  note.data.description ??
+  note.data.text ??
+  note.data.title ??
+  "未填写摘录内容";
+const formatDate = (date: Date | null) =>
+  date ? date.toLocaleDateString("zh-cn") : "未标注日期";
 ---
 
-<MainLayout
-  title="多鸣的博客 - 思维、哲学与成长"
-  description="多鸣的个人博客"
-  wide={true}
->
-  <div class="app-container">
-    <aside>
-      <div class="profile-card">
-        <div class="avatar"></div>
-        <div class="profile-name">多鸣的博客</div>
-        <div class="profile-bio">多元发声，掷地有声</div>
-        <div class="profile-bio">心有热爱，必有回响</div>
-      </div>
+<MainLayout title="多鸣的博客" description="思考、摘录与写作的入口" wide={true}>
+  <div class="home-page">
+    <section class="hero">
+      <div class="hero-eyebrow">一句话</div>
+      <h1 class="hero-title">
+        这里记录我的思考、片段，以及我理解这个世界的方式。
+      </h1>
+      <p class="hero-sub">
+        为自己写，也邀请你读。希望 30
+        秒内，你能感受到我在认真思考，并且值得继续往下看。
+      </p>
+    </section>
 
-      <nav class="category-nav">
-        <div class="nav-title">文章分类</div>
-        <div id="category-list">
-          {
-            categories.map((cat) => {
-              const count =
-                cat === "全部"
-                  ? posts.length
-                  : posts.filter((p) => p.data.tags?.includes(cat)).length;
+    <section>
+      <div class="section-heading">
+        <h2>最近原创</h2>
+        <a class="inline-link" href="/originals">全部原创 →</a>
+      </div>
+      <div class="originals-list">
+        {
+          recentOriginals.length > 0 ? (
+            recentOriginals.map((post) => (
+              <a href={`/posts/${post.slug}`} class="original-card">
+                <div class="original-meta">
+                  <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
+                </div>
+                <div class="original-title">{post.data.title}</div>
+                {post.data.description && (
+                  <p class="original-desc">{post.data.description}</p>
+                )}
+              </a>
+            ))
+          ) : (
+            <div class="section-note">还没有原创文章。</div>
+          )
+        }
+      </div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <h2>最近的摘录</h2>
+        <span class="section-note">明确标注：摘录</span>
+      </div>
+      <div class="excerpt-grid">
+        {
+          recentExcerpts.length > 0 ? (
+            recentExcerpts.map((note) => {
+              const date = resolveNoteDate(note);
+              const excerpt = pickExcerptText(note);
               return (
-                <a
-                  href={
-                    cat === "全部"
-                      ? "/"
-                      : `/category/${encodeURIComponent(cat)}`
-                  }
-                  class={`filter-btn${cat === "全部" ? " active" : ""}`}
-                  data-category={cat}
-                >
-                  <span>{cat}</span>
-                  <span class="category-badge">{count}</span>
-                </a>
+                <article class="excerpt-card">
+                  <div class="excerpt-meta">
+                    <span class="badge">摘录</span>
+                    <span>{formatDate(date)}</span>
+                  </div>
+                  <div class="excerpt-text">{excerpt}</div>
+                  {note.data.source && (
+                    <div class="excerpt-source">来源：{note.data.source}</div>
+                  )}
+                </article>
               );
             })
-          }
-        </div>
-      </nav>
-    </aside>
+          ) : (
+            <div class="section-note">还没有摘录。</div>
+          )
+        }
+      </div>
+    </section>
 
-    <main>
-      <h2 id="list-title">最新文章</h2>
-      {
-        paginatedPosts.length > 0 ? (
-          <div class="post-grid">
-            {paginatedPosts.map((post: CollectionEntry<"posts">) => (
-              <a
-                href={`/posts/${post.slug}`}
-                class="post-card-link"
-                data-title={post.data.title.toLowerCase()}
-                data-desc={(post.data.description || "").toLowerCase()}
-                data-tags={(post.data.tags || ["未分类"])
-                  .join(",")
-                  .toLowerCase()}
-              >
-                <article class="post-card">
-                  <div class="card-meta">
-                    <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
-                    <div class="card-tags">
-                      {post.data.tags?.map((t: string) => (
-                        <span class="card-tag">{t}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <h3 class="post-title">{post.data.title}</h3>
-                  {post.data.description && (
-                    <p class="post-desc">{post.data.description}</p>
-                  )}
-                  <span class="read-more">阅读全文 →</span>
-                </article>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div class="no-results">
-            暂无文章，请在 <code>src/content/posts</code> 中添加 Markdown 文件。
-          </div>
-        )
-      }
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        getPageUrl={getPageUrl}
-      />
-    </main>
+    <section class="explore">
+      <div class="section-heading">
+        <h2>继续探索</h2>
+      </div>
+      <div class="explore-grid">
+        <a class="explore-card" href="/originals">
+          <h3>去看我的原创 →</h3>
+          <p>最新文章、写作与思考的全量列表。</p>
+        </a>
+        <a class="explore-card" href="/notes">
+          <h3>浏览摘录 →</h3>
+          <p>我正在消化的片段、旁注和灵感。</p>
+        </a>
+        <a class="explore-card" href="/category">
+          <h3>按主题阅读 →</h3>
+          <p>按主题快速筛选，直达你关心的话题。</p>
+        </a>
+      </div>
+    </section>
   </div>
 </MainLayout>
-
-<script>
-  // 滚动到指定文章
-  const urlParams = new URLSearchParams(window.location.search);
-  const scrollTarget = urlParams.get("scrollTo");
-
-  if (scrollTarget) {
-    const targetCard = document.querySelector(
-      `a.post-card-link[href="/posts/${scrollTarget}"]`
-    ) as HTMLElement;
-
-    if (targetCard) {
-      setTimeout(() => {
-        targetCard.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-        // 添加高亮效果
-        targetCard.classList.add("highlight-card");
-        setTimeout(() => targetCard.classList.remove("highlight-card"), 2000);
-      }, 100);
-    }
-
-    // 清除 URL 中的 scrollTo 参数
-    const url = new URL(window.location.href);
-    url.searchParams.delete("scrollTo");
-    window.history.replaceState({}, "", url);
-  }
-</script>

@@ -1,0 +1,65 @@
+---
+import { getCollection } from "astro:content";
+import MainLayout from "../../layouts/mainlayout.astro";
+import "../../styles/originals.css";
+
+const notes = await getCollection("notes");
+// 兼容 pubDate 或 date 字段排序
+notes.sort((a, b) => {
+  const da = (a.data.pubDate ?? a.data.date ?? new Date(0)).getTime();
+  const db = (b.data.pubDate ?? b.data.date ?? new Date(0)).getTime();
+  return db - da;
+});
+---
+
+<MainLayout
+  title="片段 - 原创"
+  description="灵感、未完成想法与判断的集合"
+  wide={true}
+>
+  <div class="originals-page">
+    <section class="originals-header">
+      <h1 class="originals-title">片段</h1>
+      <blockquote class="originals-statement">
+        <p>这里是灵光与未完成想法的栈。</p>
+        <p>它们可能会走向体系，也可能止步于当下。</p>
+      </blockquote>
+    </section>
+
+    <section class="originals-sections">
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">片段列表</h2>
+          <p class="section-subtitle">按时间倒序</p>
+        </div>
+        <ul class="originals-list">
+          {
+            notes.map((note) => {
+              const title =
+                note.data.title ?? note.data.description ?? note.slug;
+              const dateVal = note.data.pubDate ?? note.data.date;
+              const dateStr = dateVal
+                ? dateVal.toLocaleDateString("zh-CN")
+                : "";
+              return (
+                <li class="originals-item">
+                  <a href={`/notes/${note.slug}`} class="originals-link">
+                    <span class="item-title">{title}</span>
+                    {dateStr && <span class="item-date">{dateStr}</span>}
+                  </a>
+                  {note.data.description && (
+                    <p class="item-desc">{note.data.description}</p>
+                  )}
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="originals-note">
+      <p class="note-text">🧩 片段可能被整合为长文，也可能保留原貌。</p>
+    </section>
+  </div>
+</MainLayout>
