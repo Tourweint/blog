@@ -1,6 +1,6 @@
 ---
-import MainLayout from "../layouts/mainlayout.astro";
-import "../styles/notes.css";
+import MainLayout from "../../layouts/mainlayout.astro";
+import "../../styles/notes.css";
 import { getCollection } from "astro:content";
 
 const resolveDate = (data: any) => data.pubDate || data.date || new Date();
@@ -46,7 +46,7 @@ const notes = await Promise.all(
   rawNotes.map(async (note) => {
     const { Content } = await note.render();
     const resolvedDate = resolveDate(note.data);
-    const tags = note.data.tags?.length ? note.data.tags : ["未分类"];
+    const tags : string[] = note.data.tags?.length ? note.data.tags : ["未分类"];
     const hook = createExcerpt(note);
     const title = note.data.title || hook || "未命名短句";
     return {
@@ -91,7 +91,7 @@ notes.forEach(note => {
 const ITEMS_PER_PAGE = 18;
 ---
 
-<MainLayout title="句子簿 - Tourweint's Blog" description="轻量想法与摘抄">
+<MainLayout title="句子簿 - Tourweint/多鸣" description="轻量想法与摘抄">
   <section class="hero">
     <div>
       <p class="eyebrow">Notes</p>
@@ -158,7 +158,7 @@ const ITEMS_PER_PAGE = 18;
             </div>
             <div class="note-footer">
               <div class="tag-row">
-                {note.tags.map((tag) => (
+                {note.tags.map((tag: string) => (
                   <span class="tag-pill">{tag}</span>
                 ))}
               </div>

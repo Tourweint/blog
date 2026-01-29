@@ -1,9 +1,9 @@
 ---
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import Postslayout from "../../layouts/mainlayout.astro";
-import TableOfContents from "../../components/TableOfContents.astro";
-import "../../styles/posts.css";
+import Postslayout from "../../../layouts/mainlayout.astro";
+import TableOfContents from "../../../components/TableOfContents.astro";
+import "../../../styles/posts.css";
 
 const pageSize = 8; // 与分页设置保持一致
 
@@ -13,7 +13,7 @@ export async function getStaticPaths() {
   // 按日期排序，与首页保持一致
   blogEntries.sort(
     (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
-      b.data.pubDate.getTime() - a.data.pubDate.getTime()
+      b.data.pubDate.getTime() - a.data.pubDate.getTime(),
   );
 
   return blogEntries.map((entry, index) => ({
@@ -48,11 +48,11 @@ const { Content, headings } = await entry.render();
 const maxStars = 5;
 const rereadStars = Math.min(
   Math.max(entry.data.rereadStars ?? 0, 0),
-  maxStars
+  maxStars,
 );
 const starStates = Array.from(
   { length: maxStars },
-  (_, index) => index < rereadStars
+  (_, index) => index < rereadStars,
 );
 
 // 处理作者信息（兼容字符串和对象两种格式）
@@ -62,11 +62,8 @@ const author = entry.data.author
     : entry.data.author
   : null;
 
-// 生成返回链接：第一页返回首页，其他页返回对应分页，带上滚动定位参数
-const backUrl =
-  pageNumber === 1
-    ? `/?scrollTo=${entry.slug}`
-    : `/page/${pageNumber}?scrollTo=${entry.slug}`;
+// 生成返回链接：返回摘录页，带上滚动定位参数
+const backUrl = `/excerpts?scrollTo=${entry.slug}`;
 
 // 计算阅读时间
 const content = entry.body;
@@ -89,11 +86,36 @@ const readingTime = Math.max(1, Math.ceil(totalWords / wordsPerMinute));
 >
   <div class="post-layout">
     <div class="post-sidebar">
+      {
+        entry.data.sourceUrl && (
+          <section class="watch-video-section">
+            <a
+              href={entry.data.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="watch-video-link"
+            >
+              <svg class="video-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span>观看原视频</span>
+              <svg
+                class="external-icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7z" />
+                <path d="M11 3v2h3.59L9 12.59 10.41 14 17 7.41V11h2V3z" />
+              </svg>
+            </a>
+          </section>
+        )
+      }
       <TableOfContents headings={headings} />
     </div>
     <div class="post-main">
       <nav class="nav-bar">
-        <a href={backUrl} class="back-link" id="back-home">← 返回首页</a>
+        <a href={backUrl} class="back-link" id="back-excerpts">← 返回摘录页</a>
       </nav>
       <article class="post-detail">
         <h1 class="post-title">{entry.data.title}</h1>
@@ -176,7 +198,7 @@ const readingTime = Math.max(1, Math.ceil(totalWords / wordsPerMinute));
           {
             prevPost ? (
               <a
-                href={`/posts/${prevPost.slug}`}
+                href={`/excerpts/page/${prevPost.slug}`}
                 class="post-nav-link post-nav-prev"
               >
                 <span class="post-nav-label">← 上一篇</span>
@@ -189,7 +211,7 @@ const readingTime = Math.max(1, Math.ceil(totalWords / wordsPerMinute));
           {
             nextPost ? (
               <a
-                href={`/posts/${nextPost.slug}`}
+                href={`/excerpts/page/${nextPost.slug}`}
                 class="post-nav-link post-nav-next"
               >
                 <span class="post-nav-label">下一篇 →</span>

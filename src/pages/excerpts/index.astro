@@ -30,7 +30,7 @@ const getPageUrl = (page: number) =>
 ---
 
 <MainLayout
-  title="摘录 - 多鸣"
+  title="摘录 - Tourweint/多鸣"
   description="所有文章与整理的列表"
   wide={true}
 >
@@ -79,7 +79,7 @@ const getPageUrl = (page: number) =>
           <div class="post-grid">
             {paginatedPosts.map((post: CollectionEntry<"posts">) => (
               <a
-                href={`/posts/${post.slug}`}
+                href={`/excerpts/page/${post.slug}`}
                 class="post-card-link"
                 data-title={post.data.title.toLowerCase()}
                 data-desc={(post.data.description || "").toLowerCase()}
@@ -127,7 +127,7 @@ const getPageUrl = (page: number) =>
 
   if (scrollTarget) {
     const targetCard = document.querySelector(
-      `a.post-card-link[href="/posts/${scrollTarget}"]`,
+      `a.post-card-link[href="/excerpts/page/${scrollTarget}"]`,
     ) as HTMLElement;
 
     if (targetCard) {

@@ -1,6 +1,6 @@
 ---
-import MainLayout from "../layouts/mainlayout.astro";
-import "../styles/tools.css";
+import MainLayout from "../../layouts/mainlayout.astro";
+import "../../styles/tools.css";
 
 const tools = [
   {
@@ -127,7 +127,7 @@ const tools = [
 ];
 ---
 
-<MainLayout title="工具箱 - Tourweint's Blog">
+<MainLayout title="工具箱 - Tourweint/多鸣">
   <div class="tools-page-bg">
     <div class="tools-container">
       <header class="tools-header">
@@ -269,7 +269,7 @@ const tools = [
       button.setAttribute("data-expanded", String(!expanded));
 
       const hiddenTools = button.previousElementSibling?.querySelector(
-        ".hidden-tools"
+        ".hidden-tools",
       ) as HTMLElement;
       if (hiddenTools) {
         hiddenTools.setAttribute("data-hidden", String(expanded));

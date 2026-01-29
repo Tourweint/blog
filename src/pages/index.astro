@@ -31,49 +31,75 @@ const formatDate = (date: Date | null) =>
   date ? date.toLocaleDateString("zh-cn") : "未标注日期";
 ---
 
-<MainLayout title="多鸣的博客" description="思考、摘录与写作的入口" wide={true}>
+<MainLayout
+  title="Tourweint/多鸣"
+  description="思考、摘录与写作的入口"
+  wide={true}
+>
   <div class="home-page">
     <section class="hero">
-      <div class="hero-eyebrow">一句话</div>
-      <h1 class="hero-title">
-        这里记录我的思考、片段，以及我理解这个世界的方式。
-      </h1>
-      <p class="hero-sub">
-        为自己写，也邀请你读。希望 30
-        秒内，你能感受到我在认真思考，并且值得继续往下看。
-      </p>
+      <div class="hero-container">
+        <div class="hero-eyebrow">欢迎来到我的思考空间</div>
+        <h1 class="hero-title">
+          思考、摘录、写作<br />在这里交织成网
+        </h1>
+        <p class="hero-sub">
+          我记录对世界的理解，以及思考的过程。每一篇文章、每一条摘录，都是我在认真打磨的作品。
+        </p>
+        <div class="hero-cta">
+          <a href="/originals" class="cta-button primary">探索原创文章</a>
+          <a href="/notes" class="cta-button secondary">阅读摘录笔记</a>
+        </div>
+      </div>
     </section>
 
-    <section>
+    <section class="originals-section">
       <div class="section-heading">
-        <h2>最近原创</h2>
-        <a class="inline-link" href="/originals">全部原创 →</a>
+        <div>
+          <h2>最新原创文章</h2>
+          <p class="section-subtitle">我的思考与写作</p>
+        </div>
+        <a class="view-all-link" href="/originals">查看全部 →</a>
       </div>
       <div class="originals-list">
         {
           recentOriginals.length > 0 ? (
             recentOriginals.map((post) => (
-              <a href={`/posts/${post.slug}`} class="original-card">
-                <div class="original-meta">
-                  <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
+              <a href={`/excerpts/page/${post.slug}`} class="original-card">
+                <div class="original-header">
+                  <div class="original-title">{post.data.title}</div>
+                  <div class="original-meta">
+                    <span class="original-date">
+                      {post.data.pubDate.toLocaleDateString("zh-cn")}
+                    </span>
+                  </div>
                 </div>
-                <div class="original-title">{post.data.title}</div>
                 {post.data.description && (
                   <p class="original-desc">{post.data.description}</p>
+                )}
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="original-tags">
+                    {post.data.tags.slice(0, 3).map((tag) => (
+                      <span class="tag">{tag}</span>
+                    ))}
+                  </div>
                 )}
               </a>
             ))
           ) : (
-            <div class="section-note">还没有原创文章。</div>
+            <div class="empty-state">还没有原创文章，敬请期待。</div>
           )
         }
       </div>
     </section>
 
-    <section>
+    <section class="excerpts-section">
       <div class="section-heading">
-        <h2>最近的摘录</h2>
-        <span class="section-note">明确标注：摘录</span>
+        <div>
+          <h2>精选摘录与笔记</h2>
+          <p class="section-subtitle">他人智慧的镜像</p>
+        </div>
+        <a class="view-all-link" href="/notes">查看全部 →</a>
       </div>
       <div class="excerpt-grid">
         {
@@ -83,29 +109,29 @@ const formatDate = (date: Date | null) =>
               const excerpt = pickExcerptText(note);
               return (
                 <article class="excerpt-card">
-                  <div class="excerpt-meta">
+                  <div class="excerpt-header">
                     <span class="badge">摘录</span>
-                    <span>{formatDate(date)}</span>
+                    <span class="excerpt-date">{formatDate(date)}</span>
                   </div>
                   <div class="excerpt-text">{excerpt}</div>
                   {note.data.source && (
-                    <div class="excerpt-source">来源：{note.data.source}</div>
+                    <div class="excerpt-source">—— {note.data.source}</div>
                   )}
                 </article>
               );
             })
           ) : (
-            <div class="section-note">还没有摘录。</div>
+            <div class="empty-state">还没有摘录笔记，继续创作中。</div>
           )
         }
       </div>
     </section>
 
-    <section class="explore">
-      <div class="section-heading">
+    <section class="explore-section\">
+      <div class='\"section-heading\"'>
         <h2>继续探索</h2>
       </div>
-      <div class="explore-grid">
+      <div class='\"explore-grid\"'>
         <a class="explore-card" href="/originals">
           <h3>去看我的原创 →</h3>
           <p>最新文章、写作与思考的全量列表。</p>

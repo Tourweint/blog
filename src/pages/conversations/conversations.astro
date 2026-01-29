@@ -1,9 +1,9 @@
 ---
-import MainLayout from "../layouts/mainlayout.astro";
-import "../styles/conversations.css";
+import MainLayout from "../../layouts/mainlayout.astro";
+import "../../styles/conversations.css";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import ConversationCard from "../components/ConversationCard.astro";
+import ConversationCard from "../../components/ConversationCard.astro";
 
 const conversations = (await getCollection("conversations")).sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
@@ -24,14 +24,14 @@ const paginatedConversations = conversations.slice(0, ITEMS_PER_PAGE);
 ---
 
 <MainLayout
-  title="优质对话 - Tourweint's Blog"
+  title="对话 - Tourweint/多鸣"
   description="真实访谈与虚构对话并行，为学习与思考提供灵感"
 >
   <section class="conversations-hero">
     <div>
       <p class="eyebrow">Conversations</p>
-      <h1>优质对话库</h1>
-      <p class="sub">深度访谈、虚构对白、播客文字版与技术问答</p>
+      <h1>对话库</h1>
+      <p class="sub">以对话形式引出或展示思考</p>
       <p class="sub-desc">不只记录真实场景，也用想象力做思想实验，为灵感服务</p>
     </div>
   </section>

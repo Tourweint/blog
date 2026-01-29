@@ -113,7 +113,7 @@ const notes = await Promise.all(
             </div>
             <div class="note-footer">
               <div class="tag-row">
-                {note.tags.map((tag) => (
+                {note.tags.map((tag : string) => (
                   <span class="tag-pill">{tag}</span>
                 ))}
               </div>

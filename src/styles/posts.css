@@ -32,6 +32,57 @@ body {
     order: 1; /* 让 sidebar 在左侧 */
 }
 
+/* 观看原视频块 */
+.watch-video-section {
+    background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.watch-video-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+}
+
+.watch-video-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 16px;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.watch-video-link:hover {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.watch-video-link .video-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.watch-video-link .external-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.85;
+    flex-shrink: 0;
+}
+
+.watch-video-link span {
+    flex: 1;
+    text-align: center;
+}
+
 /* 在小屏幕上隐藏侧边栏 */
 @media (max-width: 1200px) {
     .post-layout {

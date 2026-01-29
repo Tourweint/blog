@@ -689,6 +689,56 @@
   height: fit-content;
 }
 
+/* 观看原视频块 */
+.watch-video-section {
+  background: linear-gradient(135deg, #9a6b2f 0%, #b8884e 100%);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+}
+
+.watch-video-section:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.watch-video-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.watch-video-link:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.watch-video-link .video-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.watch-video-link .external-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.watch-video-link span {
+  flex: 1;
+  text-align: center;
+}
+
 /* 嘉宾部分 */
 .guests-section h3,
 .toc-section h3,

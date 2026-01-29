@@ -1,0 +1,123 @@
+/* 成体系的思考页面 */
+
+.systems-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+/* 页面头部 */
+.systems-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.systems-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  color: var(--text-primary, #1f2937);
+  letter-spacing: -0.02em;
+}
+
+.systems-intro {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-secondary, #6b7280);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 占位区域 */
+.systems-placeholder {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+  border: 2px dashed rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  margin-bottom: 3rem;
+}
+
+.placeholder-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.placeholder-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin: 0 0 0.75rem;
+}
+
+.placeholder-text {
+  font-size: 1rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0 0 0.5rem;
+  line-height: 1.6;
+}
+
+/* 说明卡片 */
+.systems-info {
+  background: var(--bg-subtle, #f9fafb);
+  border-left: 4px solid #667eea;
+  border-radius: 0 8px 8px 0;
+  padding: 1.5rem 2rem;
+  margin-top: 3rem;
+}
+
+.info-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-list {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.info-list li {
+  margin-bottom: 0.5rem;
+}
+
+.info-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .systems-page {
+    padding: 2rem 1rem;
+  }
+
+  .systems-title {
+    font-size: 2rem;
+  }
+
+  .systems-intro {
+    font-size: 1rem;
+  }
+
+  .placeholder-icon {
+    font-size: 3rem;
+  }
+
+  .placeholder-title {
+    font-size: 1.1rem;
+  }
+
+  .systems-info {
+    padding: 1.25rem 1.5rem;
+  }
+}

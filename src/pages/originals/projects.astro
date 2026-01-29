@@ -1,6 +1,6 @@
 ---
 import MainLayout from "../../layouts/mainlayout.astro";
-import "../../styles/originals.css";
+import "../../styles/originals/projects.css";
 ---
 
 <MainLayout
@@ -8,31 +8,30 @@ import "../../styles/originals.css";
   description="我做过的项目、实验与背后的动机"
   wide={true}
 >
-  <div class="originals-page">
-    <section class="originals-header">
-      <h1 class="originals-title">项目 / 实验</h1>
-      <blockquote class="originals-statement">
-        <p>以做验证想法，用结果反思路径。</p>
-        <p>从动机与过程到复盘与教训，尽量呈现完整闭环。</p>
-      </blockquote>
+  <div class="projects-page">
+    <header class="projects-header">
+      <h1 class="projects-title">🚀 项目 / 实验</h1>
+      <p class="projects-intro">
+        用实践验证想法，用结果反思路径。<br />
+        从动机、过程到复盘、教训，完整记录每个尝试。
+      </p>
+    </header>
+
+    <section class="projects-placeholder">
+      <div class="placeholder-icon">🔬</div>
+      <h2 class="placeholder-title">实验室筹备中</h2>
+      <p class="placeholder-text">这里将记录我的项目、实验与思考。</p>
+      <p class="placeholder-text">正在整理过往项目，准备新的尝试。</p>
     </section>
 
-    <section class="originals-sections">
-      <div class="section">
-        <div class="section-header">
-          <h2 class="section-title">项目清单</h2>
-          <p class="section-subtitle">占位：后续将接入项目数据源</p>
-        </div>
-        <div class="section-placeholder">
-          <p class="placeholder-text">
-            🚧 暂无项目数据，待接入（例如新建 projects 集合）。
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="originals-note">
-      <p class="note-text">🔧 若需要，我可以为项目新增内容集合与页面模板。</p>
-    </section>
+    <aside class="projects-info">
+      <h3 class="info-title">📋 项目会包含什么？</h3>
+      <ul class="info-list">
+        <li>为什么做这个项目（动机与背景）</li>
+        <li>如何实现的（技术选型与过程）</li>
+        <li>遇到了什么问题（挑战与解决）</li>
+        <li>最终的结果与反思（收获与教训）</li>
+      </ul>
+    </aside>
   </div>
 </MainLayout>

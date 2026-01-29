@@ -10,6 +10,7 @@ description: 将视频转文字结果（txt）或 docx 文档转换为结构清�
 # Workflow
 
 ### Step 1: Accept Input
+
 - **Input**: Path to file or Video URL.
   - `.txt` file (e.g., ASR transcription)
   - `.docx` file
@@ -17,17 +18,23 @@ description: 将视频转文字结果（txt）或 docx 文档转换为结构清�
 - **Output**: Core themes and author info.
 
 ### Step 2: Extract Content & Context
-- **Tooling**: 
+
+- **Tooling**:
   - For files: Use `extract_docx.py`.
-  - For Video URLs: Execute `.opencode/shared/scripts/.venv/Scripts/python.exe .opencode/shared/scripts/douyin_author.py {URL}` to extract video title (if possible), creator name, and creator profile URL.
-- **Goal**: Capture not just the text, but the context of "Who said it".
+  - For Video URLs: Execute `.opencode/shared/scripts/.venv/Scripts/python.exe .opencode/shared/scripts/douyin_author.py {URL}` to extract:
+    - Video title (if possible)
+    - Creator name and profile URL
+    - **Original video link** (视频作品链接)
+- **Goal**: Capture not just the text, but the context of "Who said it" and where to find the original content.
 
 ### Step 3: Semantic Reconstruction (CRITICAL)
+
 此步骤将零散的内容转换为结构化的 Markdown 知识库文章。
 
 **重构要求**：
+
 - **ASR Correction**: 修复语音识别错误，添加标点，根据语义逻辑重新划分段落。
-- **Readability**: 
+- **Readability**:
   - 使用层级清晰的标题（##, ###）。
   - 对核心观点进行 **加粗**。
   - 使用无序列表（-）或有序列表整理关键点。
@@ -35,9 +42,11 @@ description: 将视频转文字结果（txt）或 docx 文档转换为结构清�
 - **Independence**: 确保文章逻辑自洽，即使没有看过原视频也能读懂核心价值。
 
 ### Step 4: Determine Category
+
 Analyze content to suggest category, then confirm with user.
 
 ### Step 5: Generate Frontmatter
+
 Create YAML frontmatter based on `src/content/config.ts` schema:
 
 ```yaml
@@ -48,6 +57,7 @@ description: "文章的简要摘要/知识点概括"
 author:
   name: "创作者名称（必须提取）"
   url: "创作者个人主页链接（尽可能提取）"
+sourceUrl: "原视频/文章链接（从脚本提取的视频作品链接）"
 image: "默认留空"
 tags: ["分类名"]
 rereadStars: 审阅思想深度与参考价值，0-5星打分。
@@ -55,10 +65,12 @@ rereadStars: 审阅思想深度与参考价值，0-5星打分。
 ```
 
 ### Step 6: Create File
+
 - **Filename**: 短语形式，不含标点，保留中文。
 - **Path**: `src/content/posts/{序号}_{分类}/{文件名}.md`
 
 ### Step 7: Validate
+
 - Run `npm run build` to verify frontmatter validation.
 - Check file structure.
 

@@ -111,7 +111,7 @@ const getCategoryPageUrl = (pageNum: number) => {
           <div class="post-grid">
             {page.data.map((post: CollectionEntry<"posts">) => (
               <a
-                href={`/posts/${post.slug}`}
+                href={`/excerpts/page/${post.slug}`}
                 class="post-card-link"
                 data-title={post.data.title.toLowerCase()}
                 data-desc={(post.data.description || "").toLowerCase()}

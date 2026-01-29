@@ -1,7 +1,7 @@
 # douyin_author.py
 import sys
 from fetch import fetch_html
-from parser import extract_author_from_html
+from parser import extract_author_from_html, extract_works_from_html
 
 
 def main():
@@ -24,6 +24,15 @@ def main():
     print(f"来源    : {author.source}")
     print(f"作者名  : {author.name}")
     print(f"主页链接: {author.url}")
+
+    # 获取视频作品链接
+    works = extract_works_from_html(html)
+    if works:
+        print("\n✅ 获取视频作品链接成功：")
+        for work in works:
+            print(f"来源  : {work.source}")
+            print(f"名称  : {work.name}")
+            print(f"链接  : {work.url}")
 
 
 if __name__ == "__main__":

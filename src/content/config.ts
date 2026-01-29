@@ -16,6 +16,7 @@ const posts = defineCollection({
     image: z.string().optional(),
     tags: z.array(z.string()).default([]),
     rereadStars: z.number().int().min(0).max(5).default(0),
+    sourceUrl: z.string().optional(),           // 原视频/文章链接
   }),
 });
 

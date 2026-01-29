@@ -1,77 +1,53 @@
 ---
-import "../../styles/originals.css";
+import "../../styles/originals/index.css";
 import MainLayout from "../../layouts/mainlayout.astro";
 ---
 
 <MainLayout
-  title="原创 - 多鸣的博客"
+  title="原创 - Tourweint/多鸣"
   description="思想地图：我的思考、片段与实验"
   wide={true}
 >
   <div class="originals-page">
-    {/* ① 顶部声明 */}
-    <section class="originals-header">
-      <h1 class="originals-title">思想地图</h1>
-      <blockquote class="originals-statement">
-        <p>这里是我自己的思考。</p>
-        <p>有些不成熟，有些只是阶段性结论，</p>
-        <p>但它们都只属于我。</p>
-      </blockquote>
-    </section>
+    {/* 顶部标题区 */}
+    <header class="originals-header">
+      <h1 class="page-title">原创</h1>
+      <p class="page-subtitle">独立的思考，未完成的想法</p>
+    </header>
 
-    {/* ② 原创分层 */}
-    <section class="originals-sections">
-      {/* 思考（长文）*/}
-      <div class="section">
-        <div class="section-header">
-          <h2 class="section-title">
-            <a href="/originals/systems" class="title-link"
-              >思考<span class="link-arrow">→</span></a
-            >
-          </h2>
-          <p class="section-subtitle">成体系的思考 / 社会 · 技术 · 自我</p>
-        </div>
-        <div class="section-placeholder">
-          <p class="placeholder-text">💭 想法还在酝酿中...</p>
-        </div>
-      </div>
+    {/* 内容卡片网格 */}
+    <div class="content-grid">
+      {/* 思考卡片 */}
+      <a href="/originals/systems" class="content-card card-systems">
+        <div class="card-icon">💭</div>
+        <h2 class="card-title">思考</h2>
+        <p class="card-description">成体系的观点与分析</p>
+        <div class="card-status">筹备中</div>
+        <div class="card-overlay"></div>
+      </a>
 
-      {/* 片段（短）*/}
-      <div class="section">
-        <div class="section-header">
-          <h2 class="section-title">
-            <a href="/originals/fragments" class="title-link"
-              >片段<span class="link-arrow">→</span></a
-            >
-          </h2>
-          <p class="section-subtitle">灵感 / 未完成想法 / 一段判断</p>
-        </div>
-        <div class="section-placeholder">
-          <p class="placeholder-text">✨ 等待第一个灵感闪现...</p>
-        </div>
-      </div>
+      {/* 片段卡片 */}
+      <a href="/originals/fragments" class="content-card card-fragments">
+        <div class="card-icon">✨</div>
+        <h2 class="card-title">片段</h2>
+        <p class="card-description">灵感闪现，随性记录</p>
+        <div class="card-status">筹备中</div>
+        <div class="card-overlay"></div>
+      </a>
 
-      {/* 项目 / 实验 */}
-      <div class="section">
-        <div class="section-header">
-          <h2 class="section-title">
-            <a href="/originals/projects" class="title-link"
-              >项目 / 实验<span class="link-arrow">→</span></a
-            >
-          </h2>
-          <p class="section-subtitle">做了什么 / 为什么做 / 反思</p>
-        </div>
-        <div class="section-placeholder">
-          <p class="placeholder-text">🚀 新的实验正在筹备...</p>
-        </div>
-      </div>
-    </section>
+      {/* 项目卡片 */}
+      <a href="/originals/projects" class="content-card card-projects">
+        <div class="card-icon">🚀</div>
+        <h2 class="card-title">项目</h2>
+        <p class="card-description">实验与尝试的记录</p>
+        <div class="card-status">筹备中</div>
+        <div class="card-overlay"></div>
+      </a>
+    </div>
 
-    {/* ③ 时间轴说明 */}
-    <section class="originals-note">
-      <p class="note-text">
-        💡 这不是按发布时间的动态流，而是<strong>认知的积累与沉淀</strong>。
-      </p>
-    </section>
+    {/* 底部说明 */}
+    <footer class="originals-footer">
+      <p class="footer-note">这是认知的沉淀，不是时间的流水</p>
+    </footer>
   </div>
 </MainLayout>
