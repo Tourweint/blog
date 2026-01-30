@@ -3,6 +3,7 @@ import "../styles/home.css";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import MainLayout from "../layouts/mainlayout.astro";
+import { excerpts } from "../utils/excerptsPaths";
 
 const posts = await getCollection("posts");
 posts.sort(
@@ -48,7 +49,9 @@ const formatDate = (date: Date | null) =>
         </p>
         <div class="hero-cta">
           <a href="/originals" class="cta-button primary">探索原创文章</a>
-          <a href="/notes" class="cta-button secondary">阅读摘录笔记</a>
+          <a href={excerpts.notesIndex} class="cta-button secondary">
+            阅读摘录笔记
+          </a>
         </div>
       </div>
     </section>
@@ -65,7 +68,7 @@ const formatDate = (date: Date | null) =>
         {
           recentOriginals.length > 0 ? (
             recentOriginals.map((post) => (
-              <a href={`/excerpts/page/${post.slug}`} class="original-card">
+              <a href={excerpts.postDetail(post.id)} class="original-card">
                 <div class="original-header">
                   <div class="original-title">{post.data.title}</div>
                   <div class="original-meta">
@@ -79,7 +82,7 @@ const formatDate = (date: Date | null) =>
                 )}
                 {post.data.tags && post.data.tags.length > 0 && (
                   <div class="original-tags">
-                    {post.data.tags.slice(0, 3).map((tag) => (
+                    {post.data.tags.slice(0, 3).map((tag: string) => (
                       <span class="tag">{tag}</span>
                     ))}
                   </div>
@@ -99,7 +102,7 @@ const formatDate = (date: Date | null) =>
           <h2>精选摘录与笔记</h2>
           <p class="section-subtitle">他人智慧的镜像</p>
         </div>
-        <a class="view-all-link" href="/notes">查看全部 →</a>
+        <a class="view-all-link" href={excerpts.notesIndex}>查看全部 →</a>
       </div>
       <div class="excerpt-grid">
         {
@@ -136,11 +139,11 @@ const formatDate = (date: Date | null) =>
           <h3>去看我的原创 →</h3>
           <p>最新文章、写作与思考的全量列表。</p>
         </a>
-        <a class="explore-card" href="/notes">
+        <a class="explore-card" href={excerpts.notesIndex}>
           <h3>浏览摘录 →</h3>
           <p>我正在消化的片段、旁注和灵感。</p>
         </a>
-        <a class="explore-card" href="/category">
+        <a class="explore-card" href={excerpts.categoryIndex}>
           <h3>按主题阅读 →</h3>
           <p>按主题快速筛选，直达你关心的话题。</p>
         </a>

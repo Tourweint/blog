@@ -1,7 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import MainLayout from "../../layouts/mainlayout.astro";
+import MainLayout from "../../../layouts/mainlayout.astro";
+import { excerpts } from "../../../utils/excerptsPaths";
 
 const posts = await getCollection("posts");
 const tagCounter = new Map<string, number>();
@@ -32,10 +33,7 @@ const tags = Array.from(tagCounter.entries())
       {
         tags.length > 0 ? (
           tags.map((tag) => (
-            <a
-              class="tag-card"
-              href={`/category/${encodeURIComponent(tag.name)}`}
-            >
+            <a class="tag-card" href={excerpts.category(tag.name)}>
               <span class="tag-name">{tag.name}</span>
               <span class="tag-count">{tag.count} 篇</span>
             </a>
@@ -47,7 +45,7 @@ const tags = Array.from(tagCounter.entries())
     </div>
 
     <div class="back-link">
-      <a href="/excerpts">返回摘录列表 →</a>
+      <a href={excerpts.postsIndex}>返回摘录列表 →</a>
     </div>
   </div>
 </MainLayout>

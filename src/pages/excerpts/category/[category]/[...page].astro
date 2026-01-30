@@ -1,0 +1,149 @@
+---
+import "../../../../styles/index.css";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import MainLayout from "../../../../layouts/mainlayout.astro";
+import Pagination from "../../../../components/Pagination.astro";
+import { excerpts } from "../../../../utils/excerptsPaths";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getCollection("posts");
+  posts.sort(
+    (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
+      b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+  );
+
+  // 获取所有分类
+  const allTags = new Set<string>();
+  posts.forEach((post) => {
+    if (post.data.tags?.length) {
+      post.data.tags.forEach((tag) => allTags.add(tag));
+    } else {
+      allTags.add("未分类");
+    }
+  });
+
+  // 为每个分类生成分页
+  return Array.from(allTags).flatMap((tag) => {
+    const filteredPosts = posts.filter((post) => {
+      if (tag === "未分类") {
+        return !post.data.tags?.length;
+      }
+      return post.data.tags?.includes(tag);
+    });
+
+    return paginate(filteredPosts, {
+      params: { category: tag },
+      pageSize: 8,
+    });
+  });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const { category } = Astro.params;
+
+const posts = await getCollection("posts");
+const categories = [
+  "全部",
+  ...Array.from(
+    new Set(
+      posts.flatMap((p) => (p.data.tags?.length ? p.data.tags : ["未分类"])),
+    ),
+  ).sort((a, b) => a.localeCompare(b, "zh-CN")),
+];
+
+// 生成分类的分页 URL
+const getCategoryPageUrl = (pageNum: number) =>
+  excerpts.category(category!, pageNum);
+---
+
+<MainLayout
+  title={`${category} - 多鸣的博客`}
+  description={`${category}分类下的文章`}
+  wide={true}
+>
+  <div class="app-container">
+    <aside>
+      <div class="profile-card">
+        <div class="avatar"></div>
+        <div class="profile-name">多鸣的博客</div>
+        <div class="profile-bio">多元发声，掷地有声</div>
+        <div class="profile-bio">心有热爱，必有回响</div>
+      </div>
+
+      <nav class="category-nav">
+        <div class="nav-title">文章分类</div>
+        <div id="category-list">
+          {
+            categories.map((cat) => {
+              const count =
+                cat === "全部"
+                  ? posts.length
+                  : posts.filter((p) => p.data.tags?.includes(cat)).length;
+              return (
+                <a
+                  href={
+                    cat === "全部"
+                      ? excerpts.postsIndex
+                      : excerpts.category(cat)
+                  }
+                  class={`filter-btn${cat === category ? " active" : ""}`}
+                  data-category={cat}
+                >
+                  <span>{cat}</span>
+                  <span class="category-badge">{count}</span>
+                </a>
+              );
+            })
+          }
+        </div>
+      </nav>
+    </aside>
+
+    <main>
+      <h2 id="list-title">{category}</h2>
+      {
+        page.data.length > 0 ? (
+          <div class="post-grid">
+            {page.data.map((post: CollectionEntry<"posts">) => (
+              <a
+                href={excerpts.postDetail(post.id)}
+                class="post-card-link"
+                data-title={post.data.title.toLowerCase()}
+                data-desc={(post.data.description || "").toLowerCase()}
+                data-tags={(post.data.tags || ["未分类"])
+                  .join(",")
+                  .toLowerCase()}
+              >
+                <article class="post-card">
+                  <div class="card-meta">
+                    <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
+                    <div class="card-tags">
+                      {post.data.tags?.map((t: string) => (
+                        <span class="card-tag">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <h3 class="post-title">{post.data.title}</h3>
+                  {post.data.description && (
+                    <p class="post-desc">{post.data.description}</p>
+                  )}
+                  <span class="read-more">阅读全文 →</span>
+                </article>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="no-results">该分类下暂无文章。</div>
+        )
+      }
+
+      <Pagination
+        currentPage={page.currentPage}
+        totalPages={page.lastPage}
+        getPageUrl={getCategoryPageUrl}
+      />
+    </main>
+  </div>
+</MainLayout>

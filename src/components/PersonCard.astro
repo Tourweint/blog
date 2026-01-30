@@ -1,53 +1,66 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { excerpts, toIdSlug } from "../utils/excerptsPaths";
 
 interface Props {
   person: CollectionEntry<"persons">;
 }
 
 const { person } = Astro.props;
-const { data, slug } = person;
+const { data } = person;
+const personSlug = toIdSlug(person.id);
+const personHref = excerpts.personDetail(personSlug);
 ---
 
 <article class="person-card">
   <div class="card-header">
-    {data.avatar && (
-      <div class="avatar">
-        <img src={data.avatar} alt={data.name} loading="lazy" />
-      </div>
-    )}
+    {
+      data.avatar && (
+        <div class="avatar">
+          <img src={data.avatar} alt={data.name} loading="lazy" />
+        </div>
+      )
+    }
     <div class="header-info">
       <h3 class="person-name">
-        <a href={`/persons/${slug}`}>{data.name}</a>
+        <a href={personHref}>{data.name}</a>
       </h3>
-      {data.nameEn && data.nameEn !== data.name && (
-        <span class="name-en">{data.nameEn}</span>
-      )}
+      {
+        data.nameEn && data.nameEn !== data.name && (
+          <span class="name-en">{data.nameEn}</span>
+        )
+      }
       {data.role && <p class="person-role">{data.role}</p>}
     </div>
   </div>
 
-  {data.bio && (
-    <p class="person-bio">{data.bio}</p>
-  )}
+  {data.bio && <p class="person-bio">{data.bio}</p>}
 
   <div class="card-footer">
-    {data.tags && data.tags.length > 0 && (
-      <div class="tags">
-        {data.tags.slice(0, 3).map((tag) => (
-          <span class="tag">{tag}</span>
-        ))}
-      </div>
-    )}
-    <a href={`/persons/${slug}`} class="view-link">
+    {
+      data.tags && data.tags.length > 0 && (
+        <div class="tags">
+          {data.tags.slice(0, 3).map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )
+    }
+    <a href={personHref} class="view-link">
       查看详情
-      <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
+      <svg
+        class="arrow-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M5 12h14M12 5l7 7-7 7"></path>
       </svg>
     </a>
   </div>
 
-  <a href={`/persons/${slug}`} class="card-link-overlay" aria-hidden="true"></a>
+  <a href={personHref} class="card-link-overlay" aria-hidden="true"></a>
 </article>
 
 <style>

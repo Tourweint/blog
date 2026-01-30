@@ -1,0 +1,82 @@
+---
+export interface Props {
+  href: string;
+  title: string;
+  description?: string;
+  eyebrow?: string;
+  target?: "_self" | "_blank";
+  rel?: string;
+}
+
+const {
+  href,
+  title,
+  description,
+  eyebrow,
+  target = "_self",
+  rel,
+} = Astro.props;
+
+const computedRel = target === "_blank" ? (rel ?? "noopener noreferrer") : rel;
+---
+
+<a
+  class="page-entry"
+  href={href}
+  aria-label={`前往：${title}`}
+  target={target}
+  rel={computedRel}
+>
+  {eyebrow && <p class="page-entry__eyebrow">{eyebrow}</p>}
+  <h3 class="page-entry__title">{title}</h3>
+  {description && <p class="page-entry__desc">{description}</p>}
+</a>
+
+<style>
+  .page-entry {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .page-entry:hover {
+    transform: translateY(-2px);
+    border-color: rgba(79, 171, 194, 0.35);
+    box-shadow: 0 14px 34px rgba(79, 171, 194, 0.14);
+  }
+
+  .page-entry:focus-visible {
+    outline: 3px solid rgba(75, 96, 212, 0.25);
+    outline-offset: 3px;
+  }
+
+  .page-entry__eyebrow {
+    margin: 0 0 6px;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(75, 85, 99, 0.75);
+  }
+
+  .page-entry__title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  .page-entry__desc {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(75, 85, 99, 0.9);
+  }
+</style>

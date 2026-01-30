@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import MainLayout from "../../../layouts/mainlayout.astro";
 import TableOfContents from "../../../components/TableOfContents.astro";
+import { excerpts } from "../../../utils/excerptsPaths";
 import "../../../styles/posts.css";
 
 export async function getStaticPaths() {
@@ -25,7 +26,7 @@ const hasToc = tocHeadings.length > 0;
 const backUrl = "/originals/projects/projects";
 
 // 计算阅读时间（若 frontmatter 未提供）
-const content = post.body;
+const content = post.body ?? "";
 const chineseChars = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
 const englishWords = (content.match(/[a-zA-Z]+/g) || []).length;
 const wordsPerMinute = 350;
@@ -72,15 +73,12 @@ const readingTime = post.data.readingTime ?? computedReadingTime;
             {
               post.data.tags && post.data.tags.length > 0 ? (
                 post.data.tags.map((tag) => (
-                  <a
-                    href={`/category/${encodeURIComponent(tag)}`}
-                    class="category-tag"
-                  >
+                  <a href={excerpts.category(tag)} class="category-tag">
                     {tag}
                   </a>
                 ))
               ) : (
-                <a href="/category/未分类" class="category-tag">
+                <a href={excerpts.category("未分类")} class="category-tag">
                   未分类
                 </a>
               )

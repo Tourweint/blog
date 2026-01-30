@@ -1,0 +1,108 @@
+---
+import { getCollection, render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import PostDetailLayout from "../../../../layouts/postdetaillayout.astro";
+import "../../../../styles/posts.css";
+import { excerpts, toIdSlug } from "../../../../utils/excerptsPaths";
+
+export const ITEMS_PER_PAGE = 8;
+
+// 1. 生成所有文章的路径
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("posts");
+  // 按日期排序，与首页保持一致
+  blogEntries.sort(
+    (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
+      b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+  );
+
+  return blogEntries.map((entry, index) => ({
+    params: { slug: toIdSlug(entry.id) },
+    props: {
+      entry,
+      // 计算文章在第几页
+      pageNumber: Math.floor(index / ITEMS_PER_PAGE) + 1,
+      // 上一篇（更新的文章）
+      prevPost:
+        index > 0
+          ? {
+              slug: toIdSlug(blogEntries[index - 1].id),
+              title: blogEntries[index - 1].data.title,
+            }
+          : null,
+      // 下一篇（更旧的文章）
+      nextPost:
+        index < blogEntries.length - 1
+          ? {
+              slug: toIdSlug(blogEntries[index + 1].id),
+              title: blogEntries[index + 1].data.title,
+            }
+          : null,
+    },
+  }));
+}
+
+// 2. 获取文章内容
+const { entry, pageNumber, prevPost, nextPost } = Astro.props;
+const { Content, headings } = await render(entry);
+const entrySlug = toIdSlug(entry.id);
+const maxStars = 5;
+const rereadStars = Math.min(
+  Math.max(entry.data.rereadStars ?? 0, 0),
+  maxStars,
+);
+const starStates = Array.from(
+  { length: maxStars },
+  (_, index) => index < rereadStars,
+);
+
+// 处理作者信息（兼容字符串和对象两种格式）
+const author = entry.data.author
+  ? typeof entry.data.author === "string"
+    ? { name: entry.data.author, url: undefined }
+    : entry.data.author
+  : null;
+
+// 生成返回链接：返回摘录-文章列表，带上滚动定位参数
+const listBaseUrl = excerpts.postsPage(pageNumber);
+const backUrl = `${listBaseUrl}?scrollTo=${encodeURIComponent(entrySlug)}`;
+
+// 计算阅读时间
+const content = entry.body ?? "";
+// 统计中文字符和英文单词
+const chineseChars = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
+const englishWords = (content.match(/[a-zA-Z]+/g) || []).length;
+// 中文阅读速度约 300-500 字/分钟，英文约 200 词/分钟，取中间值
+const wordsPerMinute = 350;
+const totalWords = chineseChars + englishWords;
+const readingTime = Math.max(1, Math.ceil(totalWords / wordsPerMinute));
+---
+
+<PostDetailLayout
+  seoTitle={`${entry.data.title} - 多鸣的博客`}
+  contentTitle={entry.data.title}
+  description={entry.data.description || entry.data.title}
+  type="article"
+  publishedTime={entry.data.pubDate}
+  tags={entry.data.tags}
+  image={entry.data.image}
+  sourceUrl={entry.data.sourceUrl}
+  headings={headings}
+  backUrl={backUrl}
+  backLabel="← 返回摘录页"
+  dateText={entry.data.pubDate.toLocaleDateString("zh-cn")}
+  readingTime={readingTime}
+  totalWords={totalWords}
+  author={author}
+  rereadStars={rereadStars}
+  maxStars={maxStars}
+  tagsBaseHref={excerpts.categoryBaseHref}
+  prevItem={prevPost
+    ? { href: excerpts.postDetail(prevPost.slug), title: prevPost.title }
+    : null}
+  nextItem={nextPost
+    ? { href: excerpts.postDetail(nextPost.slug), title: nextPost.title }
+    : null}
+>
+  <Content />
+</PostDetailLayout>

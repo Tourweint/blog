@@ -1,25 +1,33 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { excerpts, toIdSlug } from "../utils/excerptsPaths";
 
 interface Props {
   person: CollectionEntry<"persons">;
 }
 
 const { person } = Astro.props;
-const { data, slug } = person;
+const { data } = person;
+const personSlug = toIdSlug(person.id);
+const personHref = excerpts.personDetail(personSlug);
 ---
 
 <div class="person-card-mini">
-  {data.avatar && (
-    <img src={data.avatar} alt={data.name} class="mini-avatar" loading="lazy" />
-  )}
+  {
+    data.avatar && (
+      <img
+        src={data.avatar}
+        alt={data.name}
+        class="mini-avatar"
+        loading="lazy"
+      />
+    )
+  }
   <div class="mini-info">
     <h4 class="mini-name">{data.name}</h4>
     {data.role && <p class="mini-role">{data.role}</p>}
     {data.bio && <p class="mini-bio">{data.bio}</p>}
-    <a href={`/persons/${slug}`} class="mini-link">
-      查看详情 →
-    </a>
+    <a href={personHref} class="mini-link"> 查看详情 → </a>
   </div>
 </div>
 

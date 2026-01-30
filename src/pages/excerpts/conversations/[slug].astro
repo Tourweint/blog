@@ -1,18 +1,22 @@
 ---
 import { getCollection } from "astro:content";
-import ConversationLayout from "../../layouts/conversationlayout.astro";
+import type { CollectionEntry } from "astro:content";
+import ConversationLayout from "../../../layouts/conversationlayout.astro";
+
+export const toConversationSlug = (id: string) =>
+  id.replace(/\.(md|mdx)$/i, "");
 
 export async function getStaticPaths() {
   const conversations = await getCollection("conversations");
 
   return conversations.map((conversation) => ({
-    params: { slug: conversation.slug },
+    params: { slug: toConversationSlug(conversation.id) },
     props: { post: conversation },
   }));
 }
 
 interface Props {
-  post: any;
+  post: CollectionEntry<"conversations">;
 }
 
 const { post } = Astro.props;

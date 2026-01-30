@@ -1,0 +1,227 @@
+---
+import MainLayout from "./mainlayout.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import type { ContentDetailLayoutProps } from "./contentdetail.types";
+import { excerpts } from "../utils/excerptsPaths";
+
+interface Props extends ContentDetailLayoutProps {}
+
+const {
+  seoTitle,
+  contentTitle,
+  description,
+  image,
+  type = "article",
+  publishedTime,
+  tags,
+  backUrl,
+  backLabel = "← 返回列表",
+  dateText,
+  readingTime,
+  totalWords,
+  author = null,
+  rereadStars = 0,
+  maxStars = 5,
+  sourceUrl,
+  headings,
+  tagsBaseHref = excerpts.categoryBaseHref,
+  prevItem = null,
+  nextItem = null,
+} = Astro.props;
+
+const safeMaxStars = Math.max(1, maxStars);
+const safeRereadStars = Math.min(Math.max(rereadStars ?? 0, 0), safeMaxStars);
+const starStates = Array.from(
+  { length: safeMaxStars },
+  (_, index) => index < safeRereadStars,
+);
+
+const normalizedTagsBaseHref = tagsBaseHref.endsWith("/")
+  ? tagsBaseHref
+  : `${tagsBaseHref}/`;
+---
+
+<MainLayout
+  title={seoTitle}
+  description={description}
+  type={type}
+  publishedTime={publishedTime}
+  tags={tags}
+  image={image}
+>
+  <div class="post-layout">
+    <div class="post-sidebar">
+      {
+        sourceUrl && (
+          <section class="watch-video-section">
+            <a
+              href={sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="watch-video-link"
+            >
+              <svg class="video-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span>观看原视频</span>
+            </a>
+          </section>
+        )
+      }
+
+      {
+        headings && headings.length > 0 && (
+          <TableOfContents headings={headings} />
+        )
+      }
+    </div>
+
+    <div class="post-main">
+      <nav class="nav-bar">
+        <a href={backUrl} class="back-link">{backLabel}</a>
+      </nav>
+
+      <article class="post-detail">
+        <h1 class="post-title">{contentTitle}</h1>
+
+        <div class="meta">
+          {dateText && <span class="date-tag">{dateText}</span>}
+
+          {
+            typeof readingTime === "number" && (
+              <span class="reading-time">
+                <span class="reading-icon">📖</span>
+                <span>{readingTime} 分钟阅读</span>
+                {typeof totalWords === "number" && (
+                  <span class="word-count">· 约 {totalWords} 字</span>
+                )}
+              </span>
+            )
+          }
+
+          {
+            author && (
+              <>
+                {author.url ? (
+                  <a
+                    href={author.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="author-link"
+                  >
+                    {author.name}
+                  </a>
+                ) : (
+                  <span class="author-name">{author.name}</span>
+                )}
+              </>
+            )
+          }
+
+          <div class="meta-categories" id="categories">
+            {
+              tags && tags.length > 0 ? (
+                tags.map((tag) => (
+                  <a
+                    href={`${normalizedTagsBaseHref}${encodeURIComponent(tag)}`}
+                    class="category-tag"
+                  >
+                    {tag}
+                  </a>
+                ))
+              ) : (
+                <a
+                  href={`${normalizedTagsBaseHref}${encodeURIComponent("未分类")}`}
+                  class="category-tag"
+                >
+                  未分类
+                </a>
+              )
+            }
+          </div>
+
+          {
+            safeRereadStars > 0 && (
+              <div class="meta-stars-group">
+                <span>推荐星级 :</span>
+                <div
+                  class="meta-stars"
+                  id="reread-stars"
+                  role="img"
+                  aria-label={`推荐星级 ${safeRereadStars} / ${safeMaxStars}`}
+                >
+                  {starStates.map((filled) => (
+                    <span
+                      class={`star${filled ? " star--filled" : ""}`}
+                      aria-hidden="true"
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+        </div>
+
+        <div class="content">
+          <slot />
+        </div>
+
+        <nav class="post-nav">
+          {
+            prevItem ? (
+              <a href={prevItem.href} class="post-nav-link post-nav-prev">
+                <span class="post-nav-label">← 上一篇</span>
+                <span class="post-nav-title">{prevItem.title}</span>
+              </a>
+            ) : (
+              <div class="post-nav-placeholder" />
+            )
+          }
+          {
+            nextItem ? (
+              <a href={nextItem.href} class="post-nav-link post-nav-next">
+                <span class="post-nav-label">下一篇 →</span>
+                <span class="post-nav-title">{nextItem.title}</span>
+              </a>
+            ) : (
+              <div class="post-nav-placeholder" />
+            )
+          }
+        </nav>
+      </article>
+    </div>
+  </div>
+
+  <button
+    class="back-to-top"
+    id="back-to-top"
+    aria-label="返回顶部"
+    title="返回顶部"
+  >
+    <span class="back-to-top-icon">↑</span>
+  </button>
+</MainLayout>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const backToTopBtn = document.getElementById("back-to-top");
+    if (!backToTopBtn) return;
+
+    const toggleVisibility = () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add("visible");
+      } else {
+        backToTopBtn.classList.remove("visible");
+      }
+    };
+
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
+    toggleVisibility();
+
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+</script>

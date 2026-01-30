@@ -1,0 +1,149 @@
+---
+import "../../../styles/index.css";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import MainLayout from "../../../layouts/mainlayout.astro";
+import Pagination from "../../../components/Pagination.astro";
+import { excerpts } from "../../../utils/excerptsPaths";
+
+const posts = await getCollection("posts");
+posts.sort(
+  (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
+    b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+
+const categories = [
+  "全部",
+  ...Array.from(
+    new Set(
+      posts.flatMap((p) => (p.data.tags?.length ? p.data.tags : ["未分类"])),
+    ),
+  ).sort((a, b) => a.localeCompare(b, "zh-CN")),
+];
+
+const pageSize = 8;
+const totalPages = Math.ceil(posts.length / pageSize);
+const currentPage = 1;
+const paginatedPosts = posts.slice(0, pageSize);
+
+const getPageUrl = (page: number) => excerpts.postsPage(page);
+---
+
+<MainLayout
+  title="摘录 - Tourweint/多鸣"
+  description="所有文章与整理的列表"
+  wide={true}
+>
+  <div class="app-container">
+    <aside>
+      <div class="profile-card">
+        <div class="avatar"></div>
+        <div class="profile-name">多鸣</div>
+        <div class="profile-bio">多元发声，掷地有声</div>
+        <div class="profile-bio">心有热爱，必有回响</div>
+      </div>
+
+      <nav class="category-nav">
+        <div class="nav-title">文章分类</div>
+        <div id="category-list">
+          {
+            categories.map((cat) => {
+              const count =
+                cat === "全部"
+                  ? posts.length
+                  : posts.filter((p) => p.data.tags?.includes(cat)).length;
+              return (
+                <a
+                  href={
+                    cat === "全部"
+                      ? excerpts.postsIndex
+                      : excerpts.category(cat)
+                  }
+                  class={`filter-btn${cat === "全部" ? " active" : ""}`}
+                  data-category={cat}
+                >
+                  <span>{cat}</span>
+                  <span class="category-badge">{count}</span>
+                </a>
+              );
+            })
+          }
+        </div>
+      </nav>
+    </aside>
+
+    <main>
+      <h2 id="list-title">最新摘录</h2>
+      {
+        paginatedPosts.length > 0 ? (
+          <div class="post-grid">
+            {paginatedPosts.map((post: CollectionEntry<"posts">) => (
+              <a
+                href={excerpts.postDetail(post.id)}
+                class="post-card-link"
+                data-title={post.data.title.toLowerCase()}
+                data-desc={(post.data.description || "").toLowerCase()}
+                data-tags={(post.data.tags || ["未分类"])
+                  .join(",")
+                  .toLowerCase()}
+              >
+                <article class="post-card">
+                  <div class="card-meta">
+                    <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
+                    <div class="card-tags">
+                      {post.data.tags?.map((t: string) => (
+                        <span class="card-tag">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <h3 class="post-title">{post.data.title}</h3>
+                  {post.data.description && (
+                    <p class="post-desc">{post.data.description}</p>
+                  )}
+                  <span class="read-more">阅读全文 →</span>
+                </article>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="no-results">
+            暂无文章，请在 <code>src/content/excerpts/posts</code> 中添加
+            Markdown 文件。
+          </div>
+        )
+      }
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        getPageUrl={getPageUrl}
+      />
+    </main>
+  </div>
+</MainLayout>
+
+<script define:vars={{ POST_DETAIL_PREFIX: excerpts.postDetail("") }}>
+  const urlParams = new URLSearchParams(window.location.search);
+  const scrollTarget = urlParams.get("scrollTo");
+
+  if (scrollTarget) {
+    const targetCard = document.querySelector(
+      `a.post-card-link[href="${POST_DETAIL_PREFIX}${scrollTarget}"]`,
+    );
+
+    if (targetCard) {
+      setTimeout(() => {
+        targetCard.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        targetCard.classList.add("highlight-card");
+        setTimeout(() => targetCard.classList.remove("highlight-card"), 2000);
+      }, 100);
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("scrollTo");
+    window.history.replaceState({}, "", url);
+  }
+</script>

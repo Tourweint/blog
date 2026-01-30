@@ -1,9 +1,10 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import MainLayout from "./mainlayout.astro";
 import PersonCardMini from "../components/PersonCardMini.astro";
 import TableOfContents from "../components/TableOfContents.astro";
+import { excerpts } from "../utils/excerptsPaths";
 import "../styles/conversations.css";
 
 interface Props {
@@ -11,14 +12,15 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { Content, headings } = await post.render();
+const { Content, headings } = await render(post);
 const { data } = post;
 
 // 为编者按和金句准备样式类
 const hasEditorNote = data.editorNote;
 const allPersons = await getCollection("persons");
+const toPersonSlug = (id: string) => id.replace(/\.(md|mdx)$/i, "");
 const guestPersons = (data.guests || [])
-  .map((slug: string) => allPersons.find((p) => p.slug === slug))
+  .map((slug: string) => allPersons.find((p) => toPersonSlug(p.id) === slug))
   .filter((p): p is CollectionEntry<"persons"> => p !== undefined);
 const guestNames = guestPersons.map((p) => p?.data.name).join(" × ");
 const guestRoles = guestPersons
@@ -36,7 +38,7 @@ const guestRoles = guestPersons
 >
   <article class="conversation-article">
     <nav class="back-nav">
-      <a href="/conversations" class="back-link">
+      <a href={excerpts.conversationsIndex} class="back-link">
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -165,7 +167,10 @@ const guestRoles = guestPersons
                   <strong>相关话题：</strong>
                   <div class="tags-list">
                     {data.tags.map((tag) => (
-                      <a href={`/conversations/?tag=${tag}`} class="tag-link">
+                      <a
+                        href={`${excerpts.conversationsIndex}?tag=${encodeURIComponent(tag)}`}
+                        class="tag-link"
+                      >
                         {tag}
                       </a>
                     ))}

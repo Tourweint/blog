@@ -1,19 +1,19 @@
 ---
-import MainLayout from "../../layouts/mainlayout.astro";
-import "../../styles/conversations.css";
+import MainLayout from "../../../layouts/mainlayout.astro";
+import "../../../styles/conversations.css";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import ConversationCard from "../../components/ConversationCard.astro";
+import ConversationCard from "../../../components/ConversationCard.astro";
 
 const conversations = (await getCollection("conversations")).sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
 );
 
 // 提取所有话题标签
 const allTags = [
   "全部",
   ...Array.from(new Set(conversations.flatMap((c) => c.data.tags ?? []))).sort(
-    (a, b) => a.localeCompare(b, "zh-CN")
+    (a, b) => a.localeCompare(b, "zh-CN"),
   ),
 ];
 
@@ -200,7 +200,7 @@ const paginatedConversations = conversations.slice(0, ITEMS_PER_PAGE);
     // 平滑滚动
     setTimeout(() => {
       const visibleItems = items.filter(
-        (item) => item.style.display !== "none"
+        (item) => item.style.display !== "none",
       );
       const nextItem = visibleItems[displayedCount - ITEMS_PER_PAGE_VALUE];
       if (nextItem) {
@@ -210,6 +210,22 @@ const paginatedConversations = conversations.slice(0, ITEMS_PER_PAGE);
   });
 
   // 初始化
-  pills[0]?.classList.add("active");
-  updatePagination();
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTag = urlParams.get("tag");
+
+  if (initialTag) {
+    const targetPill = pills.find((pill) => pill.dataset.tag === initialTag);
+    if (targetPill) {
+      pills.forEach((p) => p.classList.remove("active"));
+      targetPill.classList.add("active");
+      activeTag = initialTag;
+      applyFilter();
+    } else {
+      pills[0]?.classList.add("active");
+      updatePagination();
+    }
+  } else {
+    pills[0]?.classList.add("active");
+    updatePagination();
+  }
 </script>

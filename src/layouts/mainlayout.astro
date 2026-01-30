@@ -1,6 +1,7 @@
 ---
 // src/layouts/MainLayout.astro
 import "../styles/global.css";
+import { excerpts } from "../utils/excerptsPaths";
 
 interface Props {
   title?: string;
@@ -106,11 +107,7 @@ const ogImage = image.startsWith("http")
         <ul class="nav-links">
           <li><a href="/">首页</a></li>
           <li><a href="/originals/">原触发</a></li>
-          <li><a href="/excerpts/">摘录</a></li>
-          <li><a href="/conversations/conversations">对话</a></li>
-          <li><a href="/persons/persons">人物</a></li>
-          <li><a href="/notes/notes">短句</a></li>
-          <li><a href="/tools/tools">工具</a></li>
+          <li><a href={excerpts.rootHref}>摘录</a></li>
           <li><a href="/about/about">关于</a></li>
         </ul>
       </nav>
@@ -126,11 +123,7 @@ const ogImage = image.startsWith("http")
       <nav class="drawer-nav">
         <a class="drawer-link" href="/">首页</a>
         <a class="drawer-link" href="/originals/">原触发</a>
-        <a class="drawer-link" href="/excerpts/">摘录</a>
-        <a class="drawer-link" href="/conversations/conversations">对话</a>
-        <a class="drawer-link" href="/persons/persons">人物</a>
-        <a class="drawer-link" href="/notes/notes">短句</a>
-        <a class="drawer-link" href="/tools/tools">工具</a>
+        <a class="drawer-link" href={excerpts.rootHref}>摘录</a>
         <a class="drawer-link" href="/about/about">关于</a>
       </nav>
     </aside>

@@ -1,7 +1,8 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z } from "astro:content";
+import { glob } from "astro/loaders";
 
 const posts = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/excerpts/posts" }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -16,12 +17,12 @@ const posts = defineCollection({
     image: z.string().optional(),
     tags: z.array(z.string()).default([]),
     rereadStars: z.number().int().min(0).max(5).default(0),
-    sourceUrl: z.string().optional(),           // 原视频/文章链接
+    sourceUrl: z.string().optional(), // 原视频/文章链接
   }),
 });
 
 const notes = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/excerpts/notes" }),
   schema: z.object({
     title: z.string().optional(),        // 标题/核心观点
     text: z.string().optional(),         // 旧字段兼容
@@ -35,7 +36,7 @@ const notes = defineCollection({
 });
 
 const conversations = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/excerpts/conversations" }),
   schema: z.object({
     title: z.string(),                          // 对话标题
     description: z.string().optional(),         // 描述
@@ -53,7 +54,7 @@ const conversations = defineCollection({
 });
 
 const persons = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/excerpts/persons" }),
   schema: z.object({
     name: z.string(),                           // 姓名
     nameEn: z.string().optional(),              // 英文名

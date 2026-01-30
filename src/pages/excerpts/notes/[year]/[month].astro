@@ -1,19 +1,20 @@
 ---
-import MainLayout from "../../../layouts/mainlayout.astro";
-import "../../../styles/notes.css";
-import { getCollection } from "astro:content";
+import MainLayout from "../../../../layouts/mainlayout.astro";
+import "../../../../styles/notes.css";
+import { getCollection, render } from "astro:content";
+import { excerpts } from "../../../../utils/excerptsPaths";
 
 export async function getStaticPaths() {
   const allNotes = await getCollection("notes");
-  
+
   const resolveDate = (data: any) => data.pubDate || data.date || new Date();
-  
+
   const monthsData = allNotes.reduce((acc: any, note) => {
     const date = resolveDate(note.data);
     const year = date.getFullYear().toString();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const key = `${year}/${month}`;
-    
+
     if (!acc[key]) {
       acc[key] = [];
     }
@@ -22,7 +23,7 @@ export async function getStaticPaths() {
   }, {});
 
   return Object.entries(monthsData).map(([key, notes]: [string, any]) => {
-    const [year, month] = key.split('/');
+    const [year, month] = key.split("/");
     return {
       params: { year, month },
       props: { notes, year, month },
@@ -49,12 +50,13 @@ const createExcerpt = (note: any, max = 140) => {
 };
 
 const sortedNotes = rawNotes.sort(
-  (a: any, b: any) => resolveDate(b.data).getTime() - resolveDate(a.data).getTime()
+  (a: any, b: any) =>
+    resolveDate(b.data).getTime() - resolveDate(a.data).getTime(),
 );
 
 const notes = await Promise.all(
   sortedNotes.map(async (note: any) => {
-    const { Content } = await note.render();
+    const { Content } = await render(note);
     const resolvedDate = resolveDate(note.data);
     const tags = note.data.tags?.length ? note.data.tags : ["未分类"];
     const hook = createExcerpt(note);
@@ -69,11 +71,14 @@ const notes = await Promise.all(
       date: resolvedDate,
       source: note.data.source || "原创",
     };
-  })
+  }),
 );
 ---
 
-<MainLayout title={`${year}年${month}月 - 句子簿归档`} description={`${year}年${month}月的想法与摘抄`}>
+<MainLayout
+  title={`${year}年${month}月 - 句子簿归档`}
+  description={`${year}年${month}月的想法与摘抄`}
+>
   <section class="hero">
     <div>
       <p class="eyebrow">Notes Archive</p>
@@ -85,7 +90,7 @@ const notes = await Promise.all(
         <span>🎲</span>
         <span>随机一条</span>
       </button>
-      <a href="/notes" class="back-link">← 返回全部</a>
+      <a href={excerpts.notesIndex} class="back-link">← 返回全部</a>
     </div>
   </section>
 
@@ -113,7 +118,7 @@ const notes = await Promise.all(
             </div>
             <div class="note-footer">
               <div class="tag-row">
-                {note.tags.map((tag : string) => (
+                {note.tags.map((tag: string) => (
                   <span class="tag-pill">{tag}</span>
                 ))}
               </div>

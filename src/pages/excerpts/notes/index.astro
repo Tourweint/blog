@@ -1,7 +1,9 @@
 ---
-import MainLayout from "../../layouts/mainlayout.astro";
-import "../../styles/notes.css";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
+
+import MainLayout from "../../../layouts/mainlayout.astro";
+import { excerpts } from "../../../utils/excerptsPaths";
+import "../../../styles/notes.css";
 
 const resolveDate = (data: any) => data.pubDate || data.date || new Date();
 
@@ -44,9 +46,9 @@ const sortedYears = Object.keys(timelineGroups).sort(
 
 const notes = await Promise.all(
   rawNotes.map(async (note) => {
-    const { Content } = await note.render();
+    const { Content } = await render(note);
     const resolvedDate = resolveDate(note.data);
-    const tags : string[] = note.data.tags?.length ? note.data.tags : ["未分类"];
+    const tags: string[] = note.data.tags?.length ? note.data.tags : ["未分类"];
     const hook = createExcerpt(note);
     const title = note.data.title || hook || "未命名短句";
     return {
@@ -66,26 +68,32 @@ const notes = await Promise.all(
 const tagFilters = ["全部", ...new Set(notes.flatMap((n) => n.tags))];
 
 // Generate grouped structure for rendering
-const displayGroups: { type: 'year' | 'month' | 'note', value?: string, rawValue?: string, year?: string, note?: any }[] = [];
+const displayGroups: {
+  type: "year" | "month" | "note";
+  value?: string;
+  rawValue?: string;
+  year?: string;
+  note?: any;
+}[] = [];
 let currentYear = 0;
 let currentMonth = "";
 
-notes.forEach(note => {
+notes.forEach((note) => {
   if (note.year !== currentYear) {
     currentYear = note.year;
-    displayGroups.push({ type: 'year', value: currentYear.toString() });
-    currentMonth = ""; 
+    displayGroups.push({ type: "year", value: currentYear.toString() });
+    currentMonth = "";
   }
   if (note.month !== currentMonth) {
     currentMonth = note.month;
-    displayGroups.push({ 
-      type: 'month', 
+    displayGroups.push({
+      type: "month",
       value: `${currentMonth}月`,
       rawValue: currentMonth,
-      year: currentYear.toString()
+      year: currentYear.toString(),
     });
   }
-  displayGroups.push({ type: 'note', note });
+  displayGroups.push({ type: "note", note });
 });
 
 const ITEMS_PER_PAGE = 18;
@@ -121,20 +129,27 @@ const ITEMS_PER_PAGE = 18;
   <div class="notes-stream" id="note-list">
     {
       displayGroups.map((item) => {
-        if (item.type === 'year') {
-          return <h2 class="timeline-year" data-type="year-header">{item.value}</h2>;
+        if (item.type === "year") {
+          return (
+            <h2 class="timeline-year" data-type="year-header">
+              {item.value}
+            </h2>
+          );
         }
-        if (item.type === 'month') {
+        if (item.type === "month") {
           return (
             <h3 class="timeline-month" data-type="month-header">
-              <a href={`/notes/${item.year}/${item.rawValue}`} class="month-link">
+              <a
+                href={excerpts.notesMonth(item.year!, item.rawValue!)}
+                class="month-link"
+              >
                 {item.value}
                 <span class="link-icon">↗</span>
               </a>
             </h3>
           );
         }
-        
+
         const note = item.note;
         const NoteContent = note.Content;
         return (
@@ -187,7 +202,9 @@ const ITEMS_PER_PAGE = 18;
 
   const tagButtons = Array.from(document.querySelectorAll(".chip[data-tag]"));
   const cards = Array.from(document.querySelectorAll(".note-card"));
-  const headers = Array.from(document.querySelectorAll("[data-type$='-header']"));
+  const headers = Array.from(
+    document.querySelectorAll("[data-type$='-header']"),
+  );
   const randomBtn = document.getElementById("random-note");
   const loadMoreBtn = document.getElementById("load-more");
 
@@ -218,53 +235,42 @@ const ITEMS_PER_PAGE = 18;
     }
   };
 
-  const applyFilters = () => {
+  const applyFilter = () => {
+    const isAll = activeTag === "全部";
+
+    let visibleCount = 0;
     cards.forEach((card) => {
-      const tags =
-        (card as HTMLElement).dataset.tags?.split(",").filter(Boolean) || [];
-
-      const tagMatch = activeTag === "全部" || tags.includes(activeTag);
-      
-      card.toggleAttribute("hidden", !tagMatch);
-      if (!tagMatch) {
-        collapseCard(card as HTMLElement);
-      }
-    });
-
-    displayedCount = ITEMS_PER_PAGE;
-    updatePagination();
-  };
-
-  const updatePagination = () => {
-    const visibleCards = cards.filter((card) => !card.hasAttribute("hidden"));
-    
-    // Show/hide cards based on pagination
-    visibleCards.forEach((card, index) => {
-      if (index < displayedCount) {
-        (card as HTMLElement).style.display = "";
-      } else {
+      const tags = (card.getAttribute("data-tags") || "").split(",");
+      const matched = isAll || tags.includes(activeTag);
+      if (!matched) {
         (card as HTMLElement).style.display = "none";
+        return;
       }
+
+      visibleCount += 1;
+      (card as HTMLElement).style.display =
+        visibleCount <= displayedCount ? "" : "none";
     });
 
-    // Handle headers visibility
-    // A header is visible only if at least one following card (before the next header of same or higher level) is visible
     headers.forEach((header) => {
-      let next = header.nextElementSibling;
-      let hasVisibleChild = false;
-      while (next && !next.hasAttribute("data-type")) {
-        if (next.classList.contains("note-card") && !next.hasAttribute("hidden") && (next as HTMLElement).style.display !== "none") {
-          hasVisibleChild = true;
+      const next = header.nextElementSibling;
+      let hasVisible = false;
+      let cursor = next;
+      while (cursor && !cursor.matches("[data-type$='-header']")) {
+        if (
+          cursor.matches(".note-card") &&
+          (cursor as HTMLElement).style.display !== "none"
+        ) {
+          hasVisible = true;
           break;
         }
-        next = next.nextElementSibling;
+        cursor = cursor.nextElementSibling;
       }
-      (header as HTMLElement).style.display = hasVisibleChild ? "" : "none";
+      (header as HTMLElement).style.display = hasVisible ? "" : "none";
     });
 
     if (loadMoreBtn) {
-      loadMoreBtn.style.display =
-        visibleCards.length > displayedCount ? "block" : "none";
+      loadMoreBtn.toggleAttribute("hidden", visibleCount <= displayedCount);
     }
   };
 
@@ -272,9 +278,15 @@ const ITEMS_PER_PAGE = 18;
     btn.addEventListener("click", () => {
       tagButtons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
-      activeTag = (btn as HTMLElement).dataset.tag || "全部";
-      applyFilters();
+      activeTag = btn.getAttribute("data-tag") || "全部";
+      displayedCount = ITEMS_PER_PAGE;
+      applyFilter();
     });
+  });
+
+  loadMoreBtn?.addEventListener("click", () => {
+    displayedCount += ITEMS_PER_PAGE;
+    applyFilter();
   });
 
   const toggleButtons = Array.from(document.querySelectorAll(".toggle-body"));
@@ -290,13 +302,8 @@ const ITEMS_PER_PAGE = 18;
   });
 
   randomBtn?.addEventListener("click", () => {
-    const visible = cards.filter(
-      (card) =>
-        !card.hasAttribute("hidden") &&
-        (card as HTMLElement).style.display !== "none",
-    );
-    if (!visible.length) return;
-    const pick = visible[Math.floor(Math.random() * visible.length)];
+    if (!cards.length) return;
+    const pick = cards[Math.floor(Math.random() * cards.length)];
     expandCard(pick as HTMLElement);
     (pick as HTMLElement).scrollIntoView({
       behavior: "smooth",
@@ -306,12 +313,10 @@ const ITEMS_PER_PAGE = 18;
     setTimeout(() => pick.classList.remove("flash"), 1200);
   });
 
-  loadMoreBtn?.addEventListener("click", () => {
-    displayedCount += ITEMS_PER_PAGE;
-    updatePagination();
-  });
-
-  tagButtons[0]?.classList.add("active");
-  applyFilters();
+  // Init default active state
+  const defaultBtn = tagButtons.find(
+    (b) => b.getAttribute("data-tag") === "全部",
+  );
+  defaultBtn?.classList.add("active");
+  applyFilter();
 </script>
-
