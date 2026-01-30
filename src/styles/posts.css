@@ -30,22 +30,48 @@ body {
     flex-shrink: 0;
     width: 260px;
     order: 1; /* 让 sidebar 在左侧 */
+
+    /* 让目录在长文滚动时始终可见 */
+    position: sticky;
+    top: calc(var(--nav-height) + 10px);
+    align-self: flex-start;
+    max-height: calc(100vh - var(--nav-height) - 20px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* sticky + flex 布局下，让目录区域可滚动 */
+.post-sidebar .watch-video-section {
+    margin-bottom: 0;
+}
+
+.post-sidebar .toc-container {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.post-sidebar .toc-nav {
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 /* 观看原视频块 */
 .watch-video-section {
-    background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 12px;
     padding: 0;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
     margin-bottom: 20px;
 }
 
 .watch-video-section:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
 }
 
 .watch-video-link {
@@ -54,7 +80,7 @@ body {
     justify-content: center;
     gap: 8px;
     padding: 14px 16px;
-    color: white;
+    color: #0f172a;
     text-decoration: none;
     font-weight: 700;
     font-size: 0.95rem;
@@ -62,20 +88,28 @@ body {
 }
 
 .watch-video-link:hover {
-    color: rgba(255, 255, 255, 0.95);
+    background: #f0f7ff;
+    color: #0f172a;
+}
+
+.watch-video-link:focus-visible {
+    outline: 2px solid rgba(0, 102, 204, 0.5);
+    outline-offset: 2px;
 }
 
 .watch-video-link .video-icon {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
+    color: #0066cc;
 }
 
 .watch-video-link .external-icon {
     width: 14px;
     height: 14px;
-    opacity: 0.85;
+    opacity: 0.9;
     flex-shrink: 0;
+    color: #64748b;
 }
 
 .watch-video-link span {
@@ -112,9 +146,21 @@ body {
     text-decoration: none;
     color: #0066cc;
     font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 10px;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 .back-link:hover { 
-    text-decoration: underline; 
+    text-decoration: none;
+    background-color: #f0f7ff;
+    color: #0052a3;
+}
+
+.back-link:focus-visible {
+    outline: 2px solid rgba(0, 102, 204, 0.45);
+    outline-offset: 2px;
 }
 
 /* 文章容器样式 */

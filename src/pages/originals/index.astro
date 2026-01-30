@@ -1,46 +1,89 @@
 ---
+import { getCollection } from "astro:content";
 import "../../styles/originals/index.css";
 import MainLayout from "../../layouts/mainlayout.astro";
+
+const allOriginals = await getCollection("originals");
+
+const systemsPosts = allOriginals
+  .filter((post) => post.data.category === "systems")
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const fragmentsPosts = allOriginals
+  .filter((post) => post.data.category === "fragments")
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const projectsPosts = allOriginals
+  .filter((post) => post.data.category === "projects")
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+const buildStatusText = (count: number, latestDate?: Date) => {
+  if (count === 0 || !latestDate) return "暂无内容";
+  return `${count} 篇 · 更新于 ${formatDate(latestDate)}`;
+};
+
+const systemsStatusText = buildStatusText(
+  systemsPosts.length,
+  systemsPosts[0]?.data.pubDate,
+);
+const fragmentsStatusText = buildStatusText(
+  fragmentsPosts.length,
+  fragmentsPosts[0]?.data.pubDate,
+);
+const projectsStatusText = buildStatusText(
+  projectsPosts.length,
+  projectsPosts[0]?.data.pubDate,
+);
 ---
 
 <MainLayout
-  title="原创 - Tourweint/多鸣"
+  title="原触发 - Tourweint/多鸣"
   description="思想地图：我的思考、片段与实验"
   wide={true}
 >
   <div class="originals-page">
     {/* 顶部标题区 */}
     <header class="originals-header">
-      <h1 class="page-title">原创</h1>
+      <h1 class="page-title">原触发</h1>
       <p class="page-subtitle">独立的思考，未完成的想法</p>
     </header>
 
     {/* 内容卡片网格 */}
     <div class="content-grid">
       {/* 思考卡片 */}
-      <a href="/originals/systems" class="content-card card-systems">
+      <a href="/originals/systems/systems" class="content-card card-systems">
         <div class="card-icon">💭</div>
-        <h2 class="card-title">思考</h2>
+        <h2 class="card-title">原论</h2>
         <p class="card-description">成体系的观点与分析</p>
-        <div class="card-status">筹备中</div>
+        <div class="card-status">{systemsStatusText}</div>
         <div class="card-overlay"></div>
       </a>
 
       {/* 片段卡片 */}
-      <a href="/originals/fragments" class="content-card card-fragments">
+      <a
+        href="/originals/fragments/fragments"
+        class="content-card card-fragments"
+      >
         <div class="card-icon">✨</div>
-        <h2 class="card-title">片段</h2>
+        <h2 class="card-title">原点</h2>
         <p class="card-description">灵感闪现，随性记录</p>
-        <div class="card-status">筹备中</div>
+        <div class="card-status">{fragmentsStatusText}</div>
         <div class="card-overlay"></div>
       </a>
 
       {/* 项目卡片 */}
-      <a href="/originals/projects" class="content-card card-projects">
+      <a href="/originals/projects/projects" class="content-card card-projects">
         <div class="card-icon">🚀</div>
-        <h2 class="card-title">项目</h2>
+        <h2 class="card-title">原型</h2>
         <p class="card-description">实验与尝试的记录</p>
-        <div class="card-status">筹备中</div>
+        <div class="card-status">{projectsStatusText}</div>
         <div class="card-overlay"></div>
       </a>
     </div>

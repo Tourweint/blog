@@ -1,0 +1,152 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type Props = {
+  post: CollectionEntry<"originals">;
+};
+
+const { post } = Astro.props;
+---
+
+<article class="systems-card">
+  <header class="header">
+    <h2 class="title">
+      <a class="title-link" href={`/originals/${post.slug}`}
+        >{post.data.title}</a
+      >
+    </h2>
+    {post.data.featured && <span class="badge">推荐</span>}
+  </header>
+
+  {post.data.description && <p class="summary">{post.data.description}</p>}
+
+  <footer class="meta">
+    <time datetime={post.data.pubDate.toISOString()}>
+      {
+        post.data.pubDate.toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+      }
+    </time>
+    {post.data.readingTime && <span class="dot">·</span>}
+    {post.data.readingTime && <span>{post.data.readingTime} min read</span>}
+
+    {post.data.tags.length > 0 && <span class="dot">·</span>}
+    {
+      post.data.tags.length > 0 && (
+        <span class="tags" aria-label="标签">
+          {post.data.tags.slice(0, 4).map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </span>
+      )
+    }
+  </footer>
+</article>
+
+<style>
+  .systems-card {
+    background: var(--bg-card, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 14px;
+    padding: 1.5rem 1.6rem;
+    transition: all 0.2s ease;
+  }
+
+  .systems-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.06);
+    border-color: rgba(102, 126, 234, 0.55);
+  }
+
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 650;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  .title-link {
+    color: var(--text-primary, #1f2937);
+    text-decoration: none;
+  }
+
+  .title-link:hover {
+    color: #667eea;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    white-space: nowrap;
+  }
+
+  .summary {
+    margin: 0.5rem 0 0;
+    color: var(--text-secondary, #6b7280);
+    line-height: 1.75;
+    font-size: 0.98rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.95rem;
+    color: var(--text-tertiary, #9ca3af);
+    font-size: 0.86rem;
+  }
+
+  .dot {
+    margin: 0 0.15rem;
+  }
+
+  .tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+  }
+
+  .tag {
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+    background: var(--bg-subtle, #f3f4f6);
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .systems-card {
+      padding: 1.25rem;
+    }
+
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .title {
+      font-size: 1.18rem;
+    }
+  }
+</style>

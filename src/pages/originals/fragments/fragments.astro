@@ -1,0 +1,72 @@
+---
+import { getCollection } from "astro:content";
+import MainLayout from "../../../layouts/mainlayout.astro";
+import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
+import FragmentCard from "../../../components/originals/FragmentCard.astro";
+import "../../../styles/originals/fragments.css";
+
+const allOriginals = await getCollection("originals");
+const fragmentsPosts = allOriginals
+  .filter((post) => post.data.category === "fragments")
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const systemsCount = allOriginals.filter(
+  (post) => post.data.category === "systems",
+).length;
+const projectsCount = allOriginals.filter(
+  (post) => post.data.category === "projects",
+).length;
+
+const counts = {
+  systems: systemsCount,
+  fragments: fragmentsPosts.length,
+  projects: projectsCount,
+};
+---
+
+<MainLayout
+  title="片段 - 原创"
+  description="灵感、未完成想法与判断的集合"
+  wide={true}
+>
+  <div class="fragments-page">
+    <header class="fragments-header">
+      <h1 class="fragments-title">✨ 片段</h1>
+      <p class="fragments-intro">
+        灵感闪现、未完成的想法、随性的判断。<br />
+        它们可能演化为体系，也可能仅存于此刻。
+      </p>
+
+      <OriginalsFilter active="fragments" counts={counts} />
+    </header>
+
+    {
+      fragmentsPosts.length > 0 ? (
+        <section class="fragments-list">
+          {fragmentsPosts.map((post) => (
+            <FragmentCard post={post} />
+          ))}
+        </section>
+      ) : (
+        <section class="fragments-placeholder">
+          <div class="placeholder-icon">💡</div>
+          <h2 class="placeholder-title">暂无内容</h2>
+          <p class="placeholder-text">
+            这里会持续收录我的原创灵感片段与短思考。
+          </p>
+          <p class="placeholder-text">目前还没有片段，稍后再来看看。</p>
+        </section>
+      )
+    }
+
+    <aside class="fragments-info">
+      <h3 class="info-title">✍️ 什么会出现在这里？</h3>
+      <ul class="info-list">
+        <li>突然闪现的灵感与洞察</li>
+        <li>未完成但值得记录的想法</li>
+        <li>日常观察与随性判断</li>
+        <li>可能演化为长文的思考种子</li>
+      </ul>
+    </aside>
+  </div>
+</MainLayout>

@@ -1,0 +1,72 @@
+---
+import { getCollection } from "astro:content";
+import MainLayout from "../../../layouts/mainlayout.astro";
+import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
+import SystemsCard from "../../../components/originals/SystemsCard.astro";
+import "../../../styles/originals/systems.css";
+
+const allOriginals = await getCollection("originals");
+const systemsPosts = allOriginals
+  .filter((post) => post.data.category === "systems")
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const fragmentsCount = allOriginals.filter(
+  (post) => post.data.category === "fragments",
+).length;
+const projectsCount = allOriginals.filter(
+  (post) => post.data.category === "projects",
+).length;
+
+const counts = {
+  systems: systemsPosts.length,
+  fragments: fragmentsCount,
+  projects: projectsCount,
+};
+---
+
+<MainLayout
+  title="成体系的思考 - 原创"
+  description="长文与体系化观点的汇总"
+  wide={true}
+>
+  <div class="systems-page">
+    <header class="systems-header">
+      <h1 class="systems-title">💭 成体系的思考</h1>
+      <p class="systems-intro">
+        深度思考与完整论述的集合地。<br />
+        社会观察、技术理解、自我认知——在这里沉淀。
+      </p>
+
+      <OriginalsFilter active="systems" counts={counts} />
+    </header>
+
+    {
+      systemsPosts.length > 0 ? (
+        <section class="systems-list">
+          {systemsPosts.map((post) => (
+            <SystemsCard post={post} />
+          ))}
+        </section>
+      ) : (
+        <section class="systems-placeholder">
+          <div class="placeholder-icon">📝</div>
+          <h2 class="placeholder-title">暂无内容</h2>
+          <p class="placeholder-text">
+            这里会持续收录我的原创长文与体系化思考。
+          </p>
+          <p class="placeholder-text">目前还没有文章，稍后再来看看。</p>
+        </section>
+      )
+    }
+
+    <aside class="systems-info">
+      <h3 class="info-title">💡 什么会出现在这里？</h3>
+      <ul class="info-list">
+        <li>对社会现象的深度分析与思考</li>
+        <li>技术哲学与工程实践的反思</li>
+        <li>个人成长与认知升级的总结</li>
+        <li>其他需要完整论述的主题探讨</li>
+      </ul>
+    </aside>
+  </div>
+</MainLayout>

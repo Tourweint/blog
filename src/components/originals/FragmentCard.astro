@@ -1,0 +1,104 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type Props = {
+  post: CollectionEntry<"originals">;
+  maxChars?: number;
+};
+
+const { post, maxChars = 200 } = Astro.props;
+
+const sourceText = post.data.description ?? post.data.title;
+const isShort = sourceText.length <= maxChars;
+const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`;
+---
+
+<a
+  class="fragment-card"
+  href={`/originals/${post.slug}`}
+  aria-label={`打开片段：${post.data.title}`}
+>
+  <div class="content">{displayText}</div>
+
+  <footer class="meta">
+    <time datetime={post.data.pubDate.toISOString()}>
+      {
+        post.data.pubDate.toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+      }
+    </time>
+
+    {
+      post.data.tags.length > 0 && (
+        <span class="tags" aria-label="来源与标签">
+          {post.data.tags.slice(0, 4).map((tag) => (
+            <span class="tag">#{tag}</span>
+          ))}
+        </span>
+      )
+    }
+
+    {!isShort && <span class="more">阅读全文 →</span>}
+  </footer>
+</a>
+
+<style>
+  .fragment-card {
+    display: block;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 14px;
+    padding: 1.25rem 1.35rem;
+    transition: all 0.2s ease;
+  }
+
+  .fragment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.06);
+    border-color: rgba(240, 147, 251, 0.65);
+  }
+
+  .content {
+    color: var(--text-primary, #1f2937);
+    line-height: 1.85;
+    font-size: 1rem;
+    white-space: pre-wrap;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.9rem;
+    color: var(--text-tertiary, #9ca3af);
+    font-size: 0.86rem;
+  }
+
+  .tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: flex-start;
+  }
+
+  .tag {
+    color: var(--text-secondary, #6b7280);
+    background: rgba(240, 147, 251, 0.08);
+    border: 1px solid rgba(240, 147, 251, 0.15);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+  }
+
+  .more {
+    color: #f093fb;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+</style>

@@ -71,4 +71,21 @@ const persons = defineCollection({
   }),
 });
 
-export const collections = { posts, notes, conversations, persons };
+const originals = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),                          // 标题
+    description: z.string().optional(),         // 描述/摘要
+    pubDate: z.coerce.date(),                   // 发布日期
+    category: z.enum(['systems', 'fragments', 'projects']), // 分类
+    status: z.enum(['wip', 'done']).optional(),  // 进度（projects 常用）
+    githubUrl: z.string().optional(),            // GitHub 仓库链接（可选）
+    demoUrl: z.string().optional(),              // Demo/线上地址（可选）
+    tags: z.array(z.string()).default([]),      // 标签
+    image: z.string().optional(),               // 封面图
+    readingTime: z.number().optional(),         // 阅读时间（分钟）
+    featured: z.boolean().default(false),       // 是否推荐
+  }),
+});
+
+export const collections = { posts, notes, conversations, persons, originals };

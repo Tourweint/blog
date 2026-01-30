@@ -7,6 +7,7 @@
 ## 目录
 
 1. [导航栏宽度在不同页面不一致](#1-导航栏宽度在不同页面不一致)
+2. [Astro 动态路由 getStaticPaths 的 slug 参数类型错误](#2-astro-动态路由-getstaticpaths-的-slug-参数类型错误)
 
 ---
 
@@ -63,6 +64,7 @@ CSS 盒模型有两种计算方式：
 ```
 
 所以：
+
 - 首页（border-box）：导航栏总宽度 = 1100px
 - 关于页（content-box）：导航栏总宽度 = 1100px + 48px = 1148px
 
@@ -106,6 +108,59 @@ CSS 盒模型有两种计算方式：
 ### 日期
 
 2025-12-31
+
+---
+
+## 2. Astro 动态路由 getStaticPaths 的 slug 参数类型错误
+
+### 问题描述
+
+打开文章详情页时只能看到列表，进入具体内容页会报错（静态生成失败或页面无法渲染）。
+
+### 典型报错
+
+```
+Invalid getStaticPaths route parameter for slug. Expected undefined, a string or a number, received object (cognitive-biases)
+```
+
+### 根本原因
+
+Astro 的 `getStaticPaths()` 返回值里，`params` 的每个字段值必须是：`undefined | string | number`。
+
+在动态路由 `src/pages/originals/systems/[...slug].astro` 中，我们把 `params.slug` 误传成了数组：
+
+```ts
+params: {
+  slug: post.slug.replace("systems/", "").split("/");
+}
+```
+
+`.split("/")` 会生成数组（在校验里被视为 object），触发参数类型校验失败。
+
+### 解决方案
+
+不要把 slug 拆成数组；对 `[...slug]` 直接传一个包含 `/` 的字符串即可：
+
+```ts
+params: {
+  slug: post.slug.replace("systems/", "");
+}
+```
+
+这样 `"cognitive-biases"` 或 `"a/b"` 都是合法的 string，并且能正确匹配 `/originals/systems/a/b/` 这类多段路径。
+
+### 快速自检
+
+1. 检查所有 `getStaticPaths()`：`params` 里不要出现数组或对象（例如 `split("/")`、`{...}`）。
+2. 运行构建让 Astro 做一次全量校验：
+
+```bash
+npm run build
+```
+
+### 日期
+
+2026-01-29
 
 ---
 

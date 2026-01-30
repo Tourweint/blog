@@ -95,6 +95,14 @@
   margin-bottom: 0;
 }
 
+/* 项目列表 */
+.projects-list {
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 /* 响应式 */
 @media (max-width: 768px) {
   .projects-page {
