@@ -10,7 +10,7 @@ const { currentPage, totalPages, getPageUrl } = Astro.props;
 // 生成要显示的页码数组
 function generatePageNumbers(
   current: number,
-  total: number
+  total: number,
 ): (number | "...")[] {
   const pages: (number | "...")[] = [];
 
@@ -81,7 +81,7 @@ const nextUrl = currentPage < totalPages ? getPageUrl(currentPage + 1) : null;
           >
             {p}
           </a>
-        )
+        ),
       )}
 
       {/* 下一页按钮 */}
@@ -96,3 +96,76 @@ const nextUrl = currentPage < totalPages ? getPageUrl(currentPage + 1) : null;
     </nav>
   )
 }
+
+<style>
+  .pagination-container {
+    margin: 24px 0 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid var(--c-rule);
+    background: var(--c-surface);
+    color: var(--c-text);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    line-height: 1;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    transition:
+      transform var(--c-dur) var(--c-ease),
+      box-shadow var(--c-dur) var(--c-ease),
+      border-color var(--c-dur) var(--c-ease),
+      background-color var(--c-dur) var(--c-ease);
+    text-decoration: none;
+  }
+
+  .page-btn:hover:not([aria-disabled="true"]):not(.disabled):not(:disabled) {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.16);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .page-btn:active:not([aria-disabled="true"]):not(.disabled):not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .page-btn:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  .page-btn:disabled,
+  .page-btn.disabled,
+  .page-btn[aria-disabled="true"] {
+    color: rgba(0, 0, 0, 0.28);
+    border-color: rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.7);
+    cursor: not-allowed;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .page-btn.active {
+    border-color: rgba(0, 0, 0, 0.22);
+    background: rgba(0, 0, 0, 0.04);
+    font-weight: 650;
+  }
+
+  .page-ellipsis {
+    color: var(--c-muted);
+    padding: 0 4px;
+    user-select: none;
+  }
+</style>

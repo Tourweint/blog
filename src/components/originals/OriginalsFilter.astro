@@ -68,14 +68,22 @@ const tabs: Array<{
   }
 
   .back-link {
-    color: var(--text-tertiary, #9ca3af);
+    color: var(--c-muted);
     text-decoration: none;
     font-size: 0.9rem;
     white-space: nowrap;
   }
 
   .back-link:hover {
-    color: var(--text-secondary, #6b7280);
+    color: var(--c-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .back-link:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+    border-radius: 10px;
   }
 
   .pills {
@@ -91,28 +99,30 @@ const tabs: Array<{
     gap: 0.4rem;
     padding: 0.45rem 0.9rem;
     border-radius: 999px;
-    border: 1px solid var(--border-color, #e5e7eb);
-    background: var(--bg-card, #ffffff);
-    color: var(--text-secondary, #6b7280);
+    border: 1px solid var(--c-rule);
+    background: var(--c-surface);
+    color: var(--c-muted);
     text-decoration: none;
     font-size: 0.9rem;
-    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    transition: all var(--c-dur) var(--c-ease);
   }
 
   .pill:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-    color: var(--text-primary, #1f2937);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+    color: var(--c-text);
+    border-color: rgba(0, 0, 0, 0.18);
   }
 
   .pill.is-active {
-    color: var(--text-primary, #1f2937);
-    border-color: rgba(31, 41, 55, 0.2);
-    background: var(--bg-subtle, #f9fafb);
+    color: var(--c-text);
+    border-color: rgba(0, 0, 0, 0.22);
+    background: rgba(0, 0, 0, 0.04);
   }
 
   .pill-count {
-    color: var(--text-tertiary, #9ca3af);
+    color: var(--c-muted);
     font-size: 0.85rem;
     font-variant-numeric: tabular-nums;
   }

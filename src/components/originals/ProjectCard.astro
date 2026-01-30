@@ -131,17 +131,18 @@ const displayTags = post.data.tags.filter((t) => {
 
 <style>
   .project-card {
-    background: var(--bg-card, #ffffff);
-    border: 1px solid var(--border-color, #e5e7eb);
-    border-radius: 14px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-rule);
+    border-radius: var(--c-radius);
     padding: 1.5rem 1.6rem;
-    transition: all 0.2s ease;
+    box-shadow: var(--c-shadow);
+    transition: all var(--c-dur) var(--c-ease);
   }
 
   .project-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.06);
-    border-color: rgba(79, 172, 254, 0.7);
+    transform: translateY(-1px);
+    box-shadow: var(--c-shadow-hover);
+    border-color: rgba(0, 0, 0, 0.18);
   }
 
   .header {
@@ -167,12 +168,13 @@ const displayTags = post.data.tags.filter((t) => {
   }
 
   .title-link {
-    color: var(--text-primary, #1f2937);
+    color: var(--c-text);
     text-decoration: none;
   }
 
   .title-link:hover {
-    color: #4facfe;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .badge {
@@ -182,8 +184,8 @@ const displayTags = post.data.tags.filter((t) => {
     border-radius: 999px;
     font-size: 0.78rem;
     font-weight: 600;
-    color: #ffffff;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: var(--c-text);
+    background: rgba(0, 0, 0, 0.06);
     white-space: nowrap;
   }
 
@@ -200,15 +202,15 @@ const displayTags = post.data.tags.filter((t) => {
   }
 
   .status-done {
-    color: #065f46;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: var(--c-text);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
   }
 
   .status-wip {
-    color: #7c2d12;
-    background: rgba(251, 146, 60, 0.14);
-    border: 1px solid rgba(251, 146, 60, 0.28);
+    color: var(--c-text);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
   }
 
   .fields {
@@ -225,14 +227,14 @@ const displayTags = post.data.tags.filter((t) => {
   }
 
   .label {
-    color: var(--text-tertiary, #9ca3af);
+    color: var(--c-muted);
     font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.06em;
   }
 
   .value {
-    color: var(--text-primary, #1f2937);
+    color: var(--c-text);
     line-height: 1.8;
     font-size: 0.98rem;
   }
@@ -259,27 +261,27 @@ const displayTags = post.data.tags.filter((t) => {
     font-size: 0.86rem;
     font-weight: 650;
     text-decoration: none;
-    color: var(--text-primary, #1f2937);
-    background: rgba(79, 172, 254, 0.08);
-    border: 1px solid rgba(79, 172, 254, 0.18);
-    transition: all 0.15s ease;
+    color: var(--c-text);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all var(--c-dur) var(--c-ease);
   }
 
   .link-btn:hover {
     transform: translateY(-1px);
-    background: rgba(79, 172, 254, 0.12);
-    border-color: rgba(79, 172, 254, 0.28);
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.18);
   }
 
   .link-primary {
-    color: #ffffff;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    border: 1px solid rgba(79, 172, 254, 0.35);
+    color: var(--c-text);
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.14);
   }
 
   .link-primary:hover {
-    background: linear-gradient(135deg, #3a9af0 0%, #00dfe9 100%);
-    border-color: rgba(79, 172, 254, 0.5);
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.18);
   }
 
   .meta {
@@ -287,7 +289,7 @@ const displayTags = post.data.tags.filter((t) => {
     flex-wrap: wrap;
     gap: 0.35rem;
     align-items: center;
-    color: var(--text-tertiary, #9ca3af);
+    color: var(--c-muted);
     font-size: 0.86rem;
   }
 
@@ -304,9 +306,9 @@ const displayTags = post.data.tags.filter((t) => {
   .tag {
     padding: 0.18rem 0.55rem;
     border-radius: 999px;
-    background: rgba(79, 172, 254, 0.1);
-    border: 1px solid rgba(79, 172, 254, 0.16);
-    color: var(--text-secondary, #6b7280);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: var(--c-muted);
     font-size: 0.78rem;
     font-weight: 600;
   }

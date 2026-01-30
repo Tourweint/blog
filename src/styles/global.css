@@ -3,6 +3,50 @@
   --nav-height: 64px;
   --bg-body: #f4f6f8;
   --bg-card: #ffffff;
+
+  /* ===== Theme Tokens (Draft) =====
+     说明：先新增 tokens，不立刻改现有视觉；
+     下一轮会逐步把 body/链接/分隔线收敛到这些变量。
+  */
+  --t-bg: #fbfbf9;
+  --t-surface: #ffffff;
+  --t-text: #1a1a1a;
+  --t-muted: #86868b;
+  --t-rule: rgba(0, 0, 0, 0.1);
+  --t-accent: #333333;
+
+  /* 字体策略：默认不主动加载外链字体，优先使用系统/本地字体（更快、更稳、更少 CLS）。
+     如需一致性更强的字体（Inter / Noto Serif SC），后续可选择自托管或引入 fontsource。 */
+  --t-font-serif: ui-serif, "Noto Serif SC", "Source Han Serif CN",
+    "Source Han Serif SC", "Songti SC", "STSong", "SimSun", Georgia,
+    "Times New Roman", serif;
+  --t-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Inter",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+    "Noto Sans CJK SC", "Source Han Sans CN", Arial, sans-serif;
+
+  --t-leading: 1.75;
+  --t-radius: 12px;
+  --t-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.06);
+  --t-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-dur: 180ms;
+
+  /* Component Tokens（组件母语法，供组件/频道复用） */
+  --c-bg: var(--t-bg);
+  --c-surface: var(--t-surface);
+  --c-text: var(--t-text);
+  --c-muted: var(--t-muted);
+  --c-rule: var(--t-rule);
+  --c-accent: var(--t-accent);
+  --c-radius: var(--t-radius);
+  --c-shadow: var(--t-shadow-sm);
+  --c-shadow-hover: 0 10px 26px rgba(0, 0, 0, 0.08);
+  --c-ease: var(--t-ease);
+  --c-dur: var(--t-dur);
+  --c-focus: rgba(79, 171, 194, 0.28);
+
+  /* 兼容映射（暂不启用，避免一次性全站变色） */
+  /* --bg-body: var(--t-bg);
+  --bg-card: var(--t-surface); */
 }
 
 * {
@@ -12,7 +56,9 @@
 body {
   margin: 0;
   padding-top: var(--nav-height); /* 防止内容被导航栏遮挡 */
-  font-family: system-ui, sans-serif;
+  font-family: var(--t-font-sans);
+  line-height: var(--t-leading);
+  color: var(--t-text);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -60,7 +106,7 @@ body {
 }
 
 .logo-text {
-  font-family: 'Comic Sans MS Regular', sans-serif;
+  font-family: var(--t-font-serif);
   font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, #4b60d4 0%, #4fabc2 100%);

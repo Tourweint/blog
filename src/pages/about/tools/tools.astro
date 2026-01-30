@@ -2,6 +2,15 @@
 import MainLayout from "../../../layouts/mainlayout.astro";
 import "../../../styles/tools.css";
 
+const getFavicon = (url: string): string => {
+  try {
+    const hostname = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
+  } catch {
+    return "";
+  }
+};
+
 const tools = [
   {
     category: "开发工具",
@@ -125,52 +134,66 @@ const tools = [
     ],
   },
 ];
+
+const totalTools = tools.reduce(
+  (sum, category) => sum + category.items.length,
+  0,
+);
 ---
 
 <MainLayout title="工具箱 - Tourweint/多鸣">
-  <div class="tools-page-bg">
-    <div class="tools-container">
-      <header class="tools-header">
-        <h1>🧰 我的工具箱</h1>
-        <p class="tools-subtitle">
-          这里收集了我日常使用的各类工具，希望对你有所帮助
-        </p>
-      </header>
+  <div class="tools-container">
+    <header class="tools-header">
+      <p class="eyebrow">Tools</p>
+      <h1 class="tools-title">工具箱</h1>
+      <p class="tools-subtitle">这里收集了我日常使用的各类工具。</p>
+      <div class="tools-meta" aria-label="工具箱摘要">
+        <span class="meta-item">共 {tools.length} 类</span>
+        <span class="meta-sep" aria-hidden="true">·</span>
+        <span class="meta-item">{totalTools} 个工具</span>
+        <span class="meta-sep" aria-hidden="true">·</span>
+        <a class="meta-link" href="/about/about">关于我</a>
+      </div>
+    </header>
 
-      <div class="tools-grid">
-        {
-          tools.map((category, index) => {
-            const visibleItems = category.items.slice(0, 3);
-            const hiddenItems = category.items.slice(3);
-            const hasMore = hiddenItems.length > 0;
+    <div class="tools-grid">
+      {
+        tools.map((category, index) => {
+          const visibleItems = category.items.slice(0, 3);
+          const hiddenItems = category.items.slice(3);
+          const hasMore = hiddenItems.length > 0;
 
-            return (
-              <section class="tool-category">
-                <button
-                  class="category-header"
-                  data-expanded="true"
-                  aria-expanded="true"
-                  aria-controls={`tool-list-${index}`}
-                >
-                  <h2 class="category-title">{category.category}</h2>
-                  <span class="category-count">
-                    {category.items.length} 个工具
-                  </span>
-                  <span class="category-toggle">▼</span>
-                </button>
-                <div class="tool-list" id={`tool-list-${index}`}>
-                  {visibleItems.map((tool) => (
+          return (
+            <section class="tool-category">
+              <button
+                class="category-header"
+                data-expanded="true"
+                aria-expanded="true"
+                aria-controls={`tool-list-${index}`}
+              >
+                <h2 class="category-title">{category.category}</h2>
+                <span class="category-count">
+                  {category.items.length} 个工具
+                </span>
+                <span class="category-toggle" aria-hidden="true">
+                  ▼
+                </span>
+              </button>
+              <div class="tool-list" id={`tool-list-${index}`}>
+                {visibleItems.map((tool) => {
+                  const iconUrl = tool.icon || getFavicon(tool.url);
+                  return (
                     <a
                       href={tool.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       class="tool-card"
                     >
-                      <div class="tool-icon-wrapper">
-                        {tool.icon ? (
+                      <div class="tool-icon-wrapper" aria-hidden="true">
+                        {iconUrl ? (
                           <img
-                            src={tool.icon}
-                            alt={tool.name}
+                            src={iconUrl}
+                            alt=""
                             class="tool-icon"
                             loading="lazy"
                           />
@@ -184,24 +207,29 @@ const tools = [
                         <h3 class="tool-name">{tool.name}</h3>
                         <p class="tool-desc">{tool.description}</p>
                       </div>
-                      <span class="tool-arrow">→</span>
+                      <span class="tool-arrow" aria-hidden="true">
+                        →
+                      </span>
                     </a>
-                  ))}
+                  );
+                })}
 
-                  {hasMore && (
-                    <div class="hidden-tools" data-hidden="true">
-                      {hiddenItems.map((tool) => (
+                {hasMore && (
+                  <div class="hidden-tools" hidden>
+                    {hiddenItems.map((tool) => {
+                      const iconUrl = tool.icon || getFavicon(tool.url);
+                      return (
                         <a
                           href={tool.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           class="tool-card"
                         >
-                          <div class="tool-icon-wrapper">
-                            {tool.icon ? (
+                          <div class="tool-icon-wrapper" aria-hidden="true">
+                            {iconUrl ? (
                               <img
-                                src={tool.icon}
-                                alt={tool.name}
+                                src={iconUrl}
+                                alt=""
                                 class="tool-icon"
                                 loading="lazy"
                               />
@@ -215,26 +243,30 @@ const tools = [
                             <h3 class="tool-name">{tool.name}</h3>
                             <p class="tool-desc">{tool.description}</p>
                           </div>
-                          <span class="tool-arrow">→</span>
+                          <span class="tool-arrow" aria-hidden="true">
+                            →
+                          </span>
                         </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {hasMore && (
-                  <button class="expand-tools-btn" data-expanded="false">
-                    <span class="expand-text">
-                      展开剩余 {hiddenItems.length} 个工具
-                    </span>
-                    <span class="expand-icon">▼</span>
-                  </button>
+                      );
+                    })}
+                  </div>
                 )}
-              </section>
-            );
-          })
-        }
-      </div>
+              </div>
+
+              {hasMore && (
+                <button class="expand-tools-btn" data-expanded="false">
+                  <span class="expand-text">
+                    展开剩余 {hiddenItems.length} 个工具
+                  </span>
+                  <span class="expand-icon" aria-hidden="true">
+                    ▼
+                  </span>
+                </button>
+              )}
+            </section>
+          );
+        })
+      }
     </div>
   </div>
 </MainLayout>
@@ -247,17 +279,17 @@ const tools = [
       button.setAttribute("data-expanded", String(!expanded));
       button.setAttribute("aria-expanded", String(!expanded));
 
-      const toolList = button.nextElementSibling as HTMLElement;
+      const listId = button.getAttribute("aria-controls");
+      const toolList = listId ? document.getElementById(listId) : null;
       if (toolList) {
-        toolList.style.display = expanded ? "none" : "grid";
+        toolList.toggleAttribute("hidden", expanded);
       }
 
-      // 同时隐藏/显示展开按钮
       const expandBtn = button
         .closest(".tool-category")
-        ?.querySelector(".expand-tools-btn") as HTMLElement;
-      if (expandBtn) {
-        expandBtn.style.display = expanded ? "none" : "flex";
+        ?.querySelector(".expand-tools-btn");
+      if (expandBtn instanceof HTMLElement) {
+        expandBtn.toggleAttribute("hidden", expanded);
       }
     });
   });
@@ -268,16 +300,17 @@ const tools = [
       const expanded = button.getAttribute("data-expanded") === "true";
       button.setAttribute("data-expanded", String(!expanded));
 
-      const hiddenTools = button.previousElementSibling?.querySelector(
-        ".hidden-tools",
-      ) as HTMLElement;
-      if (hiddenTools) {
-        hiddenTools.setAttribute("data-hidden", String(expanded));
+      const hiddenTools =
+        button.previousElementSibling?.querySelector(".hidden-tools");
+
+      if (hiddenTools instanceof HTMLElement) {
+        hiddenTools.hidden = expanded;
       }
 
       const expandText = button.querySelector(".expand-text");
-      const hiddenCount =
-        hiddenTools?.querySelectorAll(".tool-card").length || 0;
+      const hiddenCount = hiddenTools
+        ? hiddenTools.querySelectorAll(".tool-card").length
+        : 0;
       if (expandText) {
         expandText.textContent = expanded
           ? `展开剩余 ${hiddenCount} 个工具`
@@ -290,7 +323,9 @@ const tools = [
   document.querySelectorAll(".tool-icon").forEach((img) => {
     img.addEventListener("error", () => {
       const wrapper = img.parentElement;
-      const toolName = img.getAttribute("alt") || "?";
+      const toolCard = img.closest(".tool-card");
+      const toolName =
+        toolCard?.querySelector(".tool-name")?.textContent || "?";
       if (wrapper) {
         const placeholder = document.createElement("span");
         placeholder.className = "tool-icon-placeholder";

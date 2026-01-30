@@ -4,49 +4,75 @@ import "../../styles/about.css";
 ---
 
 <MainLayout title="关于 - Tourweint/多鸣">
-  <div class="about-page-bg">
-    <div class="about-container">
-      <!-- 个人介绍卡片 -->
-      <section class="profile-section">
-        <div class="profile-avatar"></div>
-        <h1 class="profile-name">多鸣</h1>
-        <p class="profile-tagline">大音希声，大象无形</p>
-      </section>
+  <div class="about-container">
+    <!-- 个人介绍卡片 -->
+    <section class="profile-section">
+      <p class="eyebrow">About</p>
+      <img
+        class="profile-avatar"
+        src="/头像.png"
+        alt="多鸣头像"
+        width="120"
+        height="120"
+        loading="lazy"
+      />
+      <h1 class="profile-name">多鸣</h1>
+      <p class="profile-tagline">大音希声，大象无形</p>
 
-      <!-- 关于本站 -->
-      <section class="about-section">
-        <h2 class="section-title">关于本站</h2>
-        <div class="section-content">
-          <p>
-            欢迎来到这里！本站主要是收集、整理的互联网上非常值得学习的文章。
-          </p>
-          <p>
-            我希望通过分享这些优质内容，帮助更多人获得思考。
-          </p>
-          <p>
-            大部分文章不是原创，如有侵权请联系我予以删除。
-          </p>
-          <p>
-            本站使用 <a href="https://astro.build/" target="_blank">Astro</a> 构建，使用 <a href="https://vercel.com/" target="_blank">Vercel</a> 部署，域名通过 <a href="https://dash.cloudflare.com/" target="_blank">Cloudflare</a> 代理。
-          </p>
-          <p>
-            本站的大部分源代码由AI生成。
-          </p>
-        </div>
-      </section>
+      <div class="social-links" aria-label="快捷链接">
+        <a class="social-link" href="/about/tools/tools">工具箱</a>
+        <a class="social-link" href="mailto:647575404@qq.com">邮件</a>
+        <a
+          class="social-link"
+          href="https://github.com/Tourweint"
+          target="_blank"
+          rel="noopener noreferrer">GitHub</a
+        >
+      </div>
+    </section>
 
-      <!-- 关于我 -->
-      <section class="about-section">
-        <h2 class="section-title">关于我</h2>
-        <div class="section-content">
-          <p>
-            本人坚持使用简单的语言，展示广泛的思考。
-          </p>
-          <p>如果你对本站文章有任何想法或建议，欢迎与我交流！</p>
-        </div>
-      </section>
+    <!-- 关于本站 -->
+    <section class="about-section">
+      <h2 class="section-title">关于本站</h2>
+      <div class="section-content">
+        <p>欢迎来到这里！本站主要是收集、整理的互联网上非常值得学习的文章。</p>
+        <p>我希望通过分享这些优质内容，帮助更多人获得思考。</p>
+        <p>大部分文章不是原创，如有侵权请联系我予以删除。</p>
+        <p>
+          本站使用
+          <a
+            href="https://astro.build/"
+            target="_blank"
+            rel="noopener noreferrer">Astro</a
+          >
+          构建，使用
+          <a
+            href="https://vercel.com/"
+            target="_blank"
+            rel="noopener noreferrer">Vercel</a
+          >
+          部署，域名通过
+          <a
+            href="https://dash.cloudflare.com/"
+            target="_blank"
+            rel="noopener noreferrer">Cloudflare</a
+          >
+          代理。
+        </p>
+        <p>本站的大部分源代码由 AI 生成。</p>
+      </div>
+    </section>
 
-      <!-- 写作方向 
+    <!-- 关于我 -->
+    <section class="about-section">
+      <h2 class="section-title">关于我</h2>
+      <div class="section-content">
+        <p>本人坚持使用简单的语言，展示广泛的思考。</p>
+        <p>如果你对本站文章有任何想法或建议，欢迎与我交流！</p>
+      </div>
+    </section>
+
+    <!-- 写作方向 
       <section class="about-section">
         <h2 class="section-title">写作方向</h2>
         <div class="topics-grid">
@@ -84,22 +110,23 @@ import "../../styles/about.css";
       </section>
       -->
 
-      <!-- 联系方式 -->
-      <section class="about-section contact-section">
-        <h2 class="section-title">联系我</h2>
-        <div class="contact-info">
-          <div class="contact-item">
-            <span class="contact-label">📧 邮箱</span>
-            <a href="mailto:647575404@qq.com">647575404@qq.com</a>
-          </div>
-          <div class="contact-item">
-            <span class="contact-label">🐙 GitHub</span>
-            <a href="https://github.com/Tourweint" target="_blank"
-              >github.com/Tourweint</a
-            >
-          </div>
+    <!-- 联系方式 -->
+    <section class="about-section contact-section">
+      <h2 class="section-title">联系我</h2>
+      <div class="contact-info">
+        <div class="contact-item">
+          <span class="contact-label">📧 邮箱</span>
+          <a href="mailto:647575404@qq.com">647575404@qq.com</a>
         </div>
-      </section>
-    </div>
+        <div class="contact-item">
+          <span class="contact-label">🐙 GitHub</span>
+          <a
+            href="https://github.com/Tourweint"
+            target="_blank"
+            rel="noopener noreferrer">github.com/Tourweint</a
+          >
+        </div>
+      </div>
+    </section>
   </div>
 </MainLayout>

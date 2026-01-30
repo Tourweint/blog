@@ -190,28 +190,3 @@ const notes = await Promise.all(
     setTimeout(() => pick.classList.remove("flash"), 1200);
   });
 </script>
-
-<style>
-  .header-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 12px;
-  }
-  .back-link {
-    display: inline-block;
-    color: var(--notes-muted);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  .back-link:hover {
-    color: var(--notes-accent);
-  }
-  .subtitle {
-    font-size: 0.875rem;
-    color: var(--notes-muted);
-    margin-top: 8px;
-  }
-</style>

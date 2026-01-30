@@ -38,24 +38,24 @@ const computedRel = target === "_blank" ? (rel ?? "noopener noreferrer") : rel;
     text-decoration: none;
     color: inherit;
     padding: 14px 16px;
-    border-radius: 14px;
-    background: var(--bg-card);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+    border-radius: var(--c-radius);
+    background: var(--c-surface);
+    border: 1px solid var(--c-rule);
+    box-shadow: var(--c-shadow);
     transition:
-      transform 0.15s ease,
-      box-shadow 0.15s ease,
-      border-color 0.15s ease;
+      transform var(--c-dur) var(--c-ease),
+      box-shadow var(--c-dur) var(--c-ease),
+      border-color var(--c-dur) var(--c-ease);
   }
 
   .page-entry:hover {
-    transform: translateY(-2px);
-    border-color: rgba(79, 171, 194, 0.35);
-    box-shadow: 0 14px 34px rgba(79, 171, 194, 0.14);
+    transform: translateY(-1px);
+    border-color: color-mix(in oklab, var(--c-rule) 65%, var(--c-text) 35%);
+    box-shadow: var(--c-shadow-hover);
   }
 
   .page-entry:focus-visible {
-    outline: 3px solid rgba(75, 96, 212, 0.25);
+    outline: 3px solid var(--c-focus);
     outline-offset: 3px;
   }
 
@@ -64,19 +64,20 @@ const computedRel = target === "_blank" ? (rel ?? "noopener noreferrer") : rel;
     font-size: 12px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: rgba(75, 85, 99, 0.75);
+    color: var(--c-muted);
   }
 
   .page-entry__title {
     margin: 0;
     font-size: 16px;
     line-height: 1.25;
+    font-family: var(--t-font-serif);
   }
 
   .page-entry__desc {
     margin: 8px 0 0;
     font-size: 14px;
     line-height: 1.5;
-    color: rgba(75, 85, 99, 0.9);
+    color: var(--c-muted);
   }
 </style>

@@ -1,35 +1,34 @@
 ---
-import "../styles/home.css";
 import { getCollection } from "astro:content";
-import type { CollectionEntry } from "astro:content";
 import MainLayout from "../layouts/mainlayout.astro";
 import { excerpts } from "../utils/excerptsPaths";
 
-const posts = await getCollection("posts");
-posts.sort(
-  (a: CollectionEntry<"posts">, b: CollectionEntry<"posts">) =>
-    b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-);
-const recentOriginals = posts.slice(0, 3);
+import "../styles/home.css";
 
-const notes = await getCollection("notes");
-const resolveNoteDate = (note: CollectionEntry<"notes">) =>
-  note.data.pubDate ?? note.data.date ?? null;
-const recentExcerpts = [...notes]
-  .sort((a, b) => {
-    const aDate = resolveNoteDate(a)?.getTime() ?? 0;
-    const bDate = resolveNoteDate(b)?.getTime() ?? 0;
-    return bDate - aDate;
-  })
+import type { CollectionEntry } from "astro:content";
+
+const originals = await getCollection("originals");
+const recentOriginals = [...originals]
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+
+// 精选摘录：从 excerpts/posts（集合名为 posts）读取
+const excerptPosts = await getCollection("posts");
+const recentExcerpts = [...excerptPosts]
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 4);
 
-const pickExcerptText = (note: CollectionEntry<"notes">) =>
-  note.data.description ??
-  note.data.text ??
-  note.data.title ??
-  "未填写摘录内容";
-const formatDate = (date: Date | null) =>
-  date ? date.toLocaleDateString("zh-cn") : "未标注日期";
+const pickExcerptText = (post: CollectionEntry<"posts">) =>
+  post.data.description ?? post.data.title ?? "未填写摘录内容";
+
+const pickExcerptSource = (post: CollectionEntry<"posts">) => {
+  const author = post.data.author;
+  if (typeof author === "string") return author;
+  if (author && typeof author === "object") return author.name;
+  return post.data.sourceUrl ?? null;
+};
+
+const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
 ---
 
 <MainLayout
@@ -38,52 +37,51 @@ const formatDate = (date: Date | null) =>
   wide={true}
 >
   <div class="home-page">
-    <section class="hero">
-      <div class="hero-container">
-        <div class="hero-eyebrow">欢迎来到我的思考空间</div>
+    <section class="hero grid-layout">
+      <div class="hero-content">
+        <span class="hero-eyebrow">Tourweint / 多鸣</span>
         <h1 class="hero-title">
-          思考、摘录、写作<br />在这里交织成网
+          思考、摘录、写作<br />
+          <span class="indent-text">在这里交织成网</span>
         </h1>
         <p class="hero-sub">
-          我记录对世界的理解，以及思考的过程。每一篇文章、每一条摘录，都是我在认真打磨的作品。
+          记录对世界的理解，以及思考的过程。<br />
+          每一篇文章，都是我在认真打磨的作品。
         </p>
         <div class="hero-cta">
-          <a href="/originals" class="cta-button primary">探索原创文章</a>
-          <a href={excerpts.notesIndex} class="cta-button secondary">
-            阅读摘录笔记
-          </a>
+          <a href="/originals" class="hero-link">探索原创 →</a>
+          <a href={excerpts.postsIndex} class="hero-link">浏览摘录 →</a>
+          <a href={excerpts.categoryIndex} class="hero-link">按主题阅读 →</a>
         </div>
       </div>
     </section>
 
-    <section class="originals-section">
-      <div class="section-heading">
-        <div>
-          <h2>最新原创文章</h2>
-          <p class="section-subtitle">我的思考与写作</p>
-        </div>
-        <a class="view-all-link" href="/originals">查看全部 →</a>
+    <section
+      class="originals-section grid-layout"
+      aria-labelledby="home-originals-title"
+    >
+      <div class="section-header">
+        <h2 id="home-originals-title">最新原创</h2>
+        <a href="/originals" class="more">Archive →</a>
       </div>
-      <div class="originals-list">
+
+      <div class="originals-grid">
         {
           recentOriginals.length > 0 ? (
-            recentOriginals.map((post) => (
-              <a href={excerpts.postDetail(post.id)} class="original-card">
-                <div class="original-header">
-                  <div class="original-title">{post.data.title}</div>
-                  <div class="original-meta">
-                    <span class="original-date">
-                      {post.data.pubDate.toLocaleDateString("zh-cn")}
-                    </span>
-                  </div>
-                </div>
-                {post.data.description && (
-                  <p class="original-desc">{post.data.description}</p>
+            recentOriginals.map((post, index) => (
+              <a
+                href={`/originals/${post.slug}`}
+                class={index === 0 ? "featured-card" : "standard-card"}
+              >
+                <div class="card-meta">{formatDate(post.data.pubDate)}</div>
+                <h3 class="card-title">{post.data.title}</h3>
+                {index === 0 && post.data.description && (
+                  <p class="card-desc">{post.data.description}</p>
                 )}
-                {post.data.tags && post.data.tags.length > 0 && (
-                  <div class="original-tags">
-                    {post.data.tags.slice(0, 3).map((tag: string) => (
-                      <span class="tag">{tag}</span>
+                {post.data.tags.length > 0 && (
+                  <div class="card-tags">
+                    {post.data.tags.slice(0, 2).map((tag) => (
+                      <span class="card-tag">#{tag}</span>
                     ))}
                   </div>
                 )}
@@ -96,56 +94,60 @@ const formatDate = (date: Date | null) =>
       </div>
     </section>
 
-    <section class="excerpts-section">
-      <div class="section-heading">
-        <div>
-          <h2>精选摘录与笔记</h2>
-          <p class="section-subtitle">他人智慧的镜像</p>
+    <section class="excerpts-section" aria-labelledby="home-excerpts-title">
+      <div class="grid-layout">
+        <div class="section-header section-header--compact">
+          <h2 id="home-excerpts-title">精选摘录</h2>
+          <a class="more" href={excerpts.postsIndex}>All →</a>
         </div>
-        <a class="view-all-link" href={excerpts.notesIndex}>查看全部 →</a>
       </div>
-      <div class="excerpt-grid">
-        {
-          recentExcerpts.length > 0 ? (
-            recentExcerpts.map((note) => {
-              const date = resolveNoteDate(note);
-              const excerpt = pickExcerptText(note);
+
+      {
+        recentExcerpts.length > 0 ? (
+          <div class="excerpt-waterfall">
+            {recentExcerpts.map((post) => {
+              const excerpt = pickExcerptText(post);
+              const source = pickExcerptSource(post);
               return (
-                <article class="excerpt-card">
-                  <div class="excerpt-header">
-                    <span class="badge">摘录</span>
-                    <span class="excerpt-date">{formatDate(date)}</span>
+                <article class="excerpt-item">
+                  <p class="excerpt-text">“{excerpt}”</p>
+                  <div class="excerpt-meta">
+                    <span class="excerpt-date">
+                      {formatDate(post.data.pubDate)}
+                    </span>
+                    {source && <cite class="excerpt-cite">— {source}</cite>}
                   </div>
-                  <div class="excerpt-text">{excerpt}</div>
-                  {note.data.source && (
-                    <div class="excerpt-source">—— {note.data.source}</div>
-                  )}
                 </article>
               );
-            })
-          ) : (
-            <div class="empty-state">还没有摘录笔记，继续创作中。</div>
-          )
-        }
-      </div>
+            })}
+          </div>
+        ) : (
+          <div class="grid-layout">
+            <div class="empty-state">还没有摘录内容，继续创作中。</div>
+          </div>
+        )
+      }
     </section>
 
-    <section class="explore-section\">
-      <div class='\"section-heading\"'>
-        <h2>继续探索</h2>
+    <section
+      class="explore-section grid-layout"
+      aria-labelledby="home-explore-title"
+    >
+      <div class="section-header section-header--compact">
+        <h2 id="home-explore-title">继续探索</h2>
       </div>
-      <div class='\"explore-grid\"'>
-        <a class="explore-card" href="/originals">
-          <h3>去看我的原创 →</h3>
-          <p>最新文章、写作与思考的全量列表。</p>
+      <div class="explore-list">
+        <a class="explore-link" href="/originals">
+          <span class="explore-title">原触发</span>
+          <span class="explore-desc">我的思考、片段与实验。</span>
         </a>
-        <a class="explore-card" href={excerpts.notesIndex}>
-          <h3>浏览摘录 →</h3>
-          <p>我正在消化的片段、旁注和灵感。</p>
+        <a class="explore-link" href={excerpts.postsIndex}>
+          <span class="explore-title">摘录</span>
+          <span class="explore-desc">我收藏与消化的文字片段。</span>
         </a>
-        <a class="explore-card" href={excerpts.categoryIndex}>
-          <h3>按主题阅读 →</h3>
-          <p>按主题快速筛选，直达你关心的话题。</p>
+        <a class="explore-link" href={excerpts.notesIndex}>
+          <span class="explore-title">摘录笔记</span>
+          <span class="explore-desc">更私人的旁注、感受与灵感。</span>
         </a>
       </div>
     </section>

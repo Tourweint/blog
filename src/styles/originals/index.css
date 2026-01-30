@@ -1,104 +1,135 @@
-/* 原创首页 - 极简现代风格 */
+/* Originals index (scoped) */
 
-.originals-page {
-  max-width: 1200px;
+body.page-originals-index {
+  --bg-body: var(--t-bg);
+  --bg-card: var(--c-surface);
+  color: var(--c-text);
+}
+
+body.page-originals-index .originals-page {
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 28px 1.5rem 64px;
 }
 
-/* 顶部标题区 */
-.originals-header {
+/* 顶部标题区：对齐频道 header 语法 */
+body.page-originals-index .originals-header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 22px;
+  padding: 28px 22px;
+  border-radius: var(--c-radius);
+  border: 1px solid var(--c-rule);
+  background-color: var(--bg-card);
+  background-image: radial-gradient(
+    circle at 20% 20%,
+    color-mix(in oklab, var(--c-bg) 60%, white 40%) 0%,
+    color-mix(in oklab, var(--c-bg) 25%, var(--c-surface) 75%) 60%,
+    var(--c-surface) 100%
+  );
+  box-shadow: var(--c-shadow);
 }
 
-.page-title {
-  font-size: 3rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem;
-  color: var(--text-primary, #1f2937);
-  letter-spacing: -0.03em;
+body.page-originals-index .originals-header .eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(75, 85, 99, 0.75);
 }
 
-.page-subtitle {
-  font-size: 1.1rem;
-  color: var(--text-tertiary, #9ca3af);
+body.page-originals-index .page-title {
   margin: 0;
-  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.2;
+  font-family: var(--t-font-serif);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: var(--c-text);
+}
+
+body.page-originals-index .page-subtitle {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(75, 85, 99, 0.95);
 }
 
 /* 卡片网格布局 */
-.content-grid {
+body.page-originals-index .content-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-bottom: 4rem;
+  gap: 18px;
+  margin-top: 18px;
 }
 
 /* 卡片基础样式 */
-.content-card {
+body.page-originals-index .content-card {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
-  min-height: 280px;
-  background: #fff;
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 16px;
+  padding: 2rem 1.6rem;
+  min-height: 240px;
+  background: var(--bg-card);
+  border: 1px solid var(--c-rule);
+  border-radius: var(--c-radius);
   text-decoration: none;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--c-shadow);
+  transition: transform var(--c-dur) var(--c-ease),
+    box-shadow var(--c-dur) var(--c-ease),
+    border-color var(--c-dur) var(--c-ease);
 }
 
-.content-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-              0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  border-color: transparent;
+body.page-originals-index .content-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--c-shadow-hover);
+  border-color: color-mix(in oklab, var(--c-accent) 30%, var(--c-rule));
 }
 
 /* 卡片图标 */
-.card-icon {
+body.page-originals-index .card-icon {
   font-size: 3.5rem;
   margin-bottom: 1rem;
   transition: transform 0.3s ease;
 }
 
-.content-card:hover .card-icon {
+body.page-originals-index .content-card:hover .card-icon {
   transform: scale(1.1);
 }
 
 /* 卡片标题 */
-.card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-primary, #1f2937);
+body.page-originals-index .card-title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  font-family: var(--t-font-serif);
+  color: var(--c-text);
   margin: 0 0 0.5rem;
   letter-spacing: -0.01em;
 }
 
 /* 卡片描述 */
-.card-description {
+body.page-originals-index .card-description {
   font-size: 0.95rem;
-  color: var(--text-secondary, #6b7280);
+  color: var(--c-muted);
   margin: 0 0 1.5rem;
   text-align: center;
 }
 
 /* 卡片状态标签 */
-.card-status {
+body.page-originals-index .card-status {
   font-size: 0.85rem;
-  color: var(--text-tertiary, #9ca3af);
+  color: var(--c-muted);
   padding: 0.35rem 1rem;
-  background: var(--bg-subtle, #f9fafb);
+  background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
+  border: 1px solid var(--c-rule);
   border-radius: 20px;
   font-weight: 500;
 }
 
 /* 卡片渐变背景层 */
-.card-overlay {
+body.page-originals-index .card-overlay {
   position: absolute;
   inset: 0;
   opacity: 0;
@@ -107,90 +138,82 @@
   z-index: 0;
 }
 
-.content-card:hover .card-overlay {
+body.page-originals-index .content-card:hover .card-overlay {
   opacity: 0.05;
 }
 
 /* 确保内容在渐变层之上 */
-.card-icon,
-.card-title,
-.card-description,
-.card-status {
+body.page-originals-index .card-icon,
+body.page-originals-index .card-title,
+body.page-originals-index .card-description,
+body.page-originals-index .card-status {
   position: relative;
   z-index: 1;
 }
 
 /* 各卡片渐变色 */
-.card-systems .card-overlay {
+body.page-originals-index .card-systems .card-overlay {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.card-fragments .card-overlay {
+body.page-originals-index .card-fragments .card-overlay {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 }
 
-.card-projects .card-overlay {
+body.page-originals-index .card-projects .card-overlay {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
 /* 悬浮时状态标签颜色变化 */
-.card-systems:hover .card-status {
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-}
-
-.card-fragments:hover .card-status {
-  background: rgba(240, 147, 251, 0.1);
-  color: #f093fb;
-}
-
-.card-projects:hover .card-status {
-  background: rgba(79, 172, 254, 0.1);
-  color: #4facfe;
+body.page-originals-index .card-systems:hover .card-status,
+body.page-originals-index .card-fragments:hover .card-status,
+body.page-originals-index .card-projects:hover .card-status {
+  border-color: color-mix(in oklab, var(--c-accent) 30%, var(--c-rule));
+  color: var(--c-text);
 }
 
 /* 底部说明 */
-.originals-footer {
+body.page-originals-index .originals-footer {
   text-align: center;
   padding: 2rem 0;
 }
 
-.footer-note {
+body.page-originals-index .footer-note {
   font-size: 0.9rem;
-  color: var(--text-tertiary, #9ca3af);
+  color: var(--c-muted);
   margin: 0;
   font-style: italic;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .originals-page {
-    padding: 2rem 1rem;
+  body.page-originals-index .originals-page {
+    padding: 20px 1rem 40px;
   }
 
-  .page-title {
-    font-size: 2.2rem;
+  body.page-originals-index .page-title {
+    font-size: 28px;
   }
 
-  .page-subtitle {
-    font-size: 1rem;
+  body.page-originals-index .page-subtitle {
+    font-size: 14px;
   }
 
-  .content-grid {
+  body.page-originals-index .content-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 14px;
   }
 
-  .content-card {
-    min-height: 240px;
-    padding: 2.5rem 1.5rem;
+  body.page-originals-index .content-card {
+    min-height: 220px;
+    padding: 1.75rem 1.25rem;
   }
 
-  .card-icon {
-    font-size: 3rem;
+  body.page-originals-index .card-icon {
+    font-size: 3.1rem;
   }
 
-  .card-title {
-    font-size: 1.3rem;
+  body.page-originals-index .card-title {
+    font-size: 1.2rem;
   }
 }

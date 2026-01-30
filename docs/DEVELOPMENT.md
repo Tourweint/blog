@@ -101,3 +101,9 @@ rereadStars: 4
 - 新增文章：在 `src/content/posts/` 下新增 `.md` 文件，并写好 frontmatter
 - 设置星级：在文章 frontmatter 加 `rereadStars: 1~5`
 - 修改分类：调整 `tags: [...]` 数组
+
+## 8. 主题与样式维护
+
+主题 tokens、页面作用域（`page-*` body class）与组件/频道 CSS 约定见：
+
+- [docs/THEME_GUIDE.md](docs/THEME_GUIDE.md)

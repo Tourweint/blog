@@ -16,7 +16,7 @@ interface Props {
 const {
   title = "多鸣的博客",
   description = "多鸣的博客 - 思维、哲学与成长",
-  image = "/public/favicon/favicon-96x96.png",
+  image = "/favicon/favicon-96x96.png",
   type = "website",
   publishedTime,
   tags = [],
@@ -27,6 +27,105 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
 const ogImage = image.startsWith("http")
   ? image
   : new URL(image, siteUrl).toString();
+
+const pathname = Astro.url.pathname;
+const pathSegments = pathname.split("/").filter(Boolean);
+
+const bodyClasses: string[] = ["site-body"];
+
+if (pathname === "/") {
+  bodyClasses.push("page-home");
+}
+
+if (pathname.startsWith("/about/about")) {
+  bodyClasses.push("page-about");
+}
+
+if (pathname.startsWith("/about/tools")) {
+  bodyClasses.push("page-tools");
+}
+
+if (
+  pathname.startsWith("/excerpts/posts") ||
+  pathname.startsWith("/excerpts/category")
+) {
+  bodyClasses.push("page-excerpts-posts");
+}
+
+if (pathname.startsWith("/excerpts/notes")) {
+  bodyClasses.push("page-excerpts-notes");
+}
+
+if (pathname.startsWith("/excerpts/conversations")) {
+  bodyClasses.push("page-excerpts-conversations");
+}
+
+if (pathname.startsWith("/excerpts/persons")) {
+  bodyClasses.push("page-excerpts-persons");
+}
+
+if (pathname.startsWith("/excerpts")) {
+  bodyClasses.push("page-excerpts");
+}
+
+if (pathname === "/excerpts" || pathname === "/excerpts/") {
+  bodyClasses.push("page-excerpts-index");
+}
+
+// Originals（原创）频道：单独的页面作用域
+if (pathname.startsWith("/originals")) {
+  bodyClasses.push("page-originals");
+}
+
+if (pathname === "/originals" || pathname === "/originals/") {
+  bodyClasses.push("page-originals-index");
+}
+
+if (
+  pathSegments[0] === "originals" &&
+  pathSegments[1] === "systems" &&
+  pathSegments[2] === "systems"
+) {
+  bodyClasses.push("page-originals-systems");
+}
+
+if (
+  pathSegments[0] === "originals" &&
+  pathSegments[1] === "fragments" &&
+  pathSegments[2] === "fragments"
+) {
+  bodyClasses.push("page-originals-fragments");
+}
+
+if (
+  pathSegments[0] === "originals" &&
+  pathSegments[1] === "projects" &&
+  pathSegments[2] === "projects"
+) {
+  bodyClasses.push("page-originals-projects");
+}
+
+const isOriginalsDetail =
+  pathSegments[0] === "originals" &&
+  pathSegments.length >= 3 &&
+  // 排除列表页：/originals/{category}/{category}
+  pathSegments[1] !== pathSegments[2];
+
+if (isOriginalsDetail) {
+  bodyClasses.push("page-originals-detail");
+}
+
+// 详情页（文章版式）：摘录详情 / 原创详情
+if (
+  (pathSegments[0] === "excerpts" &&
+    pathSegments[1] === "posts" &&
+    pathSegments[2] === "page") ||
+  isOriginalsDetail
+) {
+  bodyClasses.push("page-article");
+}
+
+const bodyClass = bodyClasses.join(" ");
 ---
 
 <html lang="zh-cn">
@@ -86,7 +185,7 @@ const ogImage = image.startsWith("http")
     <meta name="robots" content="index, follow" />
     <meta name="googlebot" content="index, follow" />
   </head>
-  <body>
+  <body class={bodyClass}>
     <header class="navbar" id="site-navbar">
       <nav class="nav-container">
         <a href="/" class="logo">

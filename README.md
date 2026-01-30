@@ -13,6 +13,7 @@
 
 - 开发指南（本地开发 / 内容维护）：[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
 - 开发 TODO（按优先级推进）：[docs/TODO.md](docs/TODO.md)
+- 主题使用指南（tokens / 作用域化约定）：[docs/THEME_GUIDE.md](docs/THEME_GUIDE.md)
 
 ## 内容入口
 

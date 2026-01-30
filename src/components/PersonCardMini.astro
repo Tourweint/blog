@@ -36,10 +36,18 @@ const personHref = excerpts.personDetail(personSlug);
     display: flex;
     gap: 0.75rem;
     padding: 1rem;
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
+    background: var(--c-surface);
+    border: 1px solid var(--c-rule);
     border-radius: 8px;
     margin-bottom: 0.75rem;
+    box-shadow: var(--c-shadow);
+    transition: all var(--c-dur) var(--c-ease);
+  }
+
+  .person-card-mini:hover {
+    border-color: rgba(0, 0, 0, 0.18);
+    box-shadow: var(--c-shadow-hover);
+    transform: translateY(-1px);
   }
 
   .mini-avatar {
@@ -48,7 +56,7 @@ const personHref = excerpts.personDetail(personSlug);
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
-    background: var(--color-bg-tertiary, #f0f0f0);
+    background: rgba(0, 0, 0, 0.04);
   }
 
   .mini-info {
@@ -60,19 +68,20 @@ const personHref = excerpts.personDetail(personSlug);
     margin: 0;
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--c-text);
+    font-family: var(--t-font-serif);
   }
 
   .mini-role {
     margin: 0.2rem 0 0;
     font-size: 0.8rem;
-    color: var(--color-text-secondary);
+    color: var(--c-muted);
   }
 
   .mini-bio {
     margin: 0.4rem 0 0;
     font-size: 0.8rem;
-    color: var(--color-text-tertiary);
+    color: var(--c-muted);
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -84,12 +93,19 @@ const personHref = excerpts.personDetail(personSlug);
     display: inline-block;
     margin-top: 0.5rem;
     font-size: 0.8rem;
-    color: #9a6b2f;
+    color: var(--c-text);
     text-decoration: none;
     font-weight: 500;
   }
 
   .mini-link:hover {
     text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .mini-link:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+    border-radius: 8px;
   }
 </style>

@@ -49,21 +49,22 @@ const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`
   .fragment-card {
     display: block;
     text-decoration: none;
-    background: #ffffff;
-    border: 1px solid var(--border-color, #e5e7eb);
-    border-radius: 14px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-rule);
+    border-radius: var(--c-radius);
     padding: 1.25rem 1.35rem;
-    transition: all 0.2s ease;
+    box-shadow: var(--c-shadow);
+    transition: all var(--c-dur) var(--c-ease);
   }
 
   .fragment-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.06);
-    border-color: rgba(240, 147, 251, 0.65);
+    transform: translateY(-1px);
+    box-shadow: var(--c-shadow-hover);
+    border-color: rgba(0, 0, 0, 0.18);
   }
 
   .content {
-    color: var(--text-primary, #1f2937);
+    color: var(--c-text);
     line-height: 1.85;
     font-size: 1rem;
     white-space: pre-wrap;
@@ -76,7 +77,7 @@ const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`
     justify-content: space-between;
     gap: 0.75rem;
     margin-top: 0.9rem;
-    color: var(--text-tertiary, #9ca3af);
+    color: var(--c-muted);
     font-size: 0.86rem;
   }
 
@@ -88,16 +89,16 @@ const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`
   }
 
   .tag {
-    color: var(--text-secondary, #6b7280);
-    background: rgba(240, 147, 251, 0.08);
-    border: 1px solid rgba(240, 147, 251, 0.15);
+    color: var(--c-muted);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     padding: 0.15rem 0.5rem;
     border-radius: 999px;
     font-size: 0.78rem;
   }
 
   .more {
-    color: #f093fb;
+    color: var(--c-text);
     font-weight: 600;
     white-space: nowrap;
   }

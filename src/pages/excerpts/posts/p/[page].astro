@@ -54,88 +54,101 @@ const getPageUrl = (page: number) => excerpts.postsPage(page);
   description={`摘录文章列表，第 ${currentPage} 页`}
   wide={true}
 >
-  <div class="app-container">
-    <aside>
-      <div class="profile-card">
-        <div class="avatar"></div>
-        <div class="profile-name">多鸣</div>
-        <div class="profile-bio">多元发声，掷地有声</div>
-        <div class="profile-bio">心有热爱，必有回响</div>
+  <div class="excerpts-posts">
+    <header class="excerpts-posts__header">
+      <p class="excerpts-posts__eyebrow">摘录</p>
+      <h1 class="excerpts-posts__title">摘录 · 文章</h1>
+      <p class="excerpts-posts__sub">
+        把值得反复读的内容整理成可检索的卡片库。
+      </p>
+      <div class="excerpts-posts__meta">
+        <span class="meta-item">共 {posts.length} 篇</span>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.categoryIndex}>按主题浏览</a>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
       </div>
+    </header>
 
-      <nav class="category-nav">
-        <div class="nav-title">文章分类</div>
-        <div id="category-list">
-          {
-            categories.map((cat) => {
-              const count =
-                cat === "全部"
-                  ? posts.length
-                  : posts.filter((p) => p.data.tags?.includes(cat)).length;
-              return (
-                <a
-                  href={
-                    cat === "全部"
-                      ? excerpts.postsIndex
-                      : excerpts.category(cat)
-                  }
-                  class={`filter-btn${cat === "全部" ? " active" : ""}`}
-                  data-category={cat}
-                >
-                  <span>{cat}</span>
-                  <span class="category-badge">{count}</span>
-                </a>
-              );
-            })
-          }
+    <div class="excerpts-posts__layout">
+      <aside class="excerpts-posts__aside" aria-label="主题目录">
+        <div class="aside-card">
+          <div class="aside-title">主题</div>
+          <nav class="aside-list">
+            {
+              categories.map((cat) => {
+                const count =
+                  cat === "全部"
+                    ? posts.length
+                    : posts.filter((p) => p.data.tags?.includes(cat)).length;
+                return (
+                  <a
+                    href={
+                      cat === "全部"
+                        ? excerpts.postsIndex
+                        : excerpts.category(cat)
+                    }
+                    class={`aside-link${cat === "全部" ? " is-active" : ""}`}
+                  >
+                    <span class="aside-link__label">{cat}</span>
+                    <span class="aside-link__count">{count}</span>
+                  </a>
+                );
+              })
+            }
+          </nav>
         </div>
-      </nav>
-    </aside>
+      </aside>
 
-    <main>
-      <h2 id="list-title">最新摘录（第 {currentPage} 页）</h2>
-      {
-        paginatedPosts.length > 0 ? (
-          <div class="post-grid">
-            {paginatedPosts.map((post: CollectionEntry<"posts">) => (
-              <a
-                href={excerpts.postDetail(post.id)}
-                class="post-card-link"
-                data-title={post.data.title.toLowerCase()}
-                data-desc={(post.data.description || "").toLowerCase()}
-                data-tags={(post.data.tags || ["未分类"])
-                  .join(",")
-                  .toLowerCase()}
-              >
-                <article class="post-card">
-                  <div class="card-meta">
-                    <span>{post.data.pubDate.toLocaleDateString("zh-cn")}</span>
-                    <div class="card-tags">
-                      {post.data.tags?.map((t: string) => (
-                        <span class="card-tag">{t}</span>
-                      ))}
+      <main class="excerpts-posts__main">
+        <h2 class="excerpts-posts__section-title" id="list-title">
+          最新摘录（第 {currentPage} 页）
+        </h2>
+        {
+          paginatedPosts.length > 0 ? (
+            <div class="post-grid">
+              {paginatedPosts.map((post: CollectionEntry<"posts">) => (
+                <a
+                  href={excerpts.postDetail(post.id)}
+                  class="post-card-link"
+                  data-title={post.data.title.toLowerCase()}
+                  data-desc={(post.data.description || "").toLowerCase()}
+                  data-tags={(post.data.tags || ["未分类"])
+                    .join(",")
+                    .toLowerCase()}
+                >
+                  <article class="post-card">
+                    <div class="card-meta">
+                      <span>
+                        {post.data.pubDate.toLocaleDateString("zh-cn")}
+                      </span>
+                      <div class="card-tags">
+                        {post.data.tags?.map((t: string) => (
+                          <span class="card-tag">{t}</span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                  <h3 class="post-title">{post.data.title}</h3>
-                  {post.data.description && (
-                    <p class="post-desc">{post.data.description}</p>
-                  )}
-                  <span class="read-more">阅读全文 →</span>
-                </article>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div class="no-results">该页暂无文章。</div>
-        )
-      }
+                    <h3 class="post-title">{post.data.title}</h3>
+                    {post.data.description && (
+                      <p class="post-desc">{post.data.description}</p>
+                    )}
+                    <span class="read-more">阅读全文 →</span>
+                  </article>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div class="no-results">该页暂无文章。</div>
+          )
+        }
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        getPageUrl={getPageUrl}
-      />
-    </main>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          getPageUrl={getPageUrl}
+        />
+      </main>
+    </div>
   </div>
 </MainLayout>
 

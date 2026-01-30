@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../layouts/mainlayout.astro";
+import "../../styles/excerpts.css";
 
 import EntryExcerptsConversations from "../../components/entries/EntryExcerptsConversations.astro";
 import EntryExcerptsNotes from "../../components/entries/EntryExcerptsNotes.astro";
@@ -13,7 +14,7 @@ import EntryExcerptsPosts from "../../components/entries/EntryExcerptsPosts.astr
 >
   <section class="excerpts-home">
     <header class="excerpts-home__header">
-      <p class="excerpts-home__eyebrow">Excerpts</p>
+      <p class="excerpts-home__eyebrow">摘录</p>
       <h1 class="excerpts-home__title">摘录主页</h1>
       <p class="excerpts-home__sub">
         这里是摘录内容的总入口：文章、短句、人物与对话
@@ -28,43 +29,3 @@ import EntryExcerptsPosts from "../../components/entries/EntryExcerptsPosts.astr
     </div>
   </section>
 </MainLayout>
-
-<style>
-  .excerpts-home {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 28px 1.5rem 56px;
-  }
-
-  .excerpts-home__header {
-    margin-bottom: 18px;
-  }
-
-  .excerpts-home__eyebrow {
-    margin: 0 0 8px;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(75, 85, 99, 0.75);
-  }
-
-  .excerpts-home__title {
-    margin: 0;
-    font-size: 32px;
-    line-height: 1.2;
-  }
-
-  .excerpts-home__sub {
-    margin: 10px 0 0;
-    font-size: 15px;
-    color: rgba(75, 85, 99, 0.95);
-  }
-
-  .excerpts-home__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 14px;
-    margin-top: 18px;
-  }
-</style>

@@ -109,24 +109,6 @@ const paginatedConversations = conversations.slice(0, ITEMS_PER_PAGE);
   </section>
 </MainLayout>
 
-<style is:global>
-  .eyebrow {
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-primary);
-    margin-bottom: 0.5rem;
-    display: block;
-  }
-
-  .sub-desc {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-    margin-top: 0.5rem;
-  }
-</style>
-
 <script
   define:vars={{ ITEMS_PER_PAGE, conversations: conversations.length, allTags }}
 >
