@@ -8,6 +8,9 @@ body.page-excerpts-posts {
     --posts-gap: 18px;
 
     scrollbar-gutter: stable;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
 }
 
 body.page-excerpts-posts .excerpts-posts {
@@ -15,6 +18,7 @@ body.page-excerpts-posts .excerpts-posts {
     max-width: var(--posts-max);
     margin: 0 auto;
     padding: 28px 1.5rem 64px;
+    box-sizing: border-box;
 }
 
 body.page-excerpts-posts .excerpts-posts__header {
@@ -90,11 +94,16 @@ body.page-excerpts-posts .excerpts-posts__layout {
     gap: 22px;
     margin-top: 18px;
     align-items: start;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 body.page-excerpts-posts .excerpts-posts__aside {
     position: sticky;
     top: calc(var(--nav-height) + 18px);
+    width: 240px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 body.page-excerpts-posts .aside-card {
@@ -103,6 +112,8 @@ body.page-excerpts-posts .aside-card {
     border-radius: var(--c-radius);
     box-shadow: var(--c-shadow);
     padding: 14px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 body.page-excerpts-posts .aside-title {
@@ -121,6 +132,8 @@ body.page-excerpts-posts .aside-list {
     max-height: min(62vh, 520px);
     overflow: auto;
     padding-right: 6px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 body.page-excerpts-posts .aside-link {
@@ -179,12 +192,15 @@ body.page-excerpts-posts .post-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--posts-gap);
     margin-bottom: 22px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 body.page-excerpts-posts .post-card-link {
     text-decoration: none;
     color: inherit;
     display: block;
+    box-sizing: border-box;
 }
 
 body.page-excerpts-posts .post-card {
@@ -199,6 +215,8 @@ body.page-excerpts-posts .post-card {
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 body.page-excerpts-posts .post-card-link:hover .post-card {
@@ -372,28 +390,229 @@ body.page-excerpts-posts .post-card-link.highlight-card .post-card {
 
     body.page-excerpts-posts .excerpts-posts__aside {
         position: static;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    body.page-excerpts-posts .aside-card {
+        padding: 12px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     body.page-excerpts-posts .aside-list {
         max-height: none;
-        overflow: auto;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
         flex-direction: row;
         padding-right: 0;
         gap: 10px;
+        scroll-snap-type: x proximity;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     body.page-excerpts-posts .aside-link {
         white-space: nowrap;
+        scroll-snap-align: start;
+        flex-shrink: 0;
     }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 768px) {
     body.page-excerpts-posts .excerpts-posts {
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding: 24px 1.25rem 52px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__header {
+        padding: 24px 20px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__title {
+        font-size: 30px;
+    }
+
+    body.page-excerpts-posts .post-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+    }
+
+    body.page-excerpts-posts .post-card {
+        padding: 16px;
+    }
+
+    body.page-excerpts-posts .post-title {
+        font-size: 15px;
+    }
+
+    body.page-excerpts-posts .post-desc {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 640px) {
+    body.page-excerpts-posts .excerpts-posts {
+        padding: 20px 1rem 44px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__header {
+        padding: 20px 16px;
     }
 
     body.page-excerpts-posts .excerpts-posts__title {
         font-size: 28px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__sub {
+        font-size: 14px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__meta {
+        font-size: 12px;
+    }
+
+    body.page-excerpts-posts .post-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
+
+    body.page-excerpts-posts .post-card {
+        padding: 14px;
+    }
+
+    body.page-excerpts-posts .post-title {
+        font-size: 14px;
+        line-height: 1.3;
+    }
+
+    body.page-excerpts-posts .post-desc {
+        font-size: 12px;
+        line-height: 1.4;
+        -webkit-line-clamp: 2;
+    }
+
+    body.page-excerpts-posts .card-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    body.page-excerpts-posts .card-tags {
+        justify-content: flex-start;
+    }
+
+    body.page-excerpts-posts .card-tag {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    body.page-excerpts-posts .excerpts-posts {
+        padding: 18px 0.9rem 40px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__header {
+        padding: 18px 14px;
+        border-radius: 10px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__title {
+        font-size: 24px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__eyebrow {
+        font-size: 11px;
+    }
+
+    body.page-excerpts-posts .post-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    body.page-excerpts-posts .post-card {
+        padding: 12px;
+    }
+
+    body.page-excerpts-posts .post-title {
+        font-size: 13px;
+    }
+
+    body.page-excerpts-posts .post-desc {
+        font-size: 11px;
+        -webkit-line-clamp: 2;
+        margin-top: 8px;
+    }
+
+    body.page-excerpts-posts .card-meta {
+        font-size: 11px;
+        gap: 6px;
+    }
+
+    body.page-excerpts-posts .read-more {
+        font-size: 12px;
+        padding-top: 8px;
+        gap: 4px;
+    }
+
+    body.page-excerpts-posts .aside-card {
+        padding: 10px;
+    }
+
+    body.page-excerpts-posts .aside-title {
+        font-size: 11px;
+    }
+
+    body.page-excerpts-posts .aside-link {
+        padding: 8px 8px;
+    }
+
+    body.page-excerpts-posts .aside-link__label {
+        font-size: 13px;
+    }
+
+    body.page-excerpts-posts .aside-link__count {
+        font-size: 11px;
+        padding: 2px 6px;
+    }
+}
+
+@media (max-width: 380px) {
+    body.page-excerpts-posts .excerpts-posts {
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__title {
+        font-size: 22px;
+    }
+
+    body.page-excerpts-posts .excerpts-posts__sub {
+        font-size: 13px;
+    }
+
+    body.page-excerpts-posts .post-card {
+        padding: 10px;
+    }
+
+    body.page-excerpts-posts .post-title {
+        font-size: 12px;
+    }
+
+    body.page-excerpts-posts .post-desc {
+        font-size: 10px;
+        margin-top: 6px;
+    }
+
+    body.page-excerpts-posts .card-meta {
+        font-size: 10px;
+    }
+
+    body.page-excerpts-posts .card-tag {
+        font-size: 9px;
+        padding: 1px 4px;
     }
 }

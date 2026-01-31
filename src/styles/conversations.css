@@ -7,6 +7,9 @@ body.page-excerpts-conversations {
      这里仅在本频道页面作用域内为旧变量做“到组件 tokens”的映射，
      以便逐步把 conversations.css 从私有色系迁移到 --c-*。 */
 
+  /* 统一页面底色为主题底色（影响 body 背景与站点 footer 背景） */
+  --bg-body: var(--t-bg);
+
   /* 色系（映射到 component tokens） */
   --color-primary: var(--c-accent);
   --color-primary-light: var(--c-surface);
@@ -441,6 +444,7 @@ body.page-excerpts-conversations {
   gap: 0.35rem;
   border-bottom: 1px solid rgba(154, 107, 47, 0.25);
   transition: var(--transition);
+  overflow-wrap: anywhere;
 }
 
 .source-link a:hover {
@@ -456,6 +460,11 @@ body.page-excerpts-conversations {
 .pub-date,
 .reading-time {
   white-space: nowrap;
+}
+
+/* Footer URLs can be long; allow wrapping to avoid horizontal overflow */
+.original-link a {
+  overflow-wrap: anywhere;
 }
 
 .featured-quote {

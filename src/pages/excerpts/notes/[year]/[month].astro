@@ -1,8 +1,9 @@
 ---
-import MainLayout from "../../../../layouts/mainlayout.astro";
-import "../../../../styles/notes.css";
 import { getCollection, render } from "astro:content";
+import BackLink from "../../../../components/BackLink.astro";
+import MainLayout from "../../../../layouts/mainlayout.astro";
 import { excerpts } from "../../../../utils/excerptsPaths";
+import "../../../../styles/notes.css";
 
 export async function getStaticPaths() {
   const allNotes = await getCollection("notes");
@@ -90,7 +91,7 @@ const notes = await Promise.all(
         <span>🎲</span>
         <span>随机一条</span>
       </button>
-      <a href={excerpts.notesIndex} class="back-link">← 返回全部</a>
+      <BackLink href={excerpts.notesIndex} label="返回全部" />
     </div>
   </section>
 

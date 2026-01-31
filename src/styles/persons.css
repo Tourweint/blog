@@ -3,6 +3,9 @@
 body.page-excerpts-persons {
   /* 说明：人物频道样式只在本页生效，避免与其它频道（尤其 conversations/notes）互相污染。 */
 
+  /* 统一页面底色为主题底色（影响 body 背景与站点 footer 背景） */
+  --bg-body: var(--t-bg);
+
   /* 旧变量 -> component tokens 映射（逐步迁移中） */
   --color-primary: var(--c-accent);
   --color-accent: var(--c-accent);

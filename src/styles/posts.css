@@ -149,6 +149,13 @@ body.page-article .watch-video-link span {
     
     body.page-article .post-main {
         max-width: 900px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    body.page-article .post-main {
+        max-width: 100%;
     }
 }
 
@@ -168,16 +175,19 @@ body.page-originals.page-article .post-eyebrow {
 }
 
 /* 顶部导航 */
-body.page-article .nav-bar { 
+body.page-article .nav-bar,
+.post-layout .nav-bar {
     max-width: 900px;
     margin: 0 auto 10px;
 }
-body.page-article .back-link {
+body.page-article .back-link,
+.post-layout .back-link {
     text-decoration: none;
     color: var(--article-text);
     font-weight: 600;
     display: inline-flex;
     align-items: center;
+    gap: 0.4rem;
     padding: 6px 10px;
     border-radius: 10px;
     border: 1px solid transparent;
@@ -185,14 +195,22 @@ body.page-article .back-link {
         border-color var(--c-dur) var(--c-ease),
         opacity var(--c-dur) var(--c-ease);
 }
-body.page-article .back-link:hover { 
+
+body.page-article .back-icon,
+.post-layout .back-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+body.page-article .back-link:hover,
+.post-layout .back-link:hover {
     text-decoration: none;
     background-color: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
     border-color: var(--article-rule);
     opacity: 0.95;
 }
 
-body.page-article .back-link:focus-visible {
+body.page-article .back-link:focus-visible,
+.post-layout .back-link:focus-visible {
     outline: 3px solid var(--article-focus);
     outline-offset: 3px;
 }
@@ -207,9 +225,36 @@ body.page-article article {
     margin-bottom: 30px;
 }
 
+@media (max-width: 768px) {
+    body.page-article .page-content {
+        padding: 20px 1.25rem 48px;
+    }
+
+    body.page-article .post-layout {
+        gap: 24px;
+    }
+
+    body.page-article .post-sidebar {
+        width: 220px;
+    }
+
+    body.page-article article {
+        padding: 18px 32px 36px;
+    }
+
+    body.page-article .content {
+        font-size: 15px;
+        line-height: 1.8;
+    }
+}
+
 @media (max-width: 640px) {
     body.page-article {
         padding: calc(var(--nav-height) + 18px) 12px 18px;
+    }
+
+    body.page-article .page-content {
+        padding: 18px 1rem 44px;
     }
 
     body.page-article article {
@@ -233,6 +278,75 @@ body.page-article article {
 
     body.page-article .meta-categories {
         gap: 6px;
+    }
+
+    body.page-article .post-layout {
+        gap: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    body.page-article .page-content {
+        padding: 16px 0.9rem 40px;
+    }
+
+    body.page-article article {
+        padding: 14px 14px 20px;
+        border-radius: 8px;
+    }
+
+    body.page-article .content {
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    body.page-article .content h1 { font-size: 1.8em; }
+    body.page-article .content h2 { font-size: 1.5em; }
+    body.page-article .content h3 { font-size: 1.25em; }
+
+    body.page-article .meta {
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        font-size: 12px;
+        gap: 6px;
+    }
+
+    body.page-article .nav-bar {
+        margin-bottom: 8px;
+    }
+
+    body.page-article .back-link {
+        font-size: 13px;
+        padding: 5px 8px;
+    }
+}
+
+@media (max-width: 380px) {
+    body.page-article .page-content {
+        padding: 14px 0.8rem 36px;
+    }
+
+    body.page-article article {
+        padding: 12px 12px 18px;
+        border-radius: 8px;
+    }
+
+    body.page-article .content {
+        font-size: 13px;
+        line-height: 1.75;
+    }
+
+    body.page-article .content h1 { font-size: 1.6em; }
+    body.page-article .content h2 { font-size: 1.4em; }
+    body.page-article .content h3 { font-size: 1.2em; }
+
+    body.page-article .meta {
+        font-size: 11px;
+    }
+
+    body.page-article .date-tag {
+        font-size: 10px;
+        padding: 2px 8px;
     }
 }
 

@@ -1,8 +1,16 @@
+@import "@fontsource-variable/inter/index.css";
+@import "@fontsource-variable/noto-sans-sc/index.css";
+@import "@fontsource-variable/noto-serif-sc/index.css";
+
 /* 全局基础设置 */
 :root {
   --nav-height: 64px;
   --bg-body: #f4f6f8;
   --bg-card: #ffffff;
+
+  /* Brand */
+  --brand: #0f172a;
+  --brand-hover: #1f2937;
 
   /* ===== Theme Tokens (Draft) =====
      说明：先新增 tokens，不立刻改现有视觉；
@@ -15,14 +23,11 @@
   --t-rule: rgba(0, 0, 0, 0.1);
   --t-accent: #333333;
 
-  /* 字体策略：默认不主动加载外链字体，优先使用系统/本地字体（更快、更稳、更少 CLS）。
-     如需一致性更强的字体（Inter / Noto Serif SC），后续可选择自托管或引入 fontsource。 */
-  --t-font-serif: ui-serif, "Noto Serif SC", "Source Han Serif CN",
-    "Source Han Serif SC", "Songti SC", "STSong", "SimSun", Georgia,
-    "Times New Roman", serif;
-  --t-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Inter",
-    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
-    "Noto Sans CJK SC", "Source Han Sans CN", Arial, sans-serif;
+  --t-font-serif: "Noto Serif SC Variable", "Noto Serif SC",
+    "Source Han Serif CN", "Songti SC", "STSong", "SimSun", serif;
+  --t-font-sans: "Noto Sans SC Variable", "Noto Sans SC",
+    "Inter Variable", "Inter", "Source Han Sans CN", system-ui, -apple-system,
+    "Segoe UI", sans-serif;
 
   --t-leading: 1.75;
   --t-radius: 12px;
@@ -51,6 +56,46 @@
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/*
+  Mobile safety net:
+  - prevent long URLs/code/tables from forcing horizontal overflow
+  - keep media fluid inside content blocks
+*/
+.content,
+.markdown-body {
+  overflow-wrap: anywhere;
+}
+
+.content img,
+.content video,
+.content iframe,
+.markdown-body img,
+.markdown-body video,
+.markdown-body iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+.content pre,
+.markdown-body pre {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.content table,
+.markdown-body table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -106,14 +151,11 @@ body {
 }
 
 .logo-text {
-  font-family: var(--t-font-serif);
+  font-family: var(--t-font-sans);
   font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #4b60d4 0%, #4fabc2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 0.2px;
   position: relative;
 }
 
@@ -124,8 +166,12 @@ body {
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(135deg, #4b60d4 0%, #4fabc2 100%);
+  background: currentColor;
   transition: width 0.3s ease;
+}
+
+.logo:hover .logo-text {
+  color: var(--brand-hover);
 }
 
 .logo:hover .logo-text::after {
@@ -246,7 +292,7 @@ body.drawer-open .mobile-drawer {
   padding-top: 40px;
   padding-bottom: 40px;
   border-top: 1px solid #e1e4e8;
-  background: #f4f6f8;
+  background-color: var(--bg-body);
 }
 
 .footer-container {

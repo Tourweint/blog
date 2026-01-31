@@ -1,13 +1,13 @@
 ---
 import ContentDetailLayout from "./contentdetaillayout.astro";
-import type { ContentDetailLayoutProps } from "./contentdetail.types";
 import { excerpts } from "../utils/excerptsPaths";
+import type { ContentDetailLayoutProps } from "./contentdetail.types";
 
 interface Props extends ContentDetailLayoutProps {}
 
 const {
   tagsBaseHref = excerpts.categoryBaseHref,
-  backLabel = "← 返回摘录页",
+  backLabel = "返回摘录页",
   ...rest
 } = Astro.props;
 ---

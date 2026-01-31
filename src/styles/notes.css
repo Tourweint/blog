@@ -45,16 +45,26 @@ body.page-excerpts-notes .subtitle {
 }
 
 body.page-excerpts-notes .back-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--notes-muted);
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
-  transition: color 0.2s;
+  transition:
+    color var(--c-dur) var(--c-ease),
+    transform var(--c-dur) var(--c-ease);
 }
 
 body.page-excerpts-notes .back-link:hover {
-  color: var(--notes-accent);
+  color: var(--notes-text);
+  transform: translateX(-4px);
+}
+
+body.page-excerpts-notes .back-icon {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 /* Hero Section */

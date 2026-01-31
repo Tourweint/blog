@@ -1,9 +1,12 @@
 body.page-home {
-  --bg-color: #fbfbf9;
-  --text-main: #1a1a1a;
-  --text-muted: #86868b;
-  --accent: #333;
-  --rule: rgba(0, 0, 0, 0.1);
+  --bg-color: var(--t-bg);
+  --text-main: var(--t-text);
+  --text-muted: var(--t-muted);
+  --accent: var(--t-accent);
+  --rule: var(--t-rule);
+
+  /* 让全站 footer 跟随首页底色 */
+  --bg-body: var(--bg-color);
 
   --font-serif: "Noto Serif SC", "Source Han Serif CN", "Songti SC", serif;
   --font-sans: "Inter", "Source Han Sans CN", system-ui, -apple-system,
@@ -319,12 +322,20 @@ body.page-home .page-content {
   }
 }
 
+@media (max-width: 640px) {
+  .grid-layout {
+    padding: 0 1.25rem;
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 520px) {
   .hero {
     padding: 64px 0 48px;
   }
 
   .grid-layout {
+    padding: 0 1rem;
     gap: 1.25rem;
   }
 
@@ -332,5 +343,15 @@ body.page-home .page-content {
     margin-left: 0;
     display: block;
     margin-top: 0.35rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .grid-layout {
+    padding: 0 0.9rem;
+  }
+
+  .hero {
+    padding: 56px 0 40px;
   }
 }

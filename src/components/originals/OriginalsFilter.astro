@@ -1,4 +1,6 @@
 ---
+import BackLink from "../BackLink.astro";
+
 export type OriginalsActiveTab = "systems" | "fragments" | "projects";
 
 type Props = {
@@ -40,7 +42,11 @@ const tabs: Array<{
 ---
 
 <nav class="originals-filter" aria-label="原创内容过滤器">
-  <a class="back-link" href="/originals">← 回到原触发</a>
+  <BackLink
+    href="/originals"
+    label="回到原触发"
+    className="originals-back-link"
+  />
   <div class="pills" role="tablist" aria-label="分类">
     {
       tabs.map((tab) => (
@@ -64,26 +70,37 @@ const tabs: Array<{
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin: 1.25rem 0 1.75rem;
+    margin: 1.25rem 0 0rem;
   }
 
-  .back-link {
+  :global(.originals-back-link) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--c-muted);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
     white-space: nowrap;
+    transition:
+      color var(--c-dur) var(--c-ease),
+      transform var(--c-dur) var(--c-ease);
   }
 
-  .back-link:hover {
-    color: var(--c-text);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  :global(.originals-back-link:hover) {
+    color: var(--c-accent);
+    transform: translateX(-4px);
   }
 
-  .back-link:focus-visible {
+  :global(.originals-back-link:focus-visible) {
     outline: 3px solid var(--c-focus);
     outline-offset: 2px;
     border-radius: 10px;
+  }
+
+  :global(.originals-back-link .back-icon) {
+    width: 1.2rem;
+    height: 1.2rem;
   }
 
   .pills {
@@ -133,7 +150,7 @@ const tabs: Array<{
       align-items: stretch;
     }
 
-    .back-link {
+    :global(.originals-back-link) {
       text-align: center;
     }
 

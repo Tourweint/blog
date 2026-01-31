@@ -1,8 +1,9 @@
 ---
 import MainLayout from "./mainlayout.astro";
 import TableOfContents from "../components/TableOfContents.astro";
-import type { ContentDetailLayoutProps } from "./contentdetail.types";
+import BackLink from "../components/BackLink.astro";
 import { excerpts } from "../utils/excerptsPaths";
+import type { ContentDetailLayoutProps } from "./contentdetail.types";
 
 interface Props extends ContentDetailLayoutProps {}
 
@@ -15,7 +16,7 @@ const {
   publishedTime,
   tags,
   backUrl,
-  backLabel = "← 返回列表",
+  backLabel = "返回列表",
   dateText,
   readingTime,
   totalWords,
@@ -78,7 +79,7 @@ const normalizedTagsBaseHref = tagsBaseHref.endsWith("/")
 
     <div class="post-main">
       <nav class="nav-bar">
-        <a href={backUrl} class="back-link">{backLabel}</a>
+        <BackLink href={backUrl} label={backLabel} />
       </nav>
 
       <article class="post-detail">
