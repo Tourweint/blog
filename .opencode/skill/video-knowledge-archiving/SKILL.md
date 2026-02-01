@@ -67,7 +67,7 @@ rereadStars: 审阅思想深度与参考价值，0-5星打分。
 ### Step 6: Create File
 
 - **Filename**: 短语形式，不含标点，保留中文。
-- **Path**: `src/content/posts/{序号}_{分类}/{文件名}.md`
+- **Path**: `src/content/excerpts/posts/{序号}_{分类}/{文件名}.md`
 
 ### Step 7: Validate
 

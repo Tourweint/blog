@@ -60,10 +60,15 @@ body.page-excerpts-posts .excerpts-posts__meta {
     margin-top: 12px;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
     color: var(--c-muted);
-    font-size: 13px;
+    font-size: 0.875rem;
+}
+
+body.page-excerpts-posts .excerpts-posts__meta .meta-item {
+    font-weight: 600;
+    color: var(--c-text);
 }
 
 body.page-excerpts-posts .meta-sep {

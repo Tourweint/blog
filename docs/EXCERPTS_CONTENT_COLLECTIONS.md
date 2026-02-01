@@ -42,6 +42,7 @@
   - `/excerpts/category/:category(/:page)`
 - notes：
   - `/excerpts/notes`
+  - `/excerpts/notes/months`
   - `/excerpts/notes/:year/:month`
 - persons：
   - `/excerpts/persons`
@@ -223,4 +224,4 @@ export async function getStaticPaths() {
 ## 10. 建议的下一步（可选）
 
 - 把 `toIdSlug()` 抽成一个通用 util（如 `src/utils/slug.ts`），并在 posts/persons/conversations 复用
-- 如果希望 URL 更优雅：将 `/excerpts/notes/notes` 重构成 `/excerpts/notes/`，并统一替换站内链接（这会涉及路由文件名调整）
+- 如果希望扩展筛选入口：可以增加 `/excerpts/notes/months` 的导航链接，并统一在页面 meta 区显示入口

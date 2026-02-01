@@ -49,69 +49,99 @@ body.page-excerpts-conversations {
   position: relative;
   background-color: var(--color-bg);
   background-image: radial-gradient(
-    circle at 20% 20%,
-    color-mix(in oklab, var(--c-bg) 60%, white 40%) 0%,
-    color-mix(in oklab, var(--c-bg) 25%, var(--c-surface) 75%) 60%,
+    circle at 15% 20%,
+    color-mix(in oklab, var(--c-bg) 65%, white 35%) 0%,
+    color-mix(in oklab, var(--c-bg) 25%, var(--c-surface) 75%) 55%,
     var(--c-surface) 100%
   );
   color: var(--color-text);
-  padding: 3.5rem 2rem;
-  margin-bottom: 2.75rem;
-  border-radius: var(--c-radius);
+  padding: 2.75rem 2rem;
+  margin-bottom: 2rem;
+  border-radius: 20px;
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
-  text-align: center;
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.conversations-hero::after {
-  content: "";
-  position: absolute;
-  inset: 18px;
-  border: 1px dashed rgba(107, 114, 128, 0.25);
-  border-radius: 12px;
-  pointer-events: none;
+.conversations-hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 680px;
 }
 
-.conversations-hero h1 {
-  margin: 0 0 0.75rem 0;
-  font-size: 2.4rem;
-  font-weight: 800;
-  line-height: 1.25;
+.conversations-hero__eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-secondary);
+}
+
+.conversations-hero__title {
+  margin: 0;
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1.2;
   font-family: var(--t-font-serif);
   color: var(--color-text);
 }
 
-.conversations-hero .eyebrow {
-  color: var(--color-text);
-  background: color-mix(in oklab, var(--c-accent) 6%, var(--c-surface));
-  display: inline-flex;
-  padding: 0.35rem 0.8rem;
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-  letter-spacing: 0.08em;
+.conversations-hero__sub {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
 }
 
-.conversations-hero .sub {
-  margin: 0.75rem 0 0 0;
-  font-size: 1.05rem;
+.conversations-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.conversations-hero__meta .meta-item {
   font-weight: 600;
   color: var(--color-text);
 }
 
-.conversations-hero .sub-desc {
-  color: var(--color-text-secondary);
-  margin-top: 0.6rem;
-  font-size: 0.98rem;
+.conversations-hero__meta .meta-sep {
+  color: inherit;
+  opacity: 0.6;
+}
+
+.conversations-hero__meta .meta-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color var(--c-dur) var(--c-ease),
+    color var(--c-dur) var(--c-ease),
+    opacity var(--c-dur) var(--c-ease);
+}
+
+.conversations-hero__meta .meta-link:hover {
+  border-bottom-color: color-mix(in oklab, var(--color-primary) 65%, var(--color-border));
+}
+
+.conversations-hero__meta .meta-link:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 /* 过滤器 */
 .conversations-filters {
   background: var(--color-bg-secondary);
-  padding: 2rem 1.5rem;
-  margin-bottom: 3rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
   border-radius: var(--c-radius);
   border: 1px solid var(--color-border);
   max-width: 1200px;
@@ -129,7 +159,7 @@ body.page-excerpts-conversations {
 .filter-label {
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   color: var(--color-text-secondary);
 }
 
@@ -140,12 +170,12 @@ body.page-excerpts-conversations {
 }
 
 .pill {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 1rem;
   border: 1px solid var(--color-border);
-  background: var(--color-bg);
+  background: var(--color-bg-secondary);
   border-radius: 24px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--color-text-secondary);
   transition: var(--transition);
@@ -154,15 +184,20 @@ body.page-excerpts-conversations {
 
 .pill:hover {
   border-color: color-mix(in oklab, var(--c-accent) 28%, var(--color-border));
-  background: color-mix(in oklab, var(--c-accent) 6%, var(--color-bg));
+  background: color-mix(in oklab, var(--c-accent) 6%, var(--color-bg-secondary));
   color: var(--color-text);
 }
 
 .pill.active {
-  background: color-mix(in oklab, var(--c-accent) 10%, var(--color-bg));
+  background: color-mix(in oklab, var(--c-accent) 10%, var(--color-bg-secondary));
   color: var(--color-text);
   border-color: color-mix(in oklab, var(--c-accent) 34%, var(--color-border));
   font-weight: 600;
+}
+
+.pill:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
 }
 
 /* 对话卡片网格 */
@@ -983,11 +1018,12 @@ body.page-excerpts-conversations {
   }
 
   .conversations-hero {
-    padding: 2.5rem 1.25rem;
+    padding: 2.3rem 1.5rem;
+    border-radius: 16px;
   }
 
-  .conversations-hero h1 {
-    font-size: 2.05rem;
+  .conversations-hero__title {
+    font-size: 1.95rem;
   }
 
   .participants-bar {
@@ -1020,7 +1056,7 @@ body.page-excerpts-conversations {
   }
 
   .conversations-hero {
-    padding: 2.2rem 1rem;
+    padding: 2rem 1.25rem;
   }
 
   .conversations-hero h1 {

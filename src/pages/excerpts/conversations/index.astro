@@ -4,6 +4,7 @@ import "../../../styles/conversations.css";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import ConversationCard from "../../../components/ConversationCard.astro";
+import { excerpts } from "../../../utils/excerptsPaths";
 
 const conversations = (await getCollection("conversations")).sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
@@ -28,11 +29,17 @@ const paginatedConversations = conversations.slice(0, ITEMS_PER_PAGE);
   description="真实访谈与虚构对话并行，为学习与思考提供灵感"
 >
   <section class="conversations-hero">
-    <div>
-      <p class="eyebrow">Conversations</p>
-      <h1>对话库</h1>
-      <p class="sub">以对话形式引出或展示思考</p>
-      <p class="sub-desc">不只记录真实场景，也用想象力做思想实验，为灵感服务</p>
+    <div class="conversations-hero__content">
+      <p class="conversations-hero__eyebrow">摘录</p>
+      <h1 class="conversations-hero__title">摘录 · 对话</h1>
+      <p class="conversations-hero__sub">
+        真实访谈与想象对话并行，成为思考与学习的线索库。
+      </p>
+      <div class="conversations-hero__meta">
+        <span class="meta-item">共 {conversations.length} 篇</span>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
+      </div>
     </div>
   </section>
 

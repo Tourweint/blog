@@ -20,17 +20,18 @@
 
 ## 3. 内容结构（写文章放哪）
 
-文章内容放在：
+摘录文章放在：
 
-- `src/content/posts/`
+- `src/content/excerpts/posts/`
 
 你可以按分类建文件夹，例如：
 
-- `src/content/posts/04_教育、学习与写作/晚自习与读书月的讨论.md`
+- `src/content/excerpts/posts/04_教育、学习与写作/晚自习与读书月的讨论.md`
 
 路由规则：
 
-- 文章详情页：`/posts/<slug>`
+- 文章列表页：`/excerpts/posts`
+- 文章详情页：`/excerpts/posts/page/<slug>`
 - 其中 `<slug>` 由文件路径自动生成（包含子目录）。
 
 ## 4. 文章 Frontmatter 字段说明
@@ -93,12 +94,12 @@ rereadStars: 4
 
 实现文件：
 
-- `src/pages/posts/[...slug].astro`
+- `src/pages/excerpts/posts/page/[slug].astro`
 - `src/styles/posts.css`
 
 ## 7. 常用维护动作
 
-- 新增文章：在 `src/content/posts/` 下新增 `.md` 文件，并写好 frontmatter
+- 新增文章：在 `src/content/excerpts/posts/` 下新增 `.md` 文件，并写好 frontmatter
 - 设置星级：在文章 frontmatter 加 `rereadStars: 1~5`
 - 修改分类：调整 `tags: [...]` 数组
 

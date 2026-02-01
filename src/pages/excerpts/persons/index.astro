@@ -3,6 +3,7 @@ import MainLayout from "../../../layouts/mainlayout.astro";
 import "../../../styles/persons.css";
 import { getCollection } from "astro:content";
 import PersonCard from "../../../components/PersonCard.astro";
+import { excerpts } from "../../../utils/excerptsPaths";
 
 const persons = (await getCollection("persons")).sort((a, b) => {
   if (a.data.featured !== b.data.featured) {
@@ -26,12 +27,17 @@ const ITEMS_PER_PAGE = 12;
   description="广泛收录各领域的人物，包括科技领袖、思想家、企业家、博主等"
 >
   <section class="persons-hero">
-    <div>
-      <p class="eyebrow">Persons</p>
-      <h1>人物志</h1>
-      <p class="sub">广泛收录各领域的人物</p>
-      <p class="sub-desc">科技领袖、思想家、企业家、创业者、博主...</p>
-      <p class="sub-desc">他们的经历与思想值得被记录与学习</p>
+    <div class="persons-hero__content">
+      <p class="persons-hero__eyebrow">摘录</p>
+      <h1 class="persons-hero__title">摘录 · 人物</h1>
+      <p class="persons-hero__sub">
+        广泛收录各领域人物，建立可检索的思想与经历索引。
+      </p>
+      <div class="persons-hero__meta">
+        <span class="meta-item">共 {persons.length} 位</span>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
+      </div>
     </div>
   </section>
 

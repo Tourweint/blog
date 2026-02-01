@@ -1,0 +1,98 @@
+---
+import { getCollection } from "astro:content";
+
+import MainLayout from "../../../../layouts/mainlayout.astro";
+import { excerpts } from "../../../../utils/excerptsPaths";
+import "../../../../styles/notes.css";
+
+const resolveDate = (data: any) => data.pubDate || data.date || new Date();
+
+const rawNotes = await getCollection("notes");
+
+const monthMap = new Map<
+  string,
+  { year: string; month: string; count: number; latest: Date }
+>();
+
+rawNotes.forEach((note) => {
+  const date = resolveDate(note.data);
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const key = `${year}-${month}`;
+  const existing = monthMap.get(key);
+  if (!existing) {
+    monthMap.set(key, { year, month, count: 1, latest: date });
+  } else {
+    existing.count += 1;
+    if (date > existing.latest) existing.latest = date;
+  }
+});
+
+const months = Array.from(monthMap.values()).sort((a, b) => {
+  const aKey = `${a.year}-${a.month}`;
+  const bKey = `${b.year}-${b.month}`;
+  return bKey.localeCompare(aKey);
+});
+
+const groupedByYear = months.reduce(
+  (acc, item) => {
+    if (!acc[item.year]) acc[item.year] = [];
+    acc[item.year].push(item);
+    return acc;
+  },
+  {} as Record<string, typeof months>,
+);
+
+const sortedYears = Object.keys(groupedByYear).sort(
+  (a, b) => parseInt(b) - parseInt(a),
+);
+
+const totalNotes = rawNotes.length;
+const totalMonths = months.length;
+---
+
+<MainLayout
+  title="短句 · 按月份浏览 - Tourweint/多鸣"
+  description="按月份浏览所有短句摘录"
+>
+  <section class="notes-months-hero">
+    <p class="notes-months-hero__eyebrow">摘录</p>
+    <h1 class="notes-months-hero__title">按月份浏览</h1>
+    <p class="notes-months-hero__sub">
+      从时间轴进入每个月的句子簿，快速定位回顾。
+    </p>
+    <div class="notes-months-hero__meta">
+      <span class="meta-item">{totalMonths} 个月份</span>
+      <span class="meta-sep">·</span>
+      <span class="meta-item">{totalNotes} 条短句</span>
+      <span class="meta-sep">·</span>
+      <a class="meta-link" href={excerpts.notesIndex}>返回短句首页</a>
+      <span class="meta-sep">·</span>
+      <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
+    </div>
+  </section>
+
+  {
+    sortedYears.map((year) => (
+      <section class="month-section">
+        <h2 class="month-section__title">{year}</h2>
+        <div class="notes-months-grid">
+          {groupedByYear[year].map((item) => (
+            <a
+              class="month-card"
+              href={excerpts.notesMonth(item.year, item.month)}
+            >
+              <div class="month-card__title">
+                {item.year} 年 {item.month} 月
+              </div>
+              <div class="month-card__meta">共 {item.count} 条</div>
+              <div class="month-card__meta">
+                最近更新：{item.latest.toLocaleDateString("zh-cn")}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</MainLayout>

@@ -9,6 +9,13 @@
 - **组件带主题**：复用组件（卡片/分页/目录/入口卡片）自身具备一致的默认观感，页面 CSS 只负责布局与少量差异化。
 - **渐进迁移**：不要一次性全站重写；每改一块用 `npm run build` 做护栏。
 
+补充（母主题系统要点）：
+
+- **基底统一，差异局部**：全局基础样式只在 `src/styles/global.css` 定义；频道样式只在各自 `body.page-xxx` 范围覆盖。
+- **默认去卡片化**：除非需要强调，否则优先留白 + 细分隔线，避免厚阴影/大位移。
+- **排版优先**：标题/摘录更适合衬线体，元信息小号、加字距、弱化。
+- **交互克制**：hover 以 `opacity` / `underline` 为主，避免过度动效。
+
 ## 2. Tokens 速查
 
 tokens 定义位置：
@@ -40,6 +47,8 @@ tokens 定义位置：
 - 卡片：`background: var(--c-surface); border: 1px solid var(--c-rule); box-shadow: var(--c-shadow)`
 - hover：`box-shadow: var(--c-shadow-hover)`
 - focus：`outline/box-shadow` 使用 `var(--c-focus)`
+
+补充：尽量避免在频道 CSS 里直接写 `body {}` 和 `.page-content {}`。如需调整版心宽度或 padding，优先通过页面容器或公共类完成。
 
 ## 3. 页面作用域（page-\* 约定）
 

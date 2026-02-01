@@ -19,6 +19,7 @@ export const excerpts = {
   },
 
   notesIndex: "/excerpts/notes",
+  notesMonthsIndex: "/excerpts/notes/months",
   notesMonth: (year: string | number, month: string | number) =>
     `/excerpts/notes/${year}/${pad2(month)}`,
 

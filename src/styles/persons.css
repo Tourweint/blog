@@ -36,73 +36,102 @@ body.page-excerpts-persons .persons-hero {
   position: relative;
   background-color: var(--color-bg);
   background-image: radial-gradient(
-    circle at 20% 20%,
-    color-mix(in oklab, var(--c-bg) 60%, white 40%) 0%,
-    color-mix(in oklab, var(--c-bg) 25%, var(--c-surface) 75%) 60%,
+    circle at 15% 20%,
+    color-mix(in oklab, var(--c-bg) 65%, white 35%) 0%,
+    color-mix(in oklab, var(--c-bg) 25%, var(--c-surface) 75%) 55%,
     var(--c-surface) 100%
   );
   color: var(--color-text);
-  padding: 3.5rem 2rem;
-  margin-bottom: 2.75rem;
-  border-radius: var(--c-radius);
+  padding: 2.75rem 2rem;
+  margin-bottom: 2rem;
+  border-radius: 20px;
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
-  text-align: center;
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
 
-body.page-excerpts-persons .persons-hero::after {
-  content: "";
-  position: absolute;
-  inset: 18px;
-  border: 1px dashed rgba(107, 114, 128, 0.25);
-  border-radius: 12px;
-  pointer-events: none;
+body.page-excerpts-persons .persons-hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 680px;
 }
 
-body.page-excerpts-persons .persons-hero .eyebrow {
-  color: var(--color-text);
-  background: color-mix(in oklab, var(--c-accent) 6%, var(--c-surface));
-  display: inline-flex;
-  padding: 0.35rem 0.8rem;
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-  letter-spacing: 0.08em;
-  font-size: 0.875rem;
-  font-weight: 600;
+body.page-excerpts-persons .persons-hero__eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.12em;
+  color: var(--color-text-secondary);
 }
 
-body.page-excerpts-persons .persons-hero h1 {
-  margin: 0 0 0.75rem 0;
-  font-size: 2.4rem;
-  font-weight: 800;
-  line-height: 1.25;
+body.page-excerpts-persons .persons-hero__title {
+  margin: 0;
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1.2;
   font-family: var(--t-font-serif);
   color: var(--color-text);
 }
 
-body.page-excerpts-persons .persons-hero .sub {
-  margin: 0.75rem 0 0 0;
-  font-size: 1.05rem;
+body.page-excerpts-persons .persons-hero__sub {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+body.page-excerpts-persons .persons-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+body.page-excerpts-persons .persons-hero__meta .meta-item {
   font-weight: 600;
   color: var(--color-text);
 }
 
-body.page-excerpts-persons .persons-hero .sub-desc {
-  color: var(--color-text-secondary);
-  margin-top: 0.6rem;
-  font-size: 0.98rem;
+body.page-excerpts-persons .persons-hero__meta .meta-sep {
+  color: inherit;
+  opacity: 0.6;
+}
+
+body.page-excerpts-persons .persons-hero__meta .meta-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color var(--c-dur) var(--c-ease),
+    color var(--c-dur) var(--c-ease),
+    opacity var(--c-dur) var(--c-ease);
+}
+
+body.page-excerpts-persons .persons-hero__meta .meta-link:hover {
+  border-bottom-color: color-mix(in oklab, var(--color-primary) 65%, var(--color-border));
+}
+
+body.page-excerpts-persons .persons-hero__meta .meta-link:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 /* 过滤器 */
 body.page-excerpts-persons .persons-filters {
   max-width: 1200px;
   margin: 0 auto 2rem;
-  padding: 0 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--c-radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
 }
 
 body.page-excerpts-persons .filter-header {
@@ -110,7 +139,7 @@ body.page-excerpts-persons .filter-header {
 }
 
 body.page-excerpts-persons .filter-label {
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
   color: var(--color-text-secondary);
   font-weight: 500;
 }
@@ -478,8 +507,13 @@ body.page-excerpts-persons .related-item .meta span {
 
 /* 响应式 */
 @media (max-width: 768px) {
-  body.page-excerpts-persons .persons-hero h1 {
-    font-size: 2rem;
+  body.page-excerpts-persons .persons-hero {
+    padding: 2.1rem 1.5rem;
+    border-radius: 16px;
+  }
+
+  body.page-excerpts-persons .persons-hero__title {
+    font-size: 1.85rem;
   }
 
   body.page-excerpts-persons .persons-grid {

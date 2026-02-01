@@ -25,9 +25,9 @@ body.page-excerpts-notes {
 }
 
 body.page-excerpts-notes .page-content {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 20px 40px;
+  padding: 24px 1.5rem 56px;
 }
 
 /* Month archive page helpers */
@@ -68,30 +68,102 @@ body.page-excerpts-notes .back-icon {
 }
 
 /* Hero Section */
-body.page-excerpts-notes .hero {
+body.page-excerpts-notes .notes-hero {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 32px 0 24px;
-  border-bottom: 1px solid var(--notes-border);
-  margin-bottom: 24px;
+  gap: 32px;
+  padding: 28px 24px;
+  border-radius: 20px;
+  border: 1px solid var(--notes-border);
+  background-color: var(--notes-card);
+  background-image: radial-gradient(
+    circle at 15% 20%,
+    color-mix(in oklab, var(--c-bg) 65%, white 35%) 0%,
+    color-mix(in oklab, var(--c-bg) 25%, var(--notes-card) 75%) 55%,
+    var(--notes-card) 100%
+  );
+  box-shadow: var(--notes-shadow);
+  margin-bottom: 18px;
 }
 
-body.page-excerpts-notes .hero .eyebrow {
+body.page-excerpts-notes .notes-hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+body.page-excerpts-notes .notes-hero__eyebrow {
+  margin: 0;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.12em;
   color: var(--notes-muted);
 }
 
-body.page-excerpts-notes .hero h1 {
-  margin: 4px 0 0;
-  font-size: 2rem;
+body.page-excerpts-notes .notes-hero__title {
+  margin: 0;
+  font-size: 2.25rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--notes-text);
+  font-family: var(--t-font-serif);
+}
+
+body.page-excerpts-notes .notes-hero__sub {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--notes-muted);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+body.page-excerpts-notes .notes-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--notes-muted);
+}
+
+body.page-excerpts-notes .notes-hero__meta .meta-item {
+  font-weight: 600;
+  color: var(--notes-text);
+}
+
+body.page-excerpts-notes .notes-hero__meta .meta-sep {
+  color: inherit;
+  opacity: 0.6;
+}
+
+body.page-excerpts-notes .notes-hero__meta .meta-link {
+  color: var(--notes-accent);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color var(--c-dur) var(--c-ease),
+    color var(--c-dur) var(--c-ease),
+    opacity var(--c-dur) var(--c-ease);
+}
+
+body.page-excerpts-notes .notes-hero__meta .meta-link:hover {
+  border-bottom-color: color-mix(in oklab, var(--notes-accent) 65%, var(--notes-border));
+}
+
+body.page-excerpts-notes .notes-hero__meta .meta-link:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+body.page-excerpts-notes .notes-hero__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 140px;
 }
 
 body.page-excerpts-notes .random-btn {
@@ -115,50 +187,91 @@ body.page-excerpts-notes .random-btn:hover {
 }
 
 /* Filter Bar */
-body.page-excerpts-notes .filter-bar {
+body.page-excerpts-notes .notes-filters {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--notes-border);
+  background: var(--notes-card);
+  box-shadow: var(--notes-shadow);
+}
+
+body.page-excerpts-notes .filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  padding: 12px 0;
 }
 
-body.page-excerpts-notes .filter-group {
-  display: contents;
+body.page-excerpts-notes .filter-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--notes-text);
 }
 
-body.page-excerpts-notes .filter-label {
-  display: none;
+body.page-excerpts-notes .filter-toggle {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--notes-accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 999px;
+  transition:
+    background-color var(--c-dur) var(--c-ease),
+    border-color var(--c-dur) var(--c-ease),
+    color var(--c-dur) var(--c-ease);
+}
+
+body.page-excerpts-notes .filter-toggle:hover {
+  border-color: var(--notes-accent);
+  background: var(--notes-accent-light);
 }
 
 body.page-excerpts-notes .filter-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
 }
 
 body.page-excerpts-notes .chip {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
+  padding: 6px 12px;
+  border: 1px solid var(--notes-border);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--c-bg) 88%, var(--notes-card));
   color: var(--notes-muted);
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    background-color var(--c-dur) var(--c-ease),
+    border-color var(--c-dur) var(--c-ease),
+    color var(--c-dur) var(--c-ease),
+    opacity var(--c-dur) var(--c-ease);
   text-decoration: none;
 }
 
 body.page-excerpts-notes .chip:hover {
-  background: color-mix(in oklab, var(--c-bg) 78%, var(--notes-card));
+  border-color: var(--notes-border-hover);
+  background: color-mix(in oklab, var(--c-bg) 82%, var(--notes-card));
   color: var(--notes-text);
 }
 
 body.page-excerpts-notes .chip.active {
   background: var(--notes-accent-light);
   color: var(--notes-accent);
+  border-color: color-mix(in oklab, var(--notes-accent) 45%, var(--notes-border));
+}
+
+body.page-excerpts-notes .chip:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
 }
 
 /* Timeline Headers */
@@ -219,7 +332,7 @@ body.page-excerpts-notes .notes-stream {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-top: 8px;
+  padding-top: 10px;
 }
 
 
@@ -227,8 +340,8 @@ body.page-excerpts-notes .notes-stream {
 body.page-excerpts-notes .note-card {
   background: var(--notes-card);
   border: 1px solid var(--notes-border);
-  border-radius: 12px;
-  padding: 20px 24px;
+  border-radius: 16px;
+  padding: 22px 26px;
   box-shadow: var(--notes-shadow);
   transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
@@ -267,7 +380,7 @@ body.page-excerpts-notes .note-title {
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--notes-text);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 body.page-excerpts-notes .note-hook {
@@ -342,7 +455,7 @@ body.page-excerpts-notes .toggle-body:hover {
 body.page-excerpts-notes .load-more-container {
   display: flex;
   justify-content: center;
-  margin: 32px 0;
+  margin: 36px 0 10px;
 }
 
 body.page-excerpts-notes .load-more-btn {
@@ -366,6 +479,116 @@ body.page-excerpts-notes .load-more-btn:hover {
 body.page-excerpts-notes .load-more-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Months Index */
+body.page-excerpts-notes .notes-months-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 26px 22px;
+  border-radius: 18px;
+  border: 1px solid var(--notes-border);
+  background: var(--notes-card);
+  box-shadow: var(--notes-shadow);
+  margin-bottom: 18px;
+}
+
+body.page-excerpts-notes .notes-months-hero__eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--notes-muted);
+}
+
+body.page-excerpts-notes .notes-months-hero__title {
+  margin: 0;
+  font-size: 2rem;
+  font-family: var(--t-font-serif);
+  color: var(--notes-text);
+}
+
+body.page-excerpts-notes .notes-months-hero__sub {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--notes-muted);
+}
+
+body.page-excerpts-notes .notes-months-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--notes-muted);
+}
+
+body.page-excerpts-notes .notes-months-hero__meta .meta-item {
+  font-weight: 600;
+  color: var(--notes-text);
+}
+
+body.page-excerpts-notes .notes-months-hero__meta .meta-sep {
+  color: var(--notes-border-hover);
+}
+
+body.page-excerpts-notes .notes-months-hero__meta .meta-link {
+  color: var(--notes-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+body.page-excerpts-notes .notes-months-hero__meta .meta-link:hover {
+  text-decoration: underline;
+}
+
+body.page-excerpts-notes .notes-months-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+body.page-excerpts-notes .month-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--notes-border);
+  background: var(--notes-card);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--notes-shadow);
+  transition: all 0.2s ease;
+}
+
+body.page-excerpts-notes .month-card:hover {
+  border-color: var(--notes-border-hover);
+  box-shadow: var(--notes-shadow-hover);
+  transform: translateY(-1px);
+}
+
+body.page-excerpts-notes .month-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+body.page-excerpts-notes .month-card__meta {
+  font-size: 0.85rem;
+  color: var(--notes-muted);
+}
+
+body.page-excerpts-notes .month-section {
+  margin-bottom: 24px;
+}
+
+body.page-excerpts-notes .month-section__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 10px 0 12px;
+  color: var(--notes-text);
 }
 
 /* Flash Animation */
@@ -394,25 +617,39 @@ body.page-excerpts-notes .note-card.flash {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  body.page-excerpts-notes .page-content {
-    padding: 0 16px 24px;
-  }
-
-  body.page-excerpts-notes .hero {
+@media (max-width: 900px) {
+  body.page-excerpts-notes .notes-hero {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
-    padding: 24px 0 20px;
   }
 
-  body.page-excerpts-notes .hero h1 {
-    font-size: 1.5rem;
+  body.page-excerpts-notes .notes-hero__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  body.page-excerpts-notes .page-content {
+    padding: 20px 1rem 44px;
+  }
+
+  body.page-excerpts-notes .notes-hero {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  body.page-excerpts-notes .notes-hero__title {
+    font-size: 1.75rem;
+  }
+
+  body.page-excerpts-notes .notes-hero__sub {
+    font-size: 0.9375rem;
   }
 
   body.page-excerpts-notes .note-card {
     padding: 16px 18px;
-    border-radius: 10px;
+    border-radius: 12px;
   }
 
   body.page-excerpts-notes .note-footer {
@@ -421,23 +658,24 @@ body.page-excerpts-notes .note-card.flash {
   }
 
   body.page-excerpts-notes .random-btn {
-    position: absolute;
-    top: 32px;
-    right: 20px;
     padding: 6px 10px;
   }
 
-  body.page-excerpts-notes .hero {
-    position: relative;
-    padding-right: 80px;
+  body.page-excerpts-notes .notes-filters {
+    padding: 12px 14px;
   }
 
-  body.page-excerpts-notes .filter-bar {
-    gap: 8px;
+  body.page-excerpts-notes .notes-months-hero {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  body.page-excerpts-notes .notes-months-grid {
+    grid-template-columns: 1fr;
   }
 
   body.page-excerpts-notes .chip {
-    padding: 4px 8px;
+    padding: 4px 10px;
     font-size: 0.75rem;
   }
 }

@@ -100,31 +100,46 @@ const ITEMS_PER_PAGE = 18;
 ---
 
 <MainLayout title="句子簿 - Tourweint/多鸣" description="轻量想法与摘抄">
-  <section class="hero">
-    <div>
-      <p class="eyebrow">Notes</p>
-      <h1>留住短句的力度</h1>
-    </div>
-    <button class="random-btn" id="random-note">
-      <span>🎲</span>
-      <span>随机一条</span>
-    </button>
-  </section>
-
-  <div class="filter-bar">
-    <div class="filter-group">
-      <span class="filter-label">标签</span>
-      <div class="filter-chips">
-        {
-          tagFilters.map((t) => (
-            <button class="chip" data-tag={t}>
-              {t}
-            </button>
-          ))
-        }
+  <section class="notes-hero">
+    <div class="notes-hero__content">
+      <p class="notes-hero__eyebrow">摘录</p>
+      <h1 class="notes-hero__title">摘录 · 短句</h1>
+      <p class="notes-hero__sub">
+        把瞬间的灵感、摘录与想法归档成可检索的句子簿。
+      </p>
+      <div class="notes-hero__meta">
+        <span class="meta-item">共 {notes.length} 条</span>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.notesMonthsIndex}> 按月份浏览 </a>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
       </div>
     </div>
-  </div>
+    <div class="notes-hero__actions">
+      <button class="random-btn" id="random-note">
+        <span>🎲</span>
+        <span>随机一条</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="notes-filters">
+    <div class="filter-head">
+      <span class="filter-title">标签</span>
+      <button class="filter-toggle" id="toggle-tags" aria-expanded="false">
+        展开全部
+      </button>
+    </div>
+    <div class="filter-chips" data-collapsed="true">
+      {
+        tagFilters.map((t) => (
+          <button class="chip" data-tag={t}>
+            {t}
+          </button>
+        ))
+      }
+    </div>
+  </section>
 
   <div class="notes-stream" id="note-list">
     {
@@ -207,9 +222,12 @@ const ITEMS_PER_PAGE = 18;
   );
   const randomBtn = document.getElementById("random-note");
   const loadMoreBtn = document.getElementById("load-more");
+  const toggleTagsBtn = document.getElementById("toggle-tags");
 
   let activeTag = "全部";
   let displayedCount = ITEMS_PER_PAGE;
+  let tagsCollapsed = true;
+  const MAX_VISIBLE_TAGS = 12;
 
   const expandCard = (card: HTMLElement) => {
     card.setAttribute("data-state", "open");
@@ -274,12 +292,39 @@ const ITEMS_PER_PAGE = 18;
     }
   };
 
+  const updateTagToggle = () => {
+    if (!toggleTagsBtn) return;
+    if (tagButtons.length <= MAX_VISIBLE_TAGS) {
+      toggleTagsBtn.setAttribute("hidden", "true");
+      tagButtons.forEach((btn) => btn.removeAttribute("hidden"));
+      return;
+    }
+
+    toggleTagsBtn.removeAttribute("hidden");
+    toggleTagsBtn.textContent = tagsCollapsed
+      ? `展开全部 (${tagButtons.length})`
+      : "收起标签";
+    toggleTagsBtn.setAttribute("aria-expanded", String(!tagsCollapsed));
+
+    tagButtons.forEach((btn, index) => {
+      const isActive = btn.classList.contains("active");
+      const shouldHide =
+        tagsCollapsed && index >= MAX_VISIBLE_TAGS && !isActive;
+      if (shouldHide) {
+        btn.setAttribute("hidden", "true");
+      } else {
+        btn.removeAttribute("hidden");
+      }
+    });
+  };
+
   tagButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       tagButtons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       activeTag = btn.getAttribute("data-tag") || "全部";
       displayedCount = ITEMS_PER_PAGE;
+      updateTagToggle();
       applyFilter();
     });
   });
@@ -318,5 +363,11 @@ const ITEMS_PER_PAGE = 18;
     (b) => b.getAttribute("data-tag") === "全部",
   );
   defaultBtn?.classList.add("active");
+  updateTagToggle();
   applyFilter();
+
+  toggleTagsBtn?.addEventListener("click", () => {
+    tagsCollapsed = !tagsCollapsed;
+    updateTagToggle();
+  });
 </script>

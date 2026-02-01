@@ -14,22 +14,28 @@ interface Props {
 }
 
 const {
-  title = "多鸣的博客",
-  description = "多鸣的博客 - 思维、哲学与成长",
+  title = "Tourweint/多鸣",
+  description = "思维、哲学与成长的长期记录",
   image = "/favicon/favicon-96x96.png",
   type = "website",
   publishedTime,
   tags = [],
 } = Astro.props;
 
-const siteUrl = "https://tourweint.shop"; // 替换为你的实际域名
-const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+// 站点域名：优先使用 astro.config.mjs 中的 site（Astro.site），避免多处硬编码
+const site = Astro.site ?? new URL("https://tourweint.shop");
+const canonicalURL = new URL(Astro.url.pathname, site);
 const ogImage = image.startsWith("http")
   ? image
-  : new URL(image, siteUrl).toString();
+  : new URL(image, site).toString();
 
 const pathname = Astro.url.pathname;
 const pathSegments = pathname.split("/").filter(Boolean);
+
+const isHome = pathname === "/" || pathname === "/index";
+const isOriginals = pathname.startsWith("/originals");
+const isExcerpts = pathname.startsWith("/excerpts");
+const isAbout = pathname.startsWith("/about");
 
 const bodyClasses: string[] = ["site-body"];
 
@@ -159,7 +165,7 @@ const bodyClass = bodyClasses.join(" ");
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:site_name" content="多鸣的博客" />
+    <meta property="og:site_name" content="Tourweint/多鸣" />
     <meta property="og:locale" content="zh_CN" />
     {
       publishedTime && (
@@ -204,10 +210,35 @@ const bodyClass = bodyClasses.join(" ");
         </button>
 
         <ul class="nav-links">
-          <li><a href="/">首页</a></li>
-          <li><a href="/originals/">原触发</a></li>
-          <li><a href={excerpts.rootHref}>摘录</a></li>
-          <li><a href="/about/about">关于</a></li>
+          <li>
+            <a href="/" class={`nav-link${isHome ? " is-active" : ""}`}>
+              首页
+            </a>
+          </li>
+          <li>
+            <a
+              href="/originals/"
+              class={`nav-link${isOriginals ? " is-active" : ""}`}
+            >
+              原触发
+            </a>
+          </li>
+          <li>
+            <a
+              href={excerpts.rootHref}
+              class={`nav-link${isExcerpts ? " is-active" : ""}`}
+            >
+              摘录
+            </a>
+          </li>
+          <li>
+            <a
+              href="/about/about"
+              class={`nav-link${isAbout ? " is-active" : ""}`}
+            >
+              关于
+            </a>
+          </li>
         </ul>
       </nav>
     </header>
@@ -220,10 +251,27 @@ const bodyClass = bodyClasses.join(" ");
       hidden
     >
       <nav class="drawer-nav">
-        <a class="drawer-link" href="/">首页</a>
-        <a class="drawer-link" href="/originals/">原触发</a>
-        <a class="drawer-link" href={excerpts.rootHref}>摘录</a>
-        <a class="drawer-link" href="/about/about">关于</a>
+        <a class={`drawer-link${isHome ? " is-active" : ""}`} href="/">
+          首页
+        </a>
+        <a
+          class={`drawer-link${isOriginals ? " is-active" : ""}`}
+          href="/originals/"
+        >
+          原触发
+        </a>
+        <a
+          class={`drawer-link${isExcerpts ? " is-active" : ""}`}
+          href={excerpts.rootHref}
+        >
+          摘录
+        </a>
+        <a
+          class={`drawer-link${isAbout ? " is-active" : ""}`}
+          href="/about/about"
+        >
+          关于
+        </a>
       </nav>
     </aside>
 

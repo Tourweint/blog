@@ -17,5 +17,8 @@
 
 ## 内容入口
 
-- 文章目录：`src/content/posts/`
-- 文章 frontmatter 校验：`src/content/config.ts`
+- 摘录文章：`src/content/excerpts/posts/`
+- 摘录短句：`src/content/excerpts/notes/`
+- 摘录对话：`src/content/excerpts/conversations/`
+- 摘录人物：`src/content/excerpts/persons/`
+- 内容模型与校验：`src/content/config.ts`

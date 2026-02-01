@@ -65,9 +65,10 @@ image: "可选图片 URL"
 ## 文件与技能分布（核心入口）
 
 - 内容模型与验证：`src/content/config.ts`
-- 文章内容：`src/content/posts/`
-- 短札/随记：`src/content/notes/`
-- 对话内容：`src/content/conversations/`
+- 摘录文章：`src/content/excerpts/posts/`
+- 摘录短句：`src/content/excerpts/notes/`
+- 摘录对话：`src/content/excerpts/conversations/`
+- 摘录人物：`src/content/excerpts/persons/`
 - 组件：`src/components/`（卡片、目录、分页等）
 - 布局：`src/layouts/`（`MainLayout.astro`, `ConversationLayout.astro`）
 - 页面路由：`src/pages/`（含子目录 `category/`, `conversations/`, `notes/`, `posts/` 等）
