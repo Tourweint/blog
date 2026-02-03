@@ -24,3 +24,15 @@ pnpm-debug.log*
 .idea/
 
 .vercel
+
+# AI / tooling temp files
+.opencode/
+.temp/
+
+# Large audio artifacts (keep repo small)
+*.mp3
+*.wav
+*.flac
+*.aac
+*.m4a
+*.ogg

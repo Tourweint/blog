@@ -11,16 +11,16 @@ def main():
 
     url = sys.argv[1]
 
-    print(f"🔍 正在获取页面：{url}")
+    print(f"正在获取页面：{url}")
     html = fetch_html(url, headless=True)
 
     author = extract_author_from_html(html)
 
     if not author:
-        print("❌ 未能提取作者信息")
+        print("未能提取作者信息")
         sys.exit(2)
 
-    print("\n✅ 作者信息提取成功：")
+    print("\n作者信息提取成功：")
     print(f"来源    : {author.source}")
     print(f"作者名  : {author.name}")
     print(f"主页链接: {author.url}")
@@ -28,7 +28,7 @@ def main():
     # 获取视频作品链接
     works = extract_works_from_html(html)
     if works:
-        print("\n✅ 获取视频作品链接成功：")
+        print("\n获取视频作品链接成功：")
         for work in works:
             print(f"来源  : {work.source}")
             print(f"名称  : {work.name}")

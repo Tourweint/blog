@@ -411,6 +411,44 @@ body.page-excerpts-notes .note-body p:last-child {
   margin-bottom: 0;
 }
 
+/* Note body – inline external links (e.g. 原视频) */
+body.page-excerpts-notes .note-body a[href^="http"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--notes-border);
+  background: color-mix(in oklab, var(--c-bg) 90%, var(--notes-card));
+  color: var(--notes-accent);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  line-height: 1.4;
+  transition:
+    background-color var(--c-dur) var(--c-ease),
+    border-color var(--c-dur) var(--c-ease),
+    color var(--c-dur) var(--c-ease),
+    transform var(--c-dur) var(--c-ease);
+}
+
+body.page-excerpts-notes .note-body a[href^="http"]::after {
+  content: "↗";
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+body.page-excerpts-notes .note-body a[href^="http"]:hover {
+  background: var(--notes-accent-light);
+  border-color: var(--notes-border-hover);
+  color: var(--notes-text);
+  transform: translateY(-0.5px);
+}
+
+body.page-excerpts-notes .note-body a[href^="http"]:visited {
+  color: var(--notes-accent);
+}
+
 /* Note Footer */
 body.page-excerpts-notes .note-footer {
   display: flex;

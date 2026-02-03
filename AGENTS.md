@@ -1,4 +1,4 @@
-﻿# AI Agent 工作手册（中文版）
+# AI Agent 工作手册（中文版）
 
 ## 基本命令（构建/预览）
 
@@ -86,6 +86,20 @@ image: "可选图片 URL"
 - 主要依赖：`astro@5.16.6`、`@astrojs/sitemap`、`rehype-external-links`。
 - 无 ESLint/Prettier 配置，遵循 TypeScript 严格模式即可。
 - 构建同时校验内容：`npm run build`。
+
+## Python 环境与乱码处理
+
+Windows 终端默认编码可能导致 Python 输出中文乱码。执行脚本前请强制指定 UTF-8 编码：
+
+```bash
+export PYTHONIOENCODING=utf-8
+```
+
+推荐命令模式：
+
+```bash
+export PYTHONIOENCODING=utf-8 && python path/to/script.py ...
+```
 
 ## 安全与执行规范（面向 AI 代理）
 
