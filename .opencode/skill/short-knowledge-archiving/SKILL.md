@@ -46,7 +46,7 @@ title: "提取的核心观点（作为笔记标题）"
 description: "用一句话提炼笔记精髓"
 pubDate: "YYYY-MM-DD" # 使用当前日期
 tags: ["基于内容生成2-3个主题标签"]
-source: { name: "作者/创作者名称", url: "来源链接" } # 必须包含作者信息
+source: "作者/创作者名称"
 mood: "根据内容情绪选择：blue/gray/amber/rose/green"
 ---
 ```
