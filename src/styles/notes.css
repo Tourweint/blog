@@ -432,10 +432,28 @@ body.page-excerpts-notes .note-body code {
 
 body.page-excerpts-notes .note-body blockquote {
   margin: 0 0 12px;
-  padding-left: 0.9em;
-  border-left: 0.2em solid var(--notes-border);
-  color: var(--notes-muted);
-  background-color: color-mix(in oklab, var(--c-bg) 80%, var(--notes-card));
+  padding: 10px 12px;
+  border-left: 3px solid var(--notes-border-hover);
+  border-radius: 10px;
+  color: color-mix(in oklab, var(--notes-text) 70%, var(--notes-muted));
+  background-color: color-mix(in oklab, var(--c-bg) 86%, var(--notes-card));
+  box-shadow: none;
+}
+
+body.page-excerpts-notes .note-body blockquote > :first-child {
+  margin-top: 0;
+}
+
+body.page-excerpts-notes .note-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+body.page-excerpts-notes .note-body blockquote p {
+  margin: 0 0 8px;
+}
+
+body.page-excerpts-notes .note-body blockquote p:last-child {
+  margin-bottom: 0;
 }
 
 body.page-excerpts-notes .note-body hr {

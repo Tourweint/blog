@@ -8,6 +8,15 @@
   --bg-body: var(--t-bg);
   --bg-card: var(--t-surface);
 
+  /* Safe-area insets:
+     - default to 0 for browsers that don't support env()
+     - override with env() where supported (typically iOS Safari)
+  */
+  --safe-area-left: 0px;
+  --safe-area-right: 0px;
+  --safe-area-left: env(safe-area-inset-left);
+  --safe-area-right: env(safe-area-inset-right);
+
   /* Brand */
   --brand: #0f172a;
   --brand-hover: #1f2937;
@@ -137,6 +146,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+@supports (padding-left: max(0px, 0px)) {
+  .nav-container {
+    padding: 0;
+    padding-left: max(1.5rem, var(--safe-area-left));
+    padding-right: max(1.5rem, var(--safe-area-right));
+  }
 }
 
 /* Logo 样式 */
@@ -323,6 +340,14 @@ body.drawer-open .mobile-drawer {
   flex: 1;
 }
 
+@supports (padding-left: max(0px, 0px)) {
+  .page-content {
+    padding: 1rem 0;
+    padding-left: max(1.5rem, var(--safe-area-left));
+    padding-right: max(1.5rem, var(--safe-area-right));
+  }
+}
+
 /* 底部栏 */
 .site-footer {
   width: 100%;
@@ -342,6 +367,14 @@ body.drawer-open .mobile-drawer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+}
+
+@supports (padding-left: max(0px, 0px)) {
+  .footer-container {
+    padding: 0;
+    padding-left: max(1.5rem, var(--safe-area-left));
+    padding-right: max(1.5rem, var(--safe-area-right));
+  }
 }
 
 .site-footer h3 {
@@ -399,5 +432,27 @@ body.drawer-open .mobile-drawer {
   .footer-container {
     grid-template-columns: 1fr;
     padding: 0 1rem;
+  }
+}
+
+@supports (padding-left: max(0px, 0px)) {
+  @media (max-width: 640px) {
+    .nav-container {
+      padding: 0;
+      padding-left: max(1rem, var(--safe-area-left));
+      padding-right: max(1rem, var(--safe-area-right));
+    }
+
+    .page-content {
+      padding: 1rem 0;
+      padding-left: max(1rem, var(--safe-area-left));
+      padding-right: max(1rem, var(--safe-area-right));
+    }
+
+    .footer-container {
+      padding: 0;
+      padding-left: max(1rem, var(--safe-area-left));
+      padding-right: max(1rem, var(--safe-area-right));
+    }
   }
 }
