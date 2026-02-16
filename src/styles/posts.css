@@ -547,17 +547,40 @@ body.page-article .content p {
    引用 (Blockquote) - 对应 >
    ========================================= */
 body.page-article .content blockquote {
-  padding: 0 1em;
-  margin: 0 0 16px;
-    color: var(--article-muted);
-    border-left: 0.25em solid var(--article-rule);
-    background-color: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
+    margin: 0 0 16px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--article-rule);
+    border-radius: 12px;
+    background-color: color-mix(in oklab, var(--c-bg) 86%, var(--bg-card));
+    color: color-mix(in oklab, var(--article-text) 70%, var(--article-muted));
+    font-style: normal;
 }
 
 body.page-article .content blockquote em {
-  font-style: italic;
-    color: var(--article-text);
-  display: block; /* 让它自成一行 */
+    font-style: italic;
+}
+
+body.page-article .content blockquote > :first-child {
+    margin-top: 0;
+}
+
+body.page-article .content blockquote > :last-child {
+    margin-bottom: 0;
+}
+
+body.page-article .content blockquote p {
+    margin: 0 0 8px;
+}
+
+body.page-article .content blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+body.page-article .content blockquote cite {
+    display: block;
+    margin-top: 8px;
+    font-style: normal;
+    color: var(--article-muted);
 }
 
 /* =========================================
@@ -678,12 +701,7 @@ body.page-article .content li {
 }
 
 /* 引用样式 */
-body.page-article .content blockquote {
-    border-left: 4px solid var(--article-rule);
-    padding-left: 20px;
-    color: var(--article-muted);
-    margin-bottom: 20px;
-}
+/* blockquote 样式在上方统一定义，避免重复覆盖 */
 
 
 /* 链接样式 */

@@ -6,6 +6,8 @@ body.page-excerpts-notes {
   --notes-text: var(--c-text);
   --notes-muted: var(--c-muted);
 
+  scrollbar-gutter: stable;
+
   /* 轻量强调色：沿用全站“克制但有温度”的蓝绿系 */
   --notes-accent: color-mix(in oklab, var(--c-text) 25%, #4fabc2);
   --notes-accent-light: color-mix(in oklab, var(--c-bg) 88%, #4fabc2);

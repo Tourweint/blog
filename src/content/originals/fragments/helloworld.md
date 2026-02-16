@@ -2,8 +2,7 @@
 title: "我的第一篇astro博客"
 pubDate: 2025-12-4
 description: "我已经把HTML博客迁移到Astro了"
-author: "多鸣"
-image: ""
+category: "fragments"
 tags: ["生活随笔"]
 ---
 
