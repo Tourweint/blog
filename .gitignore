@@ -36,3 +36,5 @@ pnpm-debug.log*
 *.aac
 *.m4a
 *.ogg
+
+.agents/
