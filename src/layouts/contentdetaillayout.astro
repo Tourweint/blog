@@ -10,6 +10,7 @@ interface Props extends ContentDetailLayoutProps {}
 const {
   seoTitle,
   contentTitle,
+  eyebrowText = null,
   description,
   image,
   type = "article",
@@ -28,6 +29,7 @@ const {
   tagsBaseHref = excerpts.categoryBaseHref,
   prevItem = null,
   nextItem = null,
+  showNav = true,
 } = Astro.props;
 
 const safeMaxStars = Math.max(1, maxStars);
@@ -40,6 +42,8 @@ const starStates = Array.from(
 const normalizedTagsBaseHref = tagsBaseHref.endsWith("/")
   ? tagsBaseHref
   : `${tagsBaseHref}/`;
+
+const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
 ---
 
 <MainLayout
@@ -51,31 +55,31 @@ const normalizedTagsBaseHref = tagsBaseHref.endsWith("/")
   image={image}
 >
   <div class="post-layout">
-    <div class="post-sidebar">
-      {
-        sourceUrl && (
-          <section class="watch-video-section">
-            <a
-              href={sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="watch-video-link"
-            >
-              <svg class="video-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              <span>观看原视频</span>
-            </a>
-          </section>
-        )
-      }
+    {
+      hasSidebar && (
+        <div class="post-sidebar">
+          {sourceUrl && (
+            <section class="watch-video-section">
+              <a
+                href={sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="watch-video-link"
+              >
+                <svg class="video-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                <span>观看原视频</span>
+              </a>
+            </section>
+          )}
 
-      {
-        headings && headings.length > 0 && (
-          <TableOfContents headings={headings} />
-        )
-      }
-    </div>
+          {headings && headings.length > 0 && (
+            <TableOfContents headings={headings} />
+          )}
+        </div>
+      )
+    }
 
     <div class="post-main">
       <nav class="nav-bar">
@@ -83,6 +87,7 @@ const normalizedTagsBaseHref = tagsBaseHref.endsWith("/")
       </nav>
 
       <article class="post-detail">
+        {eyebrowText && <p class="post-eyebrow">{eyebrowText}</p>}
         <h1 class="post-title">{contentTitle}</h1>
 
         <div class="meta">
@@ -169,28 +174,28 @@ const normalizedTagsBaseHref = tagsBaseHref.endsWith("/")
           <slot />
         </div>
 
-        <nav class="post-nav">
-          {
-            prevItem ? (
-              <a href={prevItem.href} class="post-nav-link post-nav-prev">
-                <span class="post-nav-label">← 上一篇</span>
-                <span class="post-nav-title">{prevItem.title}</span>
-              </a>
-            ) : (
-              <div class="post-nav-placeholder" />
-            )
-          }
-          {
-            nextItem ? (
-              <a href={nextItem.href} class="post-nav-link post-nav-next">
-                <span class="post-nav-label">下一篇 →</span>
-                <span class="post-nav-title">{nextItem.title}</span>
-              </a>
-            ) : (
-              <div class="post-nav-placeholder" />
-            )
-          }
-        </nav>
+        {
+          showNav && (
+            <nav class="post-nav">
+              {prevItem ? (
+                <a href={prevItem.href} class="post-nav-link post-nav-prev">
+                  <span class="post-nav-label">← 上一篇</span>
+                  <span class="post-nav-title">{prevItem.title}</span>
+                </a>
+              ) : (
+                <div class="post-nav-placeholder" />
+              )}
+              {nextItem ? (
+                <a href={nextItem.href} class="post-nav-link post-nav-next">
+                  <span class="post-nav-label">下一篇 →</span>
+                  <span class="post-nav-title">{nextItem.title}</span>
+                </a>
+              ) : (
+                <div class="post-nav-placeholder" />
+              )}
+            </nav>
+          )
+        }
       </article>
     </div>
   </div>

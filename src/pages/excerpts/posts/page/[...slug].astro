@@ -51,10 +51,6 @@ const rereadStars = Math.min(
   Math.max(entry.data.rereadStars ?? 0, 0),
   maxStars,
 );
-const starStates = Array.from(
-  { length: maxStars },
-  (_, index) => index < rereadStars,
-);
 
 // 处理作者信息（兼容字符串和对象两种格式）
 const author = entry.data.author

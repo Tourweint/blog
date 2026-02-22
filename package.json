@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
+    "build:quiet": "astro build --silent && pagefind --site dist --quiet",
+    "build:silent": "astro build --silent && pagefind --site dist --silent",
+    "check": "astro check",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -17,6 +20,8 @@
     "rehype-external-links": "^3.0.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "typescript": "^5.9.3",
     "pagefind": "^1.4.0"
   }
 }

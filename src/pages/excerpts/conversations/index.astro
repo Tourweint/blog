@@ -2,7 +2,6 @@
 import MainLayout from "../../../layouts/mainlayout.astro";
 import "../../../styles/conversations.css";
 import { getCollection } from "astro:content";
-import type { CollectionEntry } from "astro:content";
 import ConversationCard from "../../../components/ConversationCard.astro";
 import { excerpts } from "../../../utils/excerptsPaths";
 
@@ -20,7 +19,6 @@ const allTags = [
 
 // 分页设置
 const ITEMS_PER_PAGE = 12;
-const totalPages = Math.ceil(conversations.length / ITEMS_PER_PAGE);
 const paginatedConversations = conversations.slice(0, ITEMS_PER_PAGE);
 ---
 
@@ -117,6 +115,7 @@ const paginatedConversations = conversations.slice(0, ITEMS_PER_PAGE);
 </MainLayout>
 
 <script
+  is:inline
   define:vars={{ ITEMS_PER_PAGE, conversations: conversations.length, allTags }}
 >
   const ITEMS_PER_PAGE_VALUE = ITEMS_PER_PAGE;

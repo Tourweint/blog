@@ -19,7 +19,6 @@ const guestPersons = (data.guests || [])
   )
   .filter(Boolean);
 
-const guestNames = guestPersons.map((p) => p?.data.name).join(" × ");
 const firstGuestAvatar = guestPersons[0]?.data.avatar;
 ---
 

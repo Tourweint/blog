@@ -13,6 +13,7 @@ export interface NavItem {
 export interface ContentDetailLayoutProps {
   seoTitle: string;
   contentTitle: string;
+  eyebrowText?: string;
   description?: string;
   image?: string;
   type?: "website" | "article";
@@ -37,4 +38,6 @@ export interface ContentDetailLayoutProps {
 
   prevItem?: NavItem | null;
   nextItem?: NavItem | null;
+
+  showNav?: boolean;
 }

@@ -82,7 +82,8 @@ const ITEMS_PER_PAGE = 12;
   </div>
 </MainLayout>
 
-<script define:vars={{ ITEMS_PER_PAGE, totalPersons: persons.length }}>
+<script is:inline define:vars={{ ITEMS_PER_PAGE, totalPersons: persons.length }}
+>
   const pills = Array.from(document.querySelectorAll(".pill"));
   const items = Array.from(document.querySelectorAll(".person-item"));
   const loadMoreBtn = document.getElementById("load-more");

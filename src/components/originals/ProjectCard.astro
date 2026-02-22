@@ -45,12 +45,15 @@ const displayTags = post.data.tags.filter((t) => {
 ---
 
 <article class="project-card">
+  <a
+    class="stretched-link"
+    href={`/originals/${post.slug}`}
+    aria-label={`打开项目：${post.data.title}`}></a>
+
   <header class="header">
     <div class="title-row">
       <h2 class="title">
-        <a class="title-link" href={`/originals/${post.slug}`}
-          >{post.data.title}</a
-        >
+        {post.data.title}
       </h2>
       {post.data.featured && <span class="badge">推荐</span>}
     </div>
@@ -64,16 +67,7 @@ const displayTags = post.data.tags.filter((t) => {
     }
   </header>
 
-  <div class="fields">
-    {
-      description && (
-        <div class="field">
-          <div class="label">简介</div>
-          <div class="value">{description}</div>
-        </div>
-      )
-    }
-  </div>
+  {description && <p class="summary">{description}</p>}
 
   <footer class="footer">
     <div class="meta">
@@ -87,7 +81,7 @@ const displayTags = post.data.tags.filter((t) => {
         }
       </time>
       {post.data.readingTime && <span class="dot">·</span>}
-      {post.data.readingTime && <span>{post.data.readingTime} min read</span>}
+      {post.data.readingTime && <span>{post.data.readingTime} 分钟阅读</span>}
     </div>
 
     {
@@ -131,12 +125,31 @@ const displayTags = post.data.tags.filter((t) => {
 
 <style>
   .project-card {
+    position: relative;
     background: var(--c-surface);
     border: 1px solid var(--c-rule);
     border-radius: var(--c-radius);
     padding: 1.5rem 1.6rem;
     box-shadow: var(--c-shadow);
     transition: all var(--c-dur) var(--c-ease);
+    cursor: pointer;
+  }
+
+  .stretched-link {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 0;
+  }
+
+  .stretched-link:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  .project-card > :not(.stretched-link) {
+    position: relative;
+    z-index: 1;
   }
 
   .project-card:hover {
@@ -165,16 +178,7 @@ const displayTags = post.data.tags.filter((t) => {
     font-weight: 650;
     line-height: 1.35;
     letter-spacing: -0.01em;
-  }
-
-  .title-link {
     color: var(--c-text);
-    text-decoration: none;
-  }
-
-  .title-link:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
   }
 
   .badge {
@@ -213,29 +217,10 @@ const displayTags = post.data.tags.filter((t) => {
     border: 1px solid rgba(0, 0, 0, 0.1);
   }
 
-  .fields {
-    margin-top: 0.95rem;
-    display: grid;
-    gap: 0.85rem;
-  }
-
-  .field {
-    display: grid;
-    grid-template-columns: 56px 1fr;
-    gap: 0.85rem;
-    align-items: baseline;
-  }
-
-  .label {
+  .summary {
+    margin: 0.65rem 0 0;
     color: var(--c-muted);
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-  }
-
-  .value {
-    color: var(--c-text);
-    line-height: 1.8;
+    line-height: 1.75;
     font-size: 0.98rem;
   }
 
@@ -330,10 +315,6 @@ const displayTags = post.data.tags.filter((t) => {
 
     .title {
       font-size: 1.18rem;
-    }
-
-    .field {
-      grid-template-columns: 48px 1fr;
     }
   }
 </style>

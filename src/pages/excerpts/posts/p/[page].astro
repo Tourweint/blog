@@ -152,7 +152,7 @@ const getPageUrl = (page: number) => excerpts.postsPage(page);
   </div>
 </MainLayout>
 
-<script define:vars={{ POST_DETAIL_PREFIX: excerpts.postDetail("") }}>
+<script is:inline define:vars={{ POST_DETAIL_PREFIX: excerpts.postDetail("") }}>
   const urlParams = new URLSearchParams(window.location.search);
   const scrollTarget = urlParams.get("scrollTo");
 

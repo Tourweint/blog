@@ -6,9 +6,22 @@
 npm run dev      # 本地开发热重载
 npm run build    # 生产构建（Astro 静态站点）
 npm run preview  # 预览已构建站点
+
+# 更快/更安静的校验与构建（推荐）
+npm run check        # 优先：只做项目检查（输出更少）
+npm run build:quiet  # 安静构建：关闭 Astro 日志 + Pagefind 仅输出 warning/error
+npm run build:silent # 极安静构建：关闭 Astro 日志 + Pagefind 仅输出 error
 ```
 
 当前项目无测试脚本；`npm run build` 会校验所有 frontmatter（依赖 Zod）。
+
+### 精简构建输出（避免长日志淹没上下文）
+
+- 日常验证优先顺序：`npm run check` → `npm run build:quiet` →（仅排障时）`npm run build`
+- 安静构建的原理：
+  - Astro 支持 `--silent` 关闭日志
+  - Pagefind 支持 `--quiet/--silent` 只输出更关键的信息
+- 当需要把日志粘贴到对话里时：只贴“报错段 + 前后少量上下文”（例如最后 40-80 行），避免整段构建输出占用上下文。
 
 ## 代码与内容规范
 

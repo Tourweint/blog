@@ -8,13 +8,13 @@ type Props = {
 const { post } = Astro.props;
 ---
 
-<article class="systems-card">
+<a
+  class="systems-card"
+  href={`/originals/${post.slug}`}
+  aria-label={`打开原论：${post.data.title}`}
+>
   <header class="header">
-    <h2 class="title">
-      <a class="title-link" href={`/originals/${post.slug}`}
-        >{post.data.title}</a
-      >
-    </h2>
+    <h2 class="title">{post.data.title}</h2>
     {post.data.featured && <span class="badge">推荐</span>}
   </header>
 
@@ -31,7 +31,7 @@ const { post } = Astro.props;
       }
     </time>
     {post.data.readingTime && <span class="dot">·</span>}
-    {post.data.readingTime && <span>{post.data.readingTime} min read</span>}
+    {post.data.readingTime && <span>{post.data.readingTime} 分钟阅读</span>}
 
     {post.data.tags.length > 0 && <span class="dot">·</span>}
     {
@@ -44,16 +44,18 @@ const { post } = Astro.props;
       )
     }
   </footer>
-</article>
+</a>
 
 <style>
   .systems-card {
+    display: block;
     background: var(--c-surface);
     border: 1px solid var(--c-rule);
     border-radius: var(--c-radius);
     padding: 1.5rem 1.6rem;
     box-shadow: var(--c-shadow);
     transition: all var(--c-dur) var(--c-ease);
+    text-decoration: none;
   }
 
   .systems-card:hover {
@@ -76,16 +78,7 @@ const { post } = Astro.props;
     font-weight: 650;
     line-height: 1.35;
     letter-spacing: -0.01em;
-  }
-
-  .title-link {
     color: var(--c-text);
-    text-decoration: none;
-  }
-
-  .title-link:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
   }
 
   .badge {
@@ -95,7 +88,6 @@ const { post } = Astro.props;
     border-radius: 999px;
     font-size: 0.78rem;
     font-weight: 600;
-    color: #ffffff;
     background: rgba(0, 0, 0, 0.06);
     color: var(--c-text);
     white-space: nowrap;

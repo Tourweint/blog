@@ -25,25 +25,6 @@ const rawNotes = (await getCollection("notes")).sort(
   (a, b) => resolveDate(b.data).getTime() - resolveDate(a.data).getTime(),
 );
 
-// Group notes by Year and Month for archive links
-const timelineGroups = rawNotes.reduce(
-  (acc: any, note) => {
-    const date = resolveDate(note.data);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const yKey = year.toString();
-    if (!acc[yKey]) acc[yKey] = {};
-    if (!acc[yKey][month]) acc[yKey][month] = [];
-    acc[yKey][month].push(note);
-    return acc;
-  },
-  {} as Record<string, Record<string, any[]>>,
-);
-
-const sortedYears = Object.keys(timelineGroups).sort(
-  (a, b) => parseInt(b) - parseInt(a),
-);
-
 const notes = await Promise.all(
   rawNotes.map(async (note) => {
     const { Content } = await render(note);
@@ -95,8 +76,6 @@ notes.forEach((note) => {
   }
   displayGroups.push({ type: "note", note });
 });
-
-const ITEMS_PER_PAGE = 18;
 ---
 
 <MainLayout title="句子簿 - Tourweint/多鸣" description="轻量想法与摘抄">
