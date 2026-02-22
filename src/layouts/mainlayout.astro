@@ -36,6 +36,7 @@ const isHome = pathname === "/" || pathname === "/index";
 const isOriginals = pathname.startsWith("/originals");
 const isExcerpts = pathname.startsWith("/excerpts");
 const isAbout = pathname.startsWith("/about");
+const isSearch = pathname.startsWith("/search");
 
 const bodyClasses: string[] = ["site-body"];
 
@@ -49,6 +50,10 @@ if (pathname.startsWith("/about/about")) {
 
 if (pathname.startsWith("/about/tools")) {
   bodyClasses.push("page-tools");
+}
+
+if (pathname.startsWith("/search")) {
+  bodyClasses.push("page-search");
 }
 
 if (
@@ -232,6 +237,11 @@ const bodyClass = bodyClasses.join(" ");
             </a>
           </li>
           <li>
+            <a href="/search" class={`nav-link${isSearch ? " is-active" : ""}`}>
+              搜索
+            </a>
+          </li>
+          <li>
             <a
               href="/about/about"
               class={`nav-link${isAbout ? " is-active" : ""}`}
@@ -266,6 +276,9 @@ const bodyClass = bodyClasses.join(" ");
         >
           摘录
         </a>
+        <a class={`drawer-link${isSearch ? " is-active" : ""}`} href="/search">
+          搜索
+        </a>
         <a
           class={`drawer-link${isAbout ? " is-active" : ""}`}
           href="/about/about"
@@ -275,7 +288,7 @@ const bodyClass = bodyClasses.join(" ");
       </nav>
     </aside>
 
-    <main class="page-content">
+    <main class="page-content" data-pagefind-body>
       <slot />
     </main>
 

@@ -1,0 +1,188 @@
+---
+import MainLayout from "../layouts/mainlayout.astro";
+import "../styles/search.css";
+---
+
+<MainLayout
+  title="搜索 - Tourweint/多鸣"
+  description="在站内搜索摘录与原创内容"
+>
+  <section class="search-page" aria-labelledby="search-title">
+    <header class="search-page__header">
+      <p class="search-page__eyebrow">站内检索</p>
+      <h1 id="search-title" class="search-page__title">搜索文章与摘录</h1>
+      <p class="search-page__sub">输入关键词，快速查找你想读的内容。</p>
+    </header>
+
+    <form
+      class="search-form"
+      data-search-form
+      role="search"
+      aria-label="站内搜索"
+    >
+      <label class="search-form__label" for="search-query">搜索关键词</label>
+      <div class="search-form__row">
+        <input
+          id="search-query"
+          name="q"
+          type="search"
+          class="search-form__input"
+          placeholder="例如：独立思考、道德经、AGI"
+          autocomplete="off"
+          data-search-input
+        />
+        <button type="submit" class="search-form__button">搜索</button>
+      </div>
+    </form>
+
+    <p class="search-status" data-search-status>输入关键词开始搜索。</p>
+    <ul class="search-results" data-search-results aria-live="polite"></ul>
+  </section>
+</MainLayout>
+
+<script>
+  {
+    const form = document.querySelector(
+      "[data-search-form]",
+    ) as HTMLFormElement | null;
+    const input = document.querySelector(
+      "[data-search-input]",
+    ) as HTMLInputElement | null;
+    const status = document.querySelector(
+      "[data-search-status]",
+    ) as HTMLParagraphElement | null;
+    const results = document.querySelector(
+      "[data-search-results]",
+    ) as HTMLUListElement | null;
+
+    let pagefindModule: {
+      search: (
+        term: string,
+      ) => Promise<{
+        results: Array<{
+          data: () => Promise<{
+            url: string;
+            excerpt?: string;
+            meta: { title?: string };
+          }>;
+        }>;
+      }>;
+    } | null = null;
+
+    const setStatus = (text: string) => {
+      if (status) status.textContent = text;
+    };
+
+    const escapeHtml = (text: string) =>
+      text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+
+    const createResultItem = (
+      title: string,
+      url: string,
+      excerptHtml: string,
+    ) => {
+      const li = document.createElement("li");
+      li.className = "search-result-item";
+
+      const safeTitle = escapeHtml(title);
+      const safeUrl = escapeHtml(url);
+
+      li.innerHTML = `
+        <a class="search-result-item__link" href="${safeUrl}">
+          <h2 class="search-result-item__title">${safeTitle}</h2>
+          <p class="search-result-item__excerpt">${excerptHtml}</p>
+        </a>
+      `;
+
+      return li;
+    };
+
+    const clearResults = () => {
+      if (results) results.innerHTML = "";
+    };
+
+    const ensurePagefind = async () => {
+      if (pagefindModule) return pagefindModule;
+      setStatus("正在加载检索索引...");
+
+      try {
+        const modulePath = "/pagefind/pagefind.js";
+        pagefindModule = await import(/* @vite-ignore */ modulePath);
+        return pagefindModule;
+      } catch {
+        setStatus(
+          "索引尚未生成。请先运行 npm run build，再用 npm run preview 体验检索。",
+        );
+        return null;
+      }
+    };
+
+    const renderSearchResults = async (keyword: string) => {
+      const normalizedKeyword = keyword.trim();
+
+      if (!normalizedKeyword) {
+        clearResults();
+        setStatus("输入关键词开始搜索。");
+        return;
+      }
+
+      const pagefind = await ensurePagefind();
+      if (!pagefind || !results) return;
+
+      setStatus(`正在搜索“${normalizedKeyword}”...`);
+
+      const search = await pagefind.search(normalizedKeyword);
+
+      clearResults();
+
+      if (!search || search.results.length === 0) {
+        setStatus(`没有找到与“${normalizedKeyword}”相关的内容。`);
+        return;
+      }
+
+      const matches = await Promise.all(
+        search.results.slice(0, 20).map((item) => item.data()),
+      );
+
+      matches.forEach((item) => {
+        const title = item.meta.title || item.url;
+        const excerpt = item.excerpt || "暂无摘要";
+        results.appendChild(createResultItem(title, item.url, excerpt));
+      });
+
+      setStatus(
+        `找到 ${search.results.length} 条结果，当前展示前 ${matches.length} 条。`,
+      );
+    };
+
+    const setQueryInUrl = (keyword: string) => {
+      const current = new URL(window.location.href);
+      if (keyword.trim()) {
+        current.searchParams.set("q", keyword.trim());
+      } else {
+        current.searchParams.delete("q");
+      }
+      history.replaceState(null, "", `${current.pathname}${current.search}`);
+    };
+
+    if (form && input) {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const keyword = input.value;
+        setQueryInUrl(keyword);
+        await renderSearchResults(keyword);
+      });
+
+      const q = new URLSearchParams(window.location.search).get("q") || "";
+      if (q) {
+        input.value = q;
+        renderSearchResults(q);
+      }
+    }
+  }
+</script>
