@@ -3,9 +3,10 @@ import type { CollectionEntry } from "astro:content";
 
 type Props = {
   post: CollectionEntry<"originals">;
+  listHref: string;
 };
 
-const { post } = Astro.props;
+const { post, listHref } = Astro.props;
 
 const pickStatus = (tags: string[]): "done" | "wip" | undefined => {
   const lowered = tags.map((t) => t.toLowerCase());
@@ -40,9 +41,15 @@ const displayTags = post.data.tags.filter((t) => {
   const lowered = t.toLowerCase();
   return lowered !== "wip" && lowered !== "todo" && lowered !== "done";
 });
+
+const tagHref = (tag: string) => `${listHref}?tag=${encodeURIComponent(tag)}`;
 ---
 
-<article class="project-card">
+<article
+  class="project-card"
+  data-originals-item
+  data-tags={JSON.stringify(displayTags)}
+>
   <a
     class="stretched-link"
     href={`/originals/${post.slug}`}
@@ -85,7 +92,14 @@ const displayTags = post.data.tags.filter((t) => {
       displayTags.length > 0 && (
         <span class="tags" aria-label="标签">
           {displayTags.slice(0, 4).map((tag) => (
-            <span class="tag">{tag}</span>
+            <a
+              class="tag"
+              href={tagHref(tag)}
+              data-originals-tag={tag}
+              aria-label={`按标签筛选：${tag}`}
+            >
+              {tag}
+            </a>
           ))}
         </span>
       )
@@ -109,7 +123,7 @@ const displayTags = post.data.tags.filter((t) => {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    z-index: 3;
+    z-index: 1;
     display: block;
   }
 
@@ -150,6 +164,7 @@ const displayTags = post.data.tags.filter((t) => {
     line-height: 1.35;
     letter-spacing: -0.01em;
     color: var(--c-text);
+    font-family: var(--t-font-serif);
   }
 
   .badge {
@@ -217,12 +232,25 @@ const displayTags = post.data.tags.filter((t) => {
   }
 
   .tag {
+    position: relative;
+    z-index: 3;
     padding: 0.18rem 0.5rem;
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.04);
     color: var(--c-muted);
     font-size: 0.78rem;
     font-weight: 500;
+    text-decoration: none;
+    transition: all var(--c-dur) var(--c-ease);
+  }
+
+  .tag:hover {
+    color: var(--c-text);
+  }
+
+  .tag:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
   }
 
   @media (max-width: 768px) {

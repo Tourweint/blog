@@ -1,13 +1,35 @@
 ---
 import { getCollection } from "astro:content";
-import MainLayout from "../../../layouts/mainlayout.astro";
-import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
-import ProjectCard from "../../../components/originals/ProjectCard.astro";
-import Pagination from "../../../components/Pagination.astro";
-import "../../../styles/originals/originals.css";
-import "../../../styles/originals/projects.css";
+import MainLayout from "../../../../../layouts/mainlayout.astro";
+import OriginalsFilter from "../../../../../components/originals/OriginalsFilter.astro";
+import ProjectCard from "../../../../../components/originals/ProjectCard.astro";
+import Pagination from "../../../../../components/Pagination.astro";
+import "../../../../../styles/originals/originals.css";
+import "../../../../../styles/originals/projects.css";
 
 export const PAGE_SIZE = 12;
+
+const isStatusTag = (tag: string) => {
+  const lowered = tag.toLowerCase();
+  return lowered === "wip" || lowered === "todo" || lowered === "done";
+};
+
+export async function getStaticPaths() {
+  const allOriginals = await getCollection("originals");
+  const projectsPosts = allOriginals
+    .filter((post) => post.data.category === "projects")
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+  const totalPages = Math.ceil(projectsPosts.length / PAGE_SIZE);
+  if (totalPages <= 1) return [];
+
+  return Array.from({ length: totalPages - 1 }, (_, index) => {
+    const page = index + 2;
+    return {
+      params: { page: page.toString() },
+    };
+  });
+}
 
 const allOriginals = await getCollection("originals");
 const projectsPosts = allOriginals
@@ -17,9 +39,10 @@ const projectsPosts = allOriginals
 const listIndexHref = "/originals/projects/projects";
 const listBaseHref = Astro.url.pathname;
 
+const currentPage = Number(Astro.params.page);
 const totalPages = Math.ceil(projectsPosts.length / PAGE_SIZE);
-const currentPage = 1;
-const paginatedPosts = projectsPosts.slice(0, PAGE_SIZE);
+const startIndex = (currentPage - 1) * PAGE_SIZE;
+const paginatedPosts = projectsPosts.slice(startIndex, startIndex + PAGE_SIZE);
 
 const getPageUrl = (page: number) =>
   page === 1 ? listIndexHref : `${listIndexHref}/p/${page}`;
@@ -37,11 +60,6 @@ const counts = {
   projects: projectsPosts.length,
 };
 
-const isStatusTag = (tag: string) => {
-  const lowered = tag.toLowerCase();
-  return lowered === "wip" || lowered === "todo" || lowered === "done";
-};
-
 const tagCountsMap = new Map<string, number>();
 for (const post of projectsPosts) {
   const filtered = (post.data.tags ?? []).filter((t) => !isStatusTag(t));
@@ -57,8 +75,8 @@ const tagCounts = Array.from(tagCountsMap.entries())
 ---
 
 <MainLayout
-  title="项目 / 实验 - 原创"
-  description="我做过的项目、实验与背后的动机"
+  title={`项目 / 实验 - 原创（第 ${currentPage} 页）`}
+  description={`我做过的项目、实验与背后的动机（第 ${currentPage} 页）`}
   wide={true}
 >
   <div class="projects-page">
@@ -108,24 +126,13 @@ const tagCounts = Array.from(tagCountsMap.entries())
       }
 
       <main class="originals-main">
-        {
-          projectsPosts.length > 0 ? (
-            <section class="projects-list">
-              {paginatedPosts.map((post) => (
-                <ProjectCard post={post} listHref={listBaseHref} />
-              ))}
-            </section>
-          ) : (
-            <section class="projects-placeholder">
-              <div class="placeholder-icon">🔬</div>
-              <h2 class="placeholder-title">暂无内容</h2>
-              <p class="placeholder-text">
-                这里会持续记录我的项目、实验与思考。
-              </p>
-              <p class="placeholder-text">目前还没有条目，稍后再来看看。</p>
-            </section>
-          )
-        }
+        <section class="projects-list">
+          {
+            paginatedPosts.map((post) => (
+              <ProjectCard post={post} listHref={listBaseHref} />
+            ))
+          }
+        </section>
 
         <section class="projects-placeholder" data-originals-empty hidden>
           <div class="placeholder-icon">🏷️</div>

@@ -1,13 +1,30 @@
 ---
 import { getCollection } from "astro:content";
-import MainLayout from "../../../layouts/mainlayout.astro";
-import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
-import FragmentCard from "../../../components/originals/FragmentCard.astro";
-import Pagination from "../../../components/Pagination.astro";
-import "../../../styles/originals/originals.css";
-import "../../../styles/originals/fragments.css";
+import MainLayout from "../../../../../layouts/mainlayout.astro";
+import OriginalsFilter from "../../../../../components/originals/OriginalsFilter.astro";
+import FragmentCard from "../../../../../components/originals/FragmentCard.astro";
+import Pagination from "../../../../../components/Pagination.astro";
+import "../../../../../styles/originals/originals.css";
+import "../../../../../styles/originals/fragments.css";
 
 export const PAGE_SIZE = 12;
+
+export async function getStaticPaths() {
+  const allOriginals = await getCollection("originals");
+  const fragmentsPosts = allOriginals
+    .filter((post) => post.data.category === "fragments")
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+  const totalPages = Math.ceil(fragmentsPosts.length / PAGE_SIZE);
+  if (totalPages <= 1) return [];
+
+  return Array.from({ length: totalPages - 1 }, (_, index) => {
+    const page = index + 2;
+    return {
+      params: { page: page.toString() },
+    };
+  });
+}
 
 const allOriginals = await getCollection("originals");
 const fragmentsPosts = allOriginals
@@ -17,9 +34,10 @@ const fragmentsPosts = allOriginals
 const listIndexHref = "/originals/fragments/fragments";
 const listBaseHref = Astro.url.pathname;
 
+const currentPage = Number(Astro.params.page);
 const totalPages = Math.ceil(fragmentsPosts.length / PAGE_SIZE);
-const currentPage = 1;
-const paginatedPosts = fragmentsPosts.slice(0, PAGE_SIZE);
+const startIndex = (currentPage - 1) * PAGE_SIZE;
+const paginatedPosts = fragmentsPosts.slice(startIndex, startIndex + PAGE_SIZE);
 
 const getPageUrl = (page: number) =>
   page === 1 ? listIndexHref : `${listIndexHref}/p/${page}`;
@@ -51,8 +69,8 @@ const tagCounts = Array.from(tagCountsMap.entries())
 ---
 
 <MainLayout
-  title="片段 - 原创"
-  description="灵感、未完成想法与判断的集合"
+  title={`片段 - 原创（第 ${currentPage} 页）`}
+  description={`灵感、未完成想法与判断的集合（第 ${currentPage} 页）`}
   wide={true}
 >
   <div class="fragments-page">
@@ -102,24 +120,13 @@ const tagCounts = Array.from(tagCountsMap.entries())
       }
 
       <main class="originals-main">
-        {
-          fragmentsPosts.length > 0 ? (
-            <section class="fragments-list">
-              {paginatedPosts.map((post) => (
-                <FragmentCard post={post} listHref={listBaseHref} />
-              ))}
-            </section>
-          ) : (
-            <section class="fragments-placeholder">
-              <div class="placeholder-icon">💡</div>
-              <h2 class="placeholder-title">暂无内容</h2>
-              <p class="placeholder-text">
-                这里会持续收录我的原创灵感片段与短思考。
-              </p>
-              <p class="placeholder-text">目前还没有片段，稍后再来看看。</p>
-            </section>
-          )
-        }
+        <section class="fragments-list">
+          {
+            paginatedPosts.map((post) => (
+              <FragmentCard post={post} listHref={listBaseHref} />
+            ))
+          }
+        </section>
 
         <section class="fragments-placeholder" data-originals-empty hidden>
           <div class="placeholder-icon">🏷️</div>

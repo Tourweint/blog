@@ -3,16 +3,23 @@ import type { CollectionEntry } from "astro:content";
 
 type Props = {
   post: CollectionEntry<"originals">;
+  listHref: string;
 };
 
-const { post } = Astro.props;
+const { post, listHref } = Astro.props;
+
+const tagHref = (tag: string) => `${listHref}?tag=${encodeURIComponent(tag)}`;
 ---
 
-<a
+<article
   class="systems-card"
-  href={`/originals/${post.slug}`}
-  aria-label={`打开原论：${post.data.title}`}
+  data-originals-item
+  data-tags={JSON.stringify(post.data.tags ?? [])}
 >
+  <a
+    class="stretched-link"
+    href={`/originals/${post.slug}`}
+    aria-label={`打开原论：${post.data.title}`}></a>
   <header class="header">
     <h2 class="title">{post.data.title}</h2>
     {post.data.featured && <span class="badge">推荐</span>}
@@ -38,16 +45,24 @@ const { post } = Astro.props;
       post.data.tags.length > 0 && (
         <span class="tags" aria-label="标签">
           {post.data.tags.slice(0, 4).map((tag) => (
-            <span class="tag">{tag}</span>
+            <a
+              class="tag"
+              href={tagHref(tag)}
+              data-originals-tag={tag}
+              aria-label={`按标签筛选：${tag}`}
+            >
+              {tag}
+            </a>
           ))}
         </span>
       )
     }
   </footer>
-</a>
+</article>
 
 <style>
   .systems-card {
+    position: relative;
     display: block;
     background: var(--c-surface);
     border: 1px solid var(--c-rule);
@@ -56,6 +71,23 @@ const { post } = Astro.props;
     box-shadow: var(--c-shadow);
     transition: all var(--c-dur) var(--c-ease);
     text-decoration: none;
+  }
+
+  .stretched-link {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 2;
+    display: block;
+  }
+
+  .stretched-link:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  .systems-card > :not(.stretched-link) {
+    position: relative;
   }
 
   .systems-card:hover {
@@ -79,6 +111,7 @@ const { post } = Astro.props;
     line-height: 1.35;
     letter-spacing: -0.01em;
     color: var(--c-text);
+    font-family: var(--t-font-serif);
   }
 
   .badge {
@@ -122,12 +155,25 @@ const { post } = Astro.props;
   }
 
   .tag {
+    position: relative;
+    z-index: 3;
     padding: 0.18rem 0.5rem;
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.04);
     color: var(--c-muted);
     font-size: 0.78rem;
     font-weight: 500;
+    text-decoration: none;
+    transition: all var(--c-dur) var(--c-ease);
+  }
+
+  .tag:hover {
+    color: var(--c-text);
+  }
+
+  .tag:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
   }
 
   @media (max-width: 768px) {

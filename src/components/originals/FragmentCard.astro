@@ -4,20 +4,29 @@ import type { CollectionEntry } from "astro:content";
 type Props = {
   post: CollectionEntry<"originals">;
   maxChars?: number;
+  listHref: string;
 };
 
-const { post, maxChars = 200 } = Astro.props;
+const { post, maxChars = 200, listHref } = Astro.props;
 
 const sourceText = post.data.description ?? post.data.title;
 const isShort = sourceText.length <= maxChars;
 const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`;
+
+const tagHref = (tag: string) => `${listHref}?tag=${encodeURIComponent(tag)}`;
 ---
 
-<a
+<article
   class="fragment-card"
-  href={`/originals/${post.slug}`}
-  aria-label={`打开片段：${post.data.title}`}
+  data-originals-item
+  data-tags={JSON.stringify(post.data.tags ?? [])}
 >
+  <a
+    class="stretched-link"
+    href={`/originals/${post.slug}`}
+    aria-label={`打开片段：${post.data.title}`}
+  >
+  </a>
   <div class="content">{displayText}</div>
 
   <footer class="meta">
@@ -35,7 +44,14 @@ const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`
       post.data.tags.length > 0 && (
         <span class="tags" aria-label="来源与标签">
           {post.data.tags.slice(0, 4).map((tag) => (
-            <span class="tag">#{tag}</span>
+            <a
+              class="tag"
+              href={tagHref(tag)}
+              data-originals-tag={tag}
+              aria-label={`按标签筛选：${tag}`}
+            >
+              #{tag}
+            </a>
           ))}
         </span>
       )
@@ -43,10 +59,11 @@ const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`
 
     {!isShort && <span class="more">阅读全文 →</span>}
   </footer>
-</a>
+</article>
 
 <style>
   .fragment-card {
+    position: relative;
     display: block;
     text-decoration: none;
     background: var(--c-surface);
@@ -55,6 +72,23 @@ const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`
     padding: 1.25rem 1.35rem;
     box-shadow: var(--c-shadow);
     transition: all var(--c-dur) var(--c-ease);
+  }
+
+  .stretched-link {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 2;
+    display: block;
+  }
+
+  .stretched-link:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  .fragment-card > :not(.stretched-link) {
+    position: relative;
   }
 
   .fragment-card:hover {
@@ -89,12 +123,26 @@ const displayText = isShort ? sourceText : `${sourceText.slice(0, maxChars)}…`
   }
 
   .tag {
+    position: relative;
+    z-index: 3;
     color: var(--c-muted);
     background: rgba(0, 0, 0, 0.04);
     border: 1px solid rgba(0, 0, 0, 0.08);
     padding: 0.15rem 0.5rem;
     border-radius: 999px;
     font-size: 0.78rem;
+    text-decoration: none;
+    transition: all var(--c-dur) var(--c-ease);
+  }
+
+  .tag:hover {
+    color: var(--c-text);
+    border-color: rgba(0, 0, 0, 0.16);
+  }
+
+  .tag:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
   }
 
   .more {

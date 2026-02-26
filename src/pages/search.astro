@@ -20,7 +20,12 @@ import "../styles/search.css";
       role="search"
       aria-label="站内搜索"
     >
-      <label class="search-form__label" for="search-query">搜索关键词</label>
+      <div class="search-form__meta">
+        <label class="search-form__label" for="search-query">搜索关键词</label>
+        <p class="search-status search-status--inline" data-search-status>
+          输入关键词开始搜索。
+        </p>
+      </div>
       <div class="search-form__row">
         <input
           id="search-query"
@@ -34,8 +39,6 @@ import "../styles/search.css";
         <button type="submit" class="search-form__button">搜索</button>
       </div>
     </form>
-
-    <p class="search-status" data-search-status>输入关键词开始搜索。</p>
     <ul class="search-results" data-search-results aria-live="polite"></ul>
   </section>
 </MainLayout>
@@ -56,9 +59,7 @@ import "../styles/search.css";
     ) as HTMLUListElement | null;
 
     let pagefindModule: {
-      search: (
-        term: string,
-      ) => Promise<{
+      search: (term: string) => Promise<{
         results: Array<{
           data: () => Promise<{
             url: string;
@@ -145,18 +146,79 @@ import "../styles/search.css";
         return;
       }
 
+      const MAX_RESULTS_TO_RENDER = 20;
+      const MAX_RESULTS_TO_EVALUATE = 80;
+
       const matches = await Promise.all(
-        search.results.slice(0, 20).map((item) => item.data()),
+        search.results
+          .slice(0, MAX_RESULTS_TO_EVALUATE)
+          .map((item) => item.data()),
       );
 
-      matches.forEach((item) => {
+      const resolvePathname = (rawUrl: string) => {
+        try {
+          return new URL(rawUrl, window.location.origin).pathname;
+        } catch {
+          return rawUrl;
+        }
+      };
+
+      const isContentDetailPage = (pathname: string) => {
+        const normalized =
+          pathname.endsWith("/") && pathname !== "/"
+            ? pathname.slice(0, -1)
+            : pathname;
+
+        if (normalized.startsWith("/excerpts/notes")) return false;
+
+        if (normalized.startsWith("/excerpts/posts/page/")) return true;
+
+        if (
+          normalized.startsWith("/excerpts/persons/") &&
+          normalized !== "/excerpts/persons"
+        ) {
+          return true;
+        }
+
+        if (
+          normalized.startsWith("/excerpts/conversations/") &&
+          normalized !== "/excerpts/conversations"
+        ) {
+          return true;
+        }
+
+        const disallowedOriginals = new Set([
+          "/originals/fragments/fragments",
+          "/originals/projects/projects",
+          "/originals/systems/systems",
+        ]);
+
+        if (disallowedOriginals.has(normalized)) return false;
+
+        if (normalized.startsWith("/originals/fragments/")) return true;
+        if (normalized.startsWith("/originals/projects/")) return true;
+        if (normalized.startsWith("/originals/systems/")) return true;
+
+        return false;
+      };
+
+      const filteredMatches = matches
+        .filter((item) => isContentDetailPage(resolvePathname(item.url)))
+        .slice(0, MAX_RESULTS_TO_RENDER);
+
+      if (filteredMatches.length === 0) {
+        setStatus(`没有找到与“${normalizedKeyword}”相关的正文内容。`);
+        return;
+      }
+
+      filteredMatches.forEach((item) => {
         const title = item.meta.title || item.url;
         const excerpt = item.excerpt || "暂无摘要";
         results.appendChild(createResultItem(title, item.url, excerpt));
       });
 
       setStatus(
-        `找到 ${search.results.length} 条结果，当前展示前 ${matches.length} 条。`,
+        `找到 ${search.results.length} 条结果，当前展示正文页 ${filteredMatches.length} 条。`,
       );
     };
 

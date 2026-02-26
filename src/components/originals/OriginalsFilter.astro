@@ -47,22 +47,288 @@ const tabs: Array<{
     label="回到原触发"
     className="originals-back-link"
   />
-  <div class="pills" role="tablist" aria-label="分类">
-    {
-      tabs.map((tab) => (
-        <a
-          class={`pill ${tab.key === active ? "is-active" : ""}`}
-          href={tab.href}
-          role="tab"
-          aria-selected={tab.key === active ? "true" : "false"}
-        >
-          <span class="pill-label">{tab.label}</span>
-          <span class="pill-count">{tab.count}</span>
-        </a>
-      ))
-    }
+  <div class="controls">
+    <div class="pills" role="tablist" aria-label="分类">
+      {
+        tabs.map((tab) => (
+          <a
+            class={`pill ${tab.key === active ? "is-active" : ""}`}
+            href={tab.href}
+            role="tab"
+            aria-selected={tab.key === active ? "true" : "false"}
+          >
+            <span class="pill-label">{tab.label}</span>
+            <span class="pill-count">{tab.count}</span>
+          </a>
+        ))
+      }
+    </div>
   </div>
 </nav>
+
+<script is:inline>
+  const isDebug = () =>
+    new URLSearchParams(window.location.search).get("debugOriginals") === "1";
+
+  const debug = (...args) => {
+    if (!isDebug()) return;
+    // eslint-disable-next-line no-console
+    console.log("[originals-tagfilter]", ...args);
+  };
+
+  const readTagFromUrl = () => {
+    const raw = new URLSearchParams(window.location.search).get("tag");
+    return raw ? raw.trim() : "";
+  };
+
+  const setUrlTag = (tag) => {
+    const url = new URL(window.location.href);
+    if (tag) url.searchParams.set("tag", tag);
+    else url.searchParams.delete("tag");
+    window.history.replaceState({}, "", url);
+  };
+
+  const withTagSearch = (href, tag) => {
+    if (!tag) return href;
+    try {
+      const url = new URL(href, window.location.origin);
+      url.searchParams.set("tag", tag);
+      return url.pathname + url.search + url.hash;
+    } catch {
+      return href;
+    }
+  };
+
+  const syncPaginationLinks = (tag) => {
+    if (!tag) return;
+
+    const links = Array.from(
+      document.querySelectorAll(
+        ".pagination-container a.page-btn:not(.disabled)",
+      ),
+    );
+    for (const a of links) {
+      if (!(a instanceof HTMLAnchorElement)) continue;
+      const href = a.getAttribute("href") || "";
+      if (!href || href === "#") continue;
+      a.setAttribute("href", withTagSearch(href, tag));
+    }
+  };
+
+  const parseTags = (el) => {
+    const raw = el.getAttribute("data-tags") || "[]";
+    try {
+      const tags = JSON.parse(raw);
+      if (!Array.isArray(tags)) return [];
+
+      return tags
+        .filter((t) => typeof t === "string")
+        .map((t) => t.trim())
+        .filter(Boolean);
+    } catch {
+      return [];
+    }
+  };
+
+  const ensureDebugOverlay = () => {
+    if (!isDebug()) return null;
+
+    let el = document.getElementById("originals-tagfilter-debug");
+    if (el) return el;
+
+    el = document.createElement("div");
+    el.id = "originals-tagfilter-debug";
+    el.setAttribute("role", "status");
+    el.style.position = "fixed";
+    el.style.right = "12px";
+    el.style.bottom = "12px";
+    el.style.zIndex = "9999";
+    el.style.maxWidth = "min(92vw, 420px)";
+    el.style.padding = "10px 12px";
+    el.style.borderRadius = "12px";
+    el.style.border = "1px solid rgba(0,0,0,0.15)";
+    el.style.background = "rgba(255,255,255,0.92)";
+    el.style.color = "#111827";
+    el.style.font =
+      "12px/1.45 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+    el.style.boxShadow = "0 8px 24px rgba(0,0,0,0.14)";
+    el.style.backdropFilter = "blur(6px)";
+    el.style.whiteSpace = "pre-wrap";
+
+    document.body.appendChild(el);
+    return el;
+  };
+
+  const applyTagFilter = (tag) => {
+    const items = Array.from(
+      document.querySelectorAll("[data-originals-item]"),
+    );
+    const empty = document.querySelector("[data-originals-empty]");
+
+    debug("apply", { tag, items: items.length, hasEmpty: !!empty });
+
+    let visible = 0;
+    for (const item of items) {
+      if (!tag) {
+        item.hidden = false;
+        item.setAttribute("data-originals-hidden", "0");
+        visible += 1;
+        continue;
+      }
+
+      const tags = parseTags(item);
+      const match = tags.includes(tag);
+      item.hidden = !match;
+      item.setAttribute("data-originals-hidden", item.hidden ? "1" : "0");
+      if (match) visible += 1;
+    }
+
+    if (empty) empty.hidden = !tag || visible > 0;
+
+    debug("result", { tag, visible });
+
+    const overlay = ensureDebugOverlay();
+    if (overlay) {
+      const preview = items.slice(0, 12).map((item, idx) => {
+        const tags = parseTags(item);
+        return `${String(idx + 1).padStart(2, "0")}. hidden=${item.hidden ? "1" : "0"} tags=[${tags.join(", ")}]`;
+      });
+
+      const lines = [
+        `tag: ${tag || "(all)"}`,
+        `items: ${items.length}`,
+        `visible: ${visible}`,
+        empty
+          ? `emptyBlock: ${empty.hidden ? "hidden" : "shown"}`
+          : "emptyBlock: (none)",
+        preview.length ? "----\n" + preview.join("\n") : "",
+      ];
+      overlay.textContent = lines.filter(Boolean).join("\n");
+    }
+
+    const pills = Array.from(
+      document.querySelectorAll(".tagpill[data-originals-tag]"),
+    );
+    for (const pill of pills) {
+      const pillTag = pill.getAttribute("data-originals-tag") || "";
+      const isActive = pillTag === tag;
+      pill.classList.toggle("is-active", isActive);
+      if (isActive) pill.setAttribute("aria-current", "page");
+      else pill.removeAttribute("aria-current");
+    }
+
+    syncPaginationLinks(tag);
+  };
+
+  let currentTag = "";
+
+  const runFilter = () => {
+    currentTag = readTagFromUrl();
+    applyTagFilter(currentTag);
+  };
+
+  const ensureFilterApplied = () => {
+    // 有些情况下（例如 HTML 后续注入/切换视图），初次执行时 items 还未挂载。
+    // 这里做一次短暂观察，直到 items 出现后再重跑筛选。
+    const initialCount = document.querySelectorAll(
+      "[data-originals-item]",
+    ).length;
+    if (initialCount > 0) return;
+
+    debug("no items yet; observing DOM");
+    const observer = new MutationObserver(() => {
+      const count = document.querySelectorAll("[data-originals-item]").length;
+      if (count > 0) {
+        debug("items appeared", { count });
+        observer.disconnect();
+        runFilter();
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    // 兜底：1s 后停止观察，避免长期占用。
+    setTimeout(() => {
+      observer.disconnect();
+      debug("stop observing");
+    }, 1000);
+  };
+
+  const init = () => {
+    runFilter();
+    ensureFilterApplied();
+    syncPaginationLinks(currentTag);
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      window.requestAnimationFrame(init);
+    });
+  } else {
+    window.requestAnimationFrame(init);
+  }
+
+  document.addEventListener("click", (event) => {
+    if (!(event instanceof MouseEvent)) return;
+    if (event.defaultPrevented) return;
+    if (event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+      return;
+
+    const rawTarget = event.target;
+    const target =
+      rawTarget instanceof Element
+        ? rawTarget
+        : rawTarget && rawTarget.nodeType === Node.TEXT_NODE
+          ? rawTarget.parentElement
+          : null;
+    if (!(target instanceof Element)) return;
+
+    const link = target.closest("a[data-originals-tag]");
+    if (!link) return;
+
+    event.preventDefault();
+    const tag = link.getAttribute("data-originals-tag") || "";
+    setUrlTag(tag);
+    currentTag = tag;
+    applyTagFilter(tag);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!(event instanceof MouseEvent)) return;
+    if (event.defaultPrevented) return;
+    if (event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+      return;
+
+    if (!currentTag) return;
+
+    const rawTarget = event.target;
+    const target =
+      rawTarget instanceof Element
+        ? rawTarget
+        : rawTarget && rawTarget.nodeType === Node.TEXT_NODE
+          ? rawTarget.parentElement
+          : null;
+    if (!(target instanceof Element)) return;
+
+    const a = target.closest(".pagination-container a.page-btn");
+    if (!(a instanceof HTMLAnchorElement)) return;
+
+    const href = a.getAttribute("href") || "";
+    if (!href || href === "#") return;
+
+    event.preventDefault();
+    window.location.assign(withTagSearch(href, currentTag));
+  });
+
+  window.addEventListener("popstate", () => {
+    runFilter();
+  });
+</script>
 
 <style>
   .originals-filter {
@@ -71,6 +337,14 @@ const tabs: Array<{
     justify-content: space-between;
     gap: 1rem;
     margin: 1.25rem 0 0rem;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.65rem;
+    flex: 1;
   }
 
   :global(.originals-back-link) {
@@ -147,6 +421,10 @@ const tabs: Array<{
   @media (max-width: 768px) {
     .originals-filter {
       flex-direction: column;
+      align-items: stretch;
+    }
+
+    .controls {
       align-items: stretch;
     }
 

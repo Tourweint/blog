@@ -1,0 +1,13 @@
+/* Originals: shared (scoped)
+   仅放三页共用的基础/兜底规则，避免重复。
+*/
+
+/* 兜底：确保筛选时 hidden 一定生效（避免被奇怪的样式/扩展干扰） */
+body.page-originals-fragments [data-originals-item][hidden],
+body.page-originals-fragments [data-originals-empty][hidden],
+body.page-originals-projects [data-originals-item][hidden],
+body.page-originals-projects [data-originals-empty][hidden],
+body.page-originals-systems [data-originals-item][hidden],
+body.page-originals-systems [data-originals-empty][hidden] {
+  display: none !important;
+}

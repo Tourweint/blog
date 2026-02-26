@@ -21,24 +21,6 @@ const tools = [
         icon: "https://www.google.com/s2/favicons?sz=64&domain=code.visualstudio.com", // 填写图标链接，如 "/image/tools/vscode.png" 或网络链接
         url: "https://code.visualstudio.com/",
       },
-      {
-        name: "GitHub",
-        description: "代码托管与版本控制平台",
-        icon: "",
-        url: "https://github.com/",
-      },
-      {
-        name: "Git",
-        description: "分布式版本控制系统",
-        icon: "",
-        url: "https://git-scm.com/",
-      },
-      {
-        name: "Node.js",
-        description: "JavaScript 运行时环境",
-        icon: "",
-        url: "https://nodejs.org/",
-      },
     ],
   },
   {
@@ -97,22 +79,22 @@ const tools = [
     category: "AI 工具",
     items: [
       {
-        name: "ChatGPT",
-        description: "OpenAI 的对话式 AI 助手",
+        name: "智谱 AI 输入法",
+        description: "集成大模型能力的输入法，支持写作/润色/改写等",
         icon: "",
-        url: "https://chat.openai.com/",
+        url: "https://autoglm.zhipuai.cn/autotyper",
+      },
+      {
+        name: "OpenCode",
+        description: "面向编码场景的智能编程助手/工作流工具",
+        icon: "",
+        url: "https://opencode.ai/",
       },
       {
         name: "GitHub Copilot",
         description: "AI 驱动的代码补全工具",
         icon: "",
         url: "https://github.com/features/copilot",
-      },
-      {
-        name: "Claude",
-        description: "Anthropic 的 AI 助手",
-        icon: "",
-        url: "https://claude.ai/",
       },
     ],
   },
@@ -165,28 +147,31 @@ const totalTools = tools.reduce(
     <div class="tools-grid">
       {
         tools.map((category, index) => {
-          const visibleItems = category.items.slice(0, 3);
+          const previewItems = category.items.slice(0, 3);
           const hiddenItems = category.items.slice(3);
           const hasMore = hiddenItems.length > 0;
 
           return (
             <section class="tool-category">
-              <button
-                class="category-header"
-                data-expanded="true"
-                aria-expanded="true"
-                aria-controls={`tool-list-${index}`}
-              >
+              <div class="category-header">
                 <h2 class="category-title">{category.category}</h2>
                 <span class="category-count">
                   {category.items.length} 个工具
                 </span>
-                <span class="category-toggle" aria-hidden="true">
-                  ▼
-                </span>
-              </button>
-              <div class="tool-list" id={`tool-list-${index}`}>
-                {visibleItems.map((tool) => {
+                {hasMore && (
+                  <button
+                    class="expand-tools-btn"
+                    type="button"
+                    data-expanded="false"
+                    aria-expanded="false"
+                    aria-controls={`hidden-tools-${index}`}
+                  >
+                    展开 +{hiddenItems.length}
+                  </button>
+                )}
+              </div>
+              <div class="tool-list">
+                {previewItems.map((tool) => {
                   const iconUrl = tool.icon || getFavicon(tool.url);
                   return (
                     <a
@@ -221,7 +206,7 @@ const totalTools = tools.reduce(
                 })}
 
                 {hasMore && (
-                  <div class="hidden-tools" hidden>
+                  <div class="hidden-tools" id={`hidden-tools-${index}`} hidden>
                     {hiddenItems.map((tool) => {
                       const iconUrl = tool.icon || getFavicon(tool.url);
                       return (
@@ -258,17 +243,6 @@ const totalTools = tools.reduce(
                   </div>
                 )}
               </div>
-
-              {hasMore && (
-                <button class="expand-tools-btn" data-expanded="false">
-                  <span class="expand-text">
-                    展开剩余 {hiddenItems.length} 个工具
-                  </span>
-                  <span class="expand-icon" aria-hidden="true">
-                    ▼
-                  </span>
-                </button>
-              )}
             </section>
           );
         })
@@ -278,50 +252,23 @@ const totalTools = tools.reduce(
 </MainLayout>
 
 <script>
-  // 分类展开/收起功能
-  document.querySelectorAll(".category-header").forEach((button) => {
+  // 工具展开/收起功能（每个分类块）
+  document.querySelectorAll(".expand-tools-btn").forEach((button) => {
     button.addEventListener("click", () => {
       const expanded = button.getAttribute("data-expanded") === "true";
       button.setAttribute("data-expanded", String(!expanded));
       button.setAttribute("aria-expanded", String(!expanded));
 
       const listId = button.getAttribute("aria-controls");
-      const toolList = listId ? document.getElementById(listId) : null;
-      if (toolList) {
-        toolList.toggleAttribute("hidden", expanded);
+      const hiddenTools = listId ? document.getElementById(listId) : null;
+      if (hiddenTools) {
+        hiddenTools.toggleAttribute("hidden", expanded);
       }
 
-      const expandBtn = button
-        .closest(".tool-category")
-        ?.querySelector(".expand-tools-btn");
-      if (expandBtn instanceof HTMLElement) {
-        expandBtn.toggleAttribute("hidden", expanded);
-      }
-    });
-  });
-
-  // 工具展开/收起功能
-  document.querySelectorAll(".expand-tools-btn").forEach((button) => {
-    button.addEventListener("click", () => {
-      const expanded = button.getAttribute("data-expanded") === "true";
-      button.setAttribute("data-expanded", String(!expanded));
-
-      const hiddenTools =
-        button.previousElementSibling?.querySelector(".hidden-tools");
-
-      if (hiddenTools instanceof HTMLElement) {
-        hiddenTools.hidden = expanded;
-      }
-
-      const expandText = button.querySelector(".expand-text");
       const hiddenCount = hiddenTools
         ? hiddenTools.querySelectorAll(".tool-card").length
         : 0;
-      if (expandText) {
-        expandText.textContent = expanded
-          ? `展开剩余 ${hiddenCount} 个工具`
-          : "收起";
-      }
+      button.textContent = expanded ? `展开 +${hiddenCount}` : "收起";
     });
   });
 

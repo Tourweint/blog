@@ -108,17 +108,6 @@ body.page-tools .category-header {
   padding: 1rem 1.25rem;
   background: transparent;
   border: none;
-  cursor: pointer;
-  transition: background-color var(--c-dur) var(--c-ease);
-}
-
-body.page-tools .category-header:hover {
-  background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
-}
-
-body.page-tools .category-header:focus-visible {
-  outline: 3px solid var(--c-focus);
-  outline-offset: 3px;
 }
 
 body.page-tools .category-title {
@@ -148,47 +137,13 @@ body.page-tools .category-count {
   color: var(--c-muted);
 }
 
-body.page-tools .category-toggle {
-  font-size: 0.75rem;
-  color: var(--c-muted);
-  transition: transform var(--c-dur) var(--c-ease);
-}
-
-body.page-tools .category-header[data-expanded="false"] .category-toggle {
-  transform: rotate(-90deg);
-}
-
-body.page-tools .tool-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 0.9rem;
-  padding: 0 1.25rem 1.25rem;
-}
-
-body.page-tools .tool-list[hidden] {
-  display: none;
-}
-
-body.page-tools .hidden-tools {
-  display: contents;
-}
-
-body.page-tools .hidden-tools[hidden] {
-  display: none;
-}
-
 body.page-tools .expand-tools-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.85rem 1rem;
-  background: transparent;
-  border: none;
-  border-top: 1px solid var(--c-rule);
+  font-size: 0.85rem;
   color: var(--c-muted);
-  font-size: 0.92rem;
+  background: transparent;
+  border: 1px solid var(--c-rule);
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
   cursor: pointer;
   transition: background-color var(--c-dur) var(--c-ease),
     color var(--c-dur) var(--c-ease);
@@ -204,13 +159,19 @@ body.page-tools .expand-tools-btn:focus-visible {
   outline-offset: 3px;
 }
 
-body.page-tools .expand-tools-btn[data-expanded="true"] .expand-icon {
-  transform: rotate(180deg);
+body.page-tools .tool-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.9rem;
+  padding: 0 1.25rem 1.25rem;
 }
 
-body.page-tools .expand-icon {
-  font-size: 0.75rem;
-  transition: transform var(--c-dur) var(--c-ease);
+body.page-tools .hidden-tools {
+  display: contents;
+}
+
+body.page-tools .hidden-tools[hidden] {
+  display: none;
 }
 
 body.page-tools .tool-card {

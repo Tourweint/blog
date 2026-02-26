@@ -9,9 +9,82 @@ body.page-originals-systems {
 }
 
 body.page-originals-systems .systems-page {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 28px 1.5rem 64px;
+}
+
+/* 左侧标签栏 + 右侧列表布局 */
+body.page-originals-systems .originals-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 18px;
+  margin-top: 18px;
+  align-items: start;
+}
+
+body.page-originals-systems .originals-aside {
+  position: sticky;
+  top: calc(var(--nav-height) + 1rem);
+}
+
+body.page-originals-systems .originals-aside-card {
+  background: var(--bg-card);
+  border: 1px solid var(--c-rule);
+  border-radius: var(--c-radius);
+  box-shadow: var(--c-shadow);
+  padding: 1rem 0.95rem;
+}
+
+body.page-originals-systems .originals-aside-title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(75, 85, 99, 0.75);
+}
+
+body.page-originals-systems .originals-aside-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+body.page-originals-systems .tagpill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid var(--c-rule);
+  background: var(--c-surface);
+  color: var(--c-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all var(--c-dur) var(--c-ease);
+}
+
+body.page-originals-systems .tagpill:hover {
+  color: var(--c-text);
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+body.page-originals-systems .tagpill.is-active {
+  color: var(--c-text);
+  border-color: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.page-originals-systems .tagpill-count {
+  color: var(--c-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+body.page-originals-systems .originals-main {
+  min-width: 0;
 }
 
 /* 页面头部：对齐频道 header */
@@ -138,7 +211,7 @@ body.page-originals-systems .info-list li:last-child {
 
 /* 文章列表 */
 body.page-originals-systems .systems-list {
-  margin-top: 18px;
+  margin-top: 0;
   margin-bottom: 18px;
   display: flex;
   flex-direction: column;
@@ -149,6 +222,14 @@ body.page-originals-systems .systems-list {
 @media (max-width: 768px) {
   body.page-originals-systems .systems-page {
     padding: 20px 1rem 40px;
+  }
+
+  body.page-originals-systems .originals-layout {
+    grid-template-columns: 1fr;
+  }
+
+  body.page-originals-systems .originals-aside {
+    position: static;
   }
 
   body.page-originals-systems .systems-title {

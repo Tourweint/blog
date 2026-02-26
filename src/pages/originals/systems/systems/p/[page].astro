@@ -1,13 +1,30 @@
 ---
 import { getCollection } from "astro:content";
-import MainLayout from "../../../layouts/mainlayout.astro";
-import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
-import SystemsCard from "../../../components/originals/SystemsCard.astro";
-import Pagination from "../../../components/Pagination.astro";
-import "../../../styles/originals/originals.css";
-import "../../../styles/originals/systems.css";
+import MainLayout from "../../../../../layouts/mainlayout.astro";
+import OriginalsFilter from "../../../../../components/originals/OriginalsFilter.astro";
+import SystemsCard from "../../../../../components/originals/SystemsCard.astro";
+import Pagination from "../../../../../components/Pagination.astro";
+import "../../../../../styles/originals/originals.css";
+import "../../../../../styles/originals/systems.css";
 
 export const PAGE_SIZE = 12;
+
+export async function getStaticPaths() {
+  const allOriginals = await getCollection("originals");
+  const systemsPosts = allOriginals
+    .filter((post) => post.data.category === "systems")
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+  const totalPages = Math.ceil(systemsPosts.length / PAGE_SIZE);
+  if (totalPages <= 1) return [];
+
+  return Array.from({ length: totalPages - 1 }, (_, index) => {
+    const page = index + 2;
+    return {
+      params: { page: page.toString() },
+    };
+  });
+}
 
 const allOriginals = await getCollection("originals");
 const systemsPosts = allOriginals
@@ -17,9 +34,10 @@ const systemsPosts = allOriginals
 const listIndexHref = "/originals/systems/systems";
 const listBaseHref = Astro.url.pathname;
 
+const currentPage = Number(Astro.params.page);
 const totalPages = Math.ceil(systemsPosts.length / PAGE_SIZE);
-const currentPage = 1;
-const paginatedPosts = systemsPosts.slice(0, PAGE_SIZE);
+const startIndex = (currentPage - 1) * PAGE_SIZE;
+const paginatedPosts = systemsPosts.slice(startIndex, startIndex + PAGE_SIZE);
 
 const getPageUrl = (page: number) =>
   page === 1 ? listIndexHref : `${listIndexHref}/p/${page}`;
@@ -51,8 +69,8 @@ const tagCounts = Array.from(tagCountsMap.entries())
 ---
 
 <MainLayout
-  title="成体系的思考 - 原创"
-  description="长文与体系化观点的汇总"
+  title={`成体系的思考 - 原创（第 ${currentPage} 页）`}
+  description={`长文与体系化观点的汇总（第 ${currentPage} 页）`}
   wide={true}
 >
   <div class="systems-page">
@@ -102,24 +120,13 @@ const tagCounts = Array.from(tagCountsMap.entries())
       }
 
       <main class="originals-main">
-        {
-          systemsPosts.length > 0 ? (
-            <section class="systems-list">
-              {paginatedPosts.map((post) => (
-                <SystemsCard post={post} listHref={listBaseHref} />
-              ))}
-            </section>
-          ) : (
-            <section class="systems-placeholder">
-              <div class="placeholder-icon">📝</div>
-              <h2 class="placeholder-title">暂无内容</h2>
-              <p class="placeholder-text">
-                这里会持续收录我的原创长文与体系化思考。
-              </p>
-              <p class="placeholder-text">目前还没有文章，稍后再来看看。</p>
-            </section>
-          )
-        }
+        <section class="systems-list">
+          {
+            paginatedPosts.map((post) => (
+              <SystemsCard post={post} listHref={listBaseHref} />
+            ))
+          }
+        </section>
 
         <section class="systems-placeholder" data-originals-empty hidden>
           <div class="placeholder-icon">🏷️</div>
