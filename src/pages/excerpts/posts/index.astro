@@ -139,7 +139,7 @@ const getPageUrl = (page: number) => excerpts.postsPage(page);
 
   if (scrollTarget) {
     const targetCard = document.querySelector(
-      `a.post-card-link[href="${POST_DETAIL_PREFIX}${scrollTarget}"]`,
+      `a.post-card-link[href^="${POST_DETAIL_PREFIX}${scrollTarget}"]`,
     );
 
     if (targetCard) {

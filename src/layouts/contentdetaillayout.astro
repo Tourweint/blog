@@ -124,6 +124,8 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
             )
           }
 
+          <slot name="meta-extra" />
+
           <div class="meta-categories" id="categories">
             {
               tags && tags.length > 0 ? (

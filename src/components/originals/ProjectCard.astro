@@ -34,8 +34,6 @@ const pickStatus = (tags: string[]): "done" | "wip" | undefined => {
 
 const status = pickStatus(post.data.tags);
 const description = post.data.description;
-const githubUrl = post.data.githubUrl;
-const demoUrl = post.data.demoUrl;
 const displayStatus = post.data.status ?? status;
 
 const displayTags = post.data.tags.filter((t) => {
@@ -69,55 +67,27 @@ const displayTags = post.data.tags.filter((t) => {
 
   {description && <p class="summary">{description}</p>}
 
-  <footer class="footer">
-    <div class="meta">
-      <time datetime={post.data.pubDate.toISOString()}>
-        {
-          post.data.pubDate.toLocaleDateString("zh-CN", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })
-        }
-      </time>
-      {post.data.readingTime && <span class="dot">·</span>}
-      {post.data.readingTime && <span>{post.data.readingTime} 分钟阅读</span>}
-    </div>
+  <footer class="meta">
+    <time datetime={post.data.pubDate.toISOString()}>
+      {
+        post.data.pubDate.toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+      }
+    </time>
+    {post.data.readingTime && <span class="dot">·</span>}
+    {post.data.readingTime && <span>{post.data.readingTime} 分钟阅读</span>}
 
+    {displayTags.length > 0 && <span class="dot">·</span>}
     {
       displayTags.length > 0 && (
-        <div class="tags" aria-label="Tech Stack">
-          {displayTags.slice(0, 6).map((tag) => (
+        <span class="tags" aria-label="标签">
+          {displayTags.slice(0, 4).map((tag) => (
             <span class="tag">{tag}</span>
           ))}
-        </div>
-      )
-    }
-
-    {
-      (githubUrl || demoUrl) && (
-        <div class="links" aria-label="Project Links">
-          {githubUrl && (
-            <a
-              class="link-btn"
-              href={githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub
-            </a>
-          )}
-          {demoUrl && (
-            <a
-              class="link-btn link-primary"
-              href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Demo
-            </a>
-          )}
-        </div>
+        </span>
       )
     }
   </footer>
@@ -139,7 +109,8 @@ const displayTags = post.data.tags.filter((t) => {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    z-index: 0;
+    z-index: 3;
+    display: block;
   }
 
   .stretched-link:focus-visible {
@@ -149,7 +120,7 @@ const displayTags = post.data.tags.filter((t) => {
 
   .project-card > :not(.stretched-link) {
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
 
   .project-card:hover {
@@ -224,56 +195,12 @@ const displayTags = post.data.tags.filter((t) => {
     font-size: 0.98rem;
   }
 
-  .footer {
-    margin-top: 1rem;
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  .links {
+  .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .link-btn {
-    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    height: 34px;
-    padding: 0 0.85rem;
-    border-radius: 10px;
-    font-size: 0.86rem;
-    font-weight: 650;
-    text-decoration: none;
-    color: var(--c-text);
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    transition: all var(--c-dur) var(--c-ease);
-  }
-
-  .link-btn:hover {
-    transform: translateY(-1px);
-    background: rgba(0, 0, 0, 0.06);
-    border-color: rgba(0, 0, 0, 0.18);
-  }
-
-  .link-primary {
-    color: var(--c-text);
-    background: rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(0, 0, 0, 0.14);
-  }
-
-  .link-primary:hover {
-    background: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.18);
-  }
-
-  .meta {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.95rem;
     color: var(--c-muted);
     font-size: 0.86rem;
   }
@@ -283,19 +210,19 @@ const displayTags = post.data.tags.filter((t) => {
   }
 
   .tags {
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.35rem;
+    align-items: center;
   }
 
   .tag {
-    padding: 0.18rem 0.55rem;
+    padding: 0.18rem 0.5rem;
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
     color: var(--c-muted);
     font-size: 0.78rem;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   @media (max-width: 768px) {

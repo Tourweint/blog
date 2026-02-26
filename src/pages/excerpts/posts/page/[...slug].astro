@@ -59,7 +59,9 @@ const author = entry.data.author
     : entry.data.author
   : null;
 
-// 生成返回链接：返回摘录-文章列表，带上滚动定位参数
+// 生成返回链接：默认回到“全部列表”的对应分页（scrollTo 用于定位并高亮）
+// 注意：Astro 静态构建时无法读取运行时 query（例如 ?from=...），
+// 所以“从分类页进入则返回分类页”的逻辑需要在客户端脚本中处理。
 const listBaseUrl = excerpts.postsPage(pageNumber);
 const backUrl = `${listBaseUrl}?scrollTo=${encodeURIComponent(entrySlug)}`;
 
@@ -102,3 +104,22 @@ const readingTime = Math.max(1, Math.ceil(totalWords / wordsPerMinute));
 >
   <Content />
 </PostDetailLayout>
+
+<script is:inline define:vars={{ entrySlug }}>
+  const backLink = document.querySelector(".post-layout .nav-bar a.back-link");
+
+  if (backLink instanceof HTMLAnchorElement) {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get("from");
+
+    if (from && from.startsWith("/") && !from.startsWith("//")) {
+      try {
+        const url = new URL(from, window.location.origin);
+        url.searchParams.set("scrollTo", entrySlug);
+        backLink.href = `${url.pathname}${url.search}${url.hash}`;
+      } catch {
+        // ignore invalid from
+      }
+    }
+  }
+</script>

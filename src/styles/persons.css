@@ -182,7 +182,7 @@ body.page-excerpts-persons .filter-pills .pill:focus-visible {
 body.page-excerpts-persons .persons-grid {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
@@ -201,7 +201,7 @@ body.page-excerpts-persons .empty-state {
 body.page-excerpts-persons .load-more-container {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 0 1rem;
+  padding: 0;
   text-align: center;
 }
 

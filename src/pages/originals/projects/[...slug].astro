@@ -39,6 +39,9 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
 const backUrl = "/originals/projects/projects";
 
+const githubUrl = post.data.githubUrl;
+const demoUrl = post.data.demoUrl;
+
 // 计算阅读时间（若 frontmatter 未提供）
 const content = post.body ?? "";
 const chineseChars = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
@@ -68,5 +71,31 @@ const readingTime = post.data.readingTime ?? computedReadingTime;
   prevItem={prevItem}
   nextItem={nextItem}
 >
+  {
+    (githubUrl || demoUrl) && (
+      <div class="project-meta-links" slot="meta-extra" aria-label="项目链接">
+        {githubUrl && (
+          <a
+            class="project-meta-link"
+            href={githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+        )}
+        {demoUrl && (
+          <a
+            class="project-meta-link"
+            href={demoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Demo
+          </a>
+        )}
+      </div>
+    )
+  }
   <Content />
 </ContentDetailLayout>

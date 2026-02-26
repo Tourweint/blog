@@ -56,6 +56,8 @@ const categories = [
 // 生成分类的分页 URL
 const getCategoryPageUrl = (pageNum: number) =>
   excerpts.category(category!, pageNum);
+
+const listBaseUrl = excerpts.category(category!, page.currentPage);
 ---
 
 <MainLayout
@@ -116,7 +118,7 @@ const getCategoryPageUrl = (pageNum: number) =>
             <div class="post-grid">
               {page.data.map((post: CollectionEntry<"posts">) => (
                 <a
-                  href={excerpts.postDetail(post.id)}
+                  href={`${excerpts.postDetail(post.id)}?from=${encodeURIComponent(listBaseUrl)}`}
                   class="post-card-link"
                   data-title={post.data.title.toLowerCase()}
                   data-desc={(post.data.description || "").toLowerCase()}
@@ -158,3 +160,26 @@ const getCategoryPageUrl = (pageNum: number) =>
     </div>
   </div>
 </MainLayout>
+
+<script is:inline define:vars={{ POST_DETAIL_PREFIX: excerpts.postDetail("") }}>
+  const urlParams = new URLSearchParams(window.location.search);
+  const scrollTarget = urlParams.get("scrollTo");
+
+  if (scrollTarget) {
+    const targetCard = document.querySelector(
+      `a.post-card-link[href^="${POST_DETAIL_PREFIX}${scrollTarget}"]`,
+    );
+
+    if (targetCard) {
+      setTimeout(() => {
+        targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        targetCard.classList.add("highlight-card");
+        setTimeout(() => targetCard.classList.remove("highlight-card"), 2000);
+      }, 100);
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("scrollTo");
+    window.history.replaceState({}, "", url);
+  }
+</script>

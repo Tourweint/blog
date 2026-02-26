@@ -174,6 +174,38 @@ body.page-originals.page-article .post-eyebrow {
     text-transform: uppercase;
 }
 
+/* Originals / Projects：frontmatter（meta 行）项目链接（GitHub / Demo） */
+body.page-originals-detail.page-article .project-meta-links {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+body.page-originals-detail.page-article .project-meta-link {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--article-rule);
+    background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
+    color: var(--article-text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background-color var(--c-dur) var(--c-ease),
+        border-color var(--c-dur) var(--c-ease);
+}
+
+body.page-originals-detail.page-article .project-meta-link:hover {
+    background: color-mix(in oklab, var(--c-bg) 55%, var(--bg-card));
+    border-color: color-mix(in oklab, var(--c-text) 18%, var(--article-rule));
+}
+
+body.page-originals-detail.page-article .project-meta-link:focus-visible {
+    outline: 3px solid var(--article-focus);
+    outline-offset: 3px;
+}
+
 /* 顶部导航 */
 body.page-article .nav-bar,
 .post-layout .nav-bar {
