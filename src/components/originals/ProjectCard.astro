@@ -123,7 +123,7 @@ const tagHref = (tag: string) => `${listHref}?tag=${encodeURIComponent(tag)}`;
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    z-index: 1;
+    z-index: 2;
     display: block;
   }
 
@@ -134,7 +134,6 @@ const tagHref = (tag: string) => `${listHref}?tag=${encodeURIComponent(tag)}`;
 
   .project-card > :not(.stretched-link) {
     position: relative;
-    z-index: 2;
   }
 
   .project-card:hover {
