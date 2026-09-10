@@ -1,81 +1,56 @@
 ---
-import { getCollection, render } from "astro:content";
-
 import MainLayout from "../../../layouts/mainlayout.astro";
 import { excerpts } from "../../../utils/excerptsPaths";
+import { getNoteViews, toNoteMeta } from "../../../utils/notesData";
+import type { NoteView } from "../../../utils/notesData";
 import "../../../styles/notes.css";
 
-const resolveDate = (data: any) => data.pubDate || data.date || new Date();
+// 首屏服务端渲染的卡片数；其余卡片由客户端根据 JSON island 构建。
+// dev 模式会为每个服务端元素注入 source-loc 注解，一次性渲染上百张卡片会显著拖慢，
+// 因此只 SSR 首屏，把元素数量降到与其它分页列表一致。
+const INITIAL_RENDER = 18;
 
-const flatten = (text: string) =>
-  text
-    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
-    .replace(/[#!>*`~_|>-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-const createExcerpt = (note: any, max = 140) => {
-  const source = note.data.description || note.data.text || note.body || "";
-  const clean = flatten(source);
-  if (!clean) return "随手的一句短摘";
-  return clean.length > max ? `${clean.slice(0, max)}…` : clean;
-};
-
-const rawNotes = (await getCollection("notes")).sort(
-  (a, b) => resolveDate(b.data).getTime() - resolveDate(a.data).getTime(),
-);
-
-const notes = await Promise.all(
-  rawNotes.map(async (note) => {
-    const { Content } = await render(note);
-    const resolvedDate = resolveDate(note.data);
-    const tags: string[] = note.data.tags?.length ? note.data.tags : ["未分类"];
-    const hook = createExcerpt(note);
-    const title = note.data.title || hook || "未命名短句";
-    return {
-      ...note,
-      Content,
-      hook,
-      title,
-      tags,
-      year: resolvedDate.getFullYear(),
-      month: (resolvedDate.getMonth() + 1).toString().padStart(2, "0"),
-      date: resolvedDate,
-      source: note.data.source || "原创",
-    };
-  }),
-);
-
+const notes: NoteView[] = await getNoteViews();
 const tagFilters = ["全部", ...new Set(notes.flatMap((n) => n.tags))];
 
-// Generate grouped structure for rendering
-const displayGroups: {
-  type: "year" | "month" | "note";
-  value?: string;
-  rawValue?: string;
-  year?: string;
-  note?: any;
-}[] = [];
-let currentYear = 0;
-let currentMonth = "";
+// 仅为首屏卡片生成 year/month 分组结构用于 SSR
+type Group =
+  | { type: "year"; value: string }
+  | { type: "month"; value: string; rawValue: string; year: string }
+  | { type: "note"; note: NoteView };
 
-notes.forEach((note) => {
-  if (note.year !== currentYear) {
-    currentYear = note.year;
-    displayGroups.push({ type: "year", value: currentYear.toString() });
-    currentMonth = "";
-  }
-  if (note.month !== currentMonth) {
-    currentMonth = note.month;
-    displayGroups.push({
-      type: "month",
-      value: `${currentMonth}月`,
-      rawValue: currentMonth,
-      year: currentYear.toString(),
-    });
-  }
-  displayGroups.push({ type: "note", note });
-});
+const buildGroups = (list: NoteView[]): Group[] => {
+  const groups: Group[] = [];
+  let currentYear = 0;
+  let currentMonth = "";
+  list.forEach((note) => {
+    if (note.year !== currentYear) {
+      currentYear = note.year;
+      groups.push({ type: "year", value: currentYear.toString() });
+      currentMonth = "";
+    }
+    if (note.month !== currentMonth) {
+      currentMonth = note.month;
+      groups.push({
+        type: "month",
+        value: `${currentMonth}月`,
+        rawValue: currentMonth,
+        year: currentYear.toString(),
+      });
+    }
+    groups.push({ type: "note", note });
+  });
+  return groups;
+};
+
+const displayGroups = buildGroups(notes.slice(0, INITIAL_RENDER));
+
+// 只下发元数据（不含正文）；正文由 /excerpts/notes/bodies.json 异步加载。
+// 转义 "<" 防止闭合 <script>。
+const notesMetaJson = JSON.stringify(notes.map(toNoteMeta)).replace(
+  /</g,
+  "\\u003c",
+);
 ---
 
 <MainLayout title="句子簿 - Tourweint/多鸣" description="轻量想法与摘抄">
@@ -134,7 +109,7 @@ notes.forEach((note) => {
           return (
             <h3 class="timeline-month" data-type="month-header">
               <a
-                href={excerpts.notesMonth(item.year!, item.rawValue!)}
+                href={excerpts.notesMonth(item.year, item.rawValue)}
                 class="month-link"
               >
                 {item.value}
@@ -145,26 +120,22 @@ notes.forEach((note) => {
         }
 
         const note = item.note;
-        const NoteContent = note.Content;
         return (
           <article
             class="note-card"
             data-tags={note.tags.join(",")}
             data-year={note.year}
             data-month={note.month}
+            data-note-key={note.key}
           >
             <div class="note-meta">
-              <time datetime={note.date.toISOString().split("T")[0]}>
-                {note.date.toLocaleDateString("zh-cn")}
-              </time>
+              <time datetime={note.dateISO}>{note.dateLabel}</time>
               <span>·</span>
               <span class="note-source">{note.source}</span>
             </div>
             <h2 class="note-title">{note.title}</h2>
             <p class="note-hook">{note.hook}</p>
-            <div class="note-body content" hidden>
-              <NoteContent />
-            </div>
+            <div class="note-body content" hidden></div>
             <div class="note-footer">
               <div class="tag-row">
                 {note.tags.map((tag: string) => (
@@ -189,9 +160,96 @@ notes.forEach((note) => {
   <div class="load-more-container">
     <button class="load-more-btn" id="load-more">加载更多</button>
   </div>
+
+  <script
+    is:inline
+    type="application/json"
+    id="notes-data"
+    set:html={notesMetaJson}
+  />
 </MainLayout>
 
 <script>
+  import {
+    setCardOpen,
+    bindNoteToggles,
+    prefetchBodiesWhenIdle,
+  } from "../../../scripts/noteBody";
+
+  const INITIAL_RENDER = 18;
+
+  type NoteMeta = {
+    key: string;
+    title: string;
+    hook: string;
+    tags: string[];
+    year: number;
+    month: string;
+    dateISO: string;
+    dateLabel: string;
+    source: string;
+  };
+
+  // 读取服务端下发的笔记元数据（不含正文）
+  const dataEl = document.getElementById("notes-data");
+  const allNotes: NoteMeta[] = dataEl
+    ? JSON.parse(dataEl.textContent || "[]")
+    : [];
+
+  const esc = (value: unknown) =>
+    String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+  const yearHtml = (year: number) =>
+    `<h2 class="timeline-year" data-type="year-header">${year}</h2>`;
+
+  const monthHtml = (n: NoteMeta) =>
+    `<h3 class="timeline-month" data-type="month-header"><a href="/excerpts/notes/${n.year}/${n.month}" class="month-link">${n.month}月<span class="link-icon">↗</span></a></h3>`;
+
+  const cardHtml = (n: NoteMeta) => `
+    <article class="note-card" data-tags="${esc(n.tags.join(","))}" data-year="${n.year}" data-month="${n.month}" data-note-key="${n.key}">
+      <div class="note-meta">
+        <time datetime="${n.dateISO}">${n.dateLabel}</time>
+        <span>·</span>
+        <span class="note-source">${esc(n.source)}</span>
+      </div>
+      <h2 class="note-title">${esc(n.title)}</h2>
+      <p class="note-hook">${esc(n.hook)}</p>
+      <div class="note-body content" hidden></div>
+      <div class="note-footer">
+        <div class="tag-row">${n.tags
+          .map((t) => `<span class="tag-pill">${esc(t)}</span>`)
+          .join("")}</div>
+        <button class="toggle-body" data-label-open="展开" data-label-close="收起" aria-expanded="false">展开</button>
+      </div>
+    </article>`;
+
+  // 构建首屏之外的其余卡片（客户端构建无 dev source-loc 开销，速度很快）
+  const stream = document.getElementById("note-list");
+  if (stream && allNotes.length > INITIAL_RENDER) {
+    let tail = "";
+    const seed = allNotes[INITIAL_RENDER - 1];
+    let currentYear: number | null = seed ? seed.year : null;
+    let currentMonth: string | null = seed ? seed.month : null;
+    for (let i = INITIAL_RENDER; i < allNotes.length; i++) {
+      const n = allNotes[i];
+      if (n.year !== currentYear) {
+        tail += yearHtml(n.year);
+        currentYear = n.year;
+        currentMonth = null;
+      }
+      if (n.month !== currentMonth) {
+        tail += monthHtml(n);
+        currentMonth = n.month;
+      }
+      tail += cardHtml(n);
+    }
+    stream.insertAdjacentHTML("beforeend", tail);
+  }
+
   const ITEMS_PER_PAGE = 18;
 
   const tagButtons = Array.from(document.querySelectorAll(".chip[data-tag]"));
@@ -208,29 +266,7 @@ notes.forEach((note) => {
   let tagsCollapsed = true;
   const MAX_VISIBLE_TAGS = 12;
 
-  const expandCard = (card: HTMLElement) => {
-    card.setAttribute("data-state", "open");
-    card.classList.add("expanded");
-    card.querySelector(".note-body")?.removeAttribute("hidden");
-    const toggle = card.querySelector(".toggle-body");
-    if (toggle) {
-      const toggleElement = toggle as HTMLElement;
-      toggleElement.textContent = toggleElement.dataset.labelClose || "收起";
-      toggleElement.setAttribute("aria-expanded", "true");
-    }
-  };
-
-  const collapseCard = (card: HTMLElement) => {
-    card.setAttribute("data-state", "closed");
-    card.classList.remove("expanded");
-    card.querySelector(".note-body")?.setAttribute("hidden", "true");
-    const toggle = card.querySelector(".toggle-body");
-    if (toggle) {
-      const toggleElement = toggle as HTMLElement;
-      toggleElement.textContent = toggleElement.dataset.labelOpen || "展开";
-      toggleElement.setAttribute("aria-expanded", "false");
-    }
-  };
+  const expandCard = (card: HTMLElement) => setCardOpen(card, true);
 
   const applyFilter = () => {
     const isAll = activeTag === "全部";
@@ -313,17 +349,8 @@ notes.forEach((note) => {
     applyFilter();
   });
 
-  const toggleButtons = Array.from(document.querySelectorAll(".toggle-body"));
-  toggleButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const card = btn.closest(".note-card");
-      if (!card) return;
-      const isOpen = card.getAttribute("data-state") === "open";
-      isOpen
-        ? collapseCard(card as HTMLElement)
-        : expandCard(card as HTMLElement);
-    });
-  });
+  // 为全部卡片（含客户端补建的）绑定展开/收起
+  bindNoteToggles();
 
   randomBtn?.addEventListener("click", () => {
     if (!cards.length) return;
@@ -356,4 +383,7 @@ notes.forEach((note) => {
     tagsCollapsed = !tagsCollapsed;
     updateTagToggle();
   });
+
+  // 浏览器空闲时预取正文，让首次展开更顺滑
+  prefetchBodiesWhenIdle();
 </script>

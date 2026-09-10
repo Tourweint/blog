@@ -1,37 +1,35 @@
 ---
-import { getCollection, render } from "astro:content";
-import type { CollectionEntry } from "astro:content";
-
 import MainLayout from "../../../../../layouts/mainlayout.astro";
 import { excerpts } from "../../../../../utils/excerptsPaths";
+import { getNoteViews } from "../../../../../utils/notesData";
+import type { NoteView } from "../../../../../utils/notesData";
 import "../../../../../styles/notes.css";
 
 export async function getStaticPaths() {
-  const notes = await getCollection("notes");
+  const notes = await getNoteViews();
   const groups = new Map<
     string,
-    { year: string; month: string; notes: CollectionEntry<"notes">[] }
+    { year: string; month: string; notes: NoteView[] }
   >();
 
   notes.forEach((note) => {
-    const data: any = note.data;
-    const date: Date = data.pubDate || data.date || new Date();
-    const year = date.getFullYear().toString();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const key = `${year}-${month}`;
+    const key = `${note.year}-${note.month}`;
     const group = groups.get(key);
     if (!group) {
-      groups.set(key, { year, month, notes: [note] });
+      groups.set(key, {
+        year: String(note.year),
+        month: note.month,
+        notes: [note],
+      });
     } else {
       group.notes.push(note);
     }
   });
 
-  const ordered = Array.from(groups.values()).sort((a, b) => {
-    const keyA = `${a.year}-${a.month}`;
-    const keyB = `${b.year}-${b.month}`;
-    return keyA.localeCompare(keyB);
-  });
+  // getNoteViews 已按日期倒序，分组保持该顺序
+  const ordered = Array.from(groups.values()).sort((a, b) =>
+    `${a.year}-${a.month}`.localeCompare(`${b.year}-${b.month}`),
+  );
 
   return ordered.map((group, index) => {
     const prev = index > 0 ? ordered[index - 1] : undefined;
@@ -53,58 +51,16 @@ export async function getStaticPaths() {
 const {
   year,
   month,
-  notes: monthNotes,
+  notes,
   prev,
   next,
 } = Astro.props as {
   year: string;
   month: string;
-  notes: CollectionEntry<"notes">[];
+  notes: NoteView[];
   prev: { year: string; month: string } | null;
   next: { year: string; month: string } | null;
 };
-
-const flatten = (text: string) =>
-  text
-    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
-    .replace(/[#!>*`~_|>-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-const createExcerpt = (note: any, max = 140) => {
-  const source = note.data.description || note.data.text || note.body || "";
-  const clean = flatten(source);
-  if (!clean) return "随手的一句短摘";
-  return clean.length > max ? `${clean.slice(0, max)}…` : clean;
-};
-
-const notes = await Promise.all(
-  monthNotes
-    .sort((a, b) => {
-      const dataA: any = a.data;
-      const dataB: any = b.data;
-      const dateA: Date = dataA.pubDate || dataA.date || new Date();
-      const dateB: Date = dataB.pubDate || dataB.date || new Date();
-      return dateB.getTime() - dateA.getTime();
-    })
-    .map(async (note) => {
-      const { Content } = await render(note);
-      const data: any = note.data;
-      const resolvedDate: Date = data.pubDate || data.date || new Date();
-      const tags: string[] = data.tags?.length ? data.tags : ["未分类"];
-      const hook = createExcerpt(note);
-      const title = data.title || hook || "未命名短句";
-      return {
-        ...note,
-        Content,
-        hook,
-        title,
-        tags,
-        date: resolvedDate,
-        source: data.source || "原创",
-      };
-    }),
-);
 
 const monthTitle = `${year}年${month}月`;
 ---
@@ -156,77 +112,44 @@ const monthTitle = `${year}年${month}月`;
 
   <div class="notes-stream">
     {
-      notes.map((note) => {
-        const NoteContent = note.Content;
-        return (
-          <article class="note-card" data-tags={note.tags.join(",")}>
-            <div class="note-meta">
-              <time datetime={note.date.toISOString().split("T")[0]}>
-                {note.date.toLocaleDateString("zh-cn")}
-              </time>
-              <span>·</span>
-              <span class="note-source">{note.source}</span>
+      notes.map((note) => (
+        <article
+          class="note-card"
+          data-tags={note.tags.join(",")}
+          data-note-key={note.key}
+        >
+          <div class="note-meta">
+            <time datetime={note.dateISO}>{note.dateLabel}</time>
+            <span>·</span>
+            <span class="note-source">{note.source}</span>
+          </div>
+          <h2 class="note-title">{note.title}</h2>
+          <p class="note-hook">{note.hook}</p>
+          <div class="note-body content" hidden></div>
+          <div class="note-footer">
+            <div class="tag-row">
+              {note.tags.map((tag: string) => (
+                <span class="tag-pill">{tag}</span>
+              ))}
             </div>
-            <h2 class="note-title">{note.title}</h2>
-            <p class="note-hook">{note.hook}</p>
-            <div class="note-body content" hidden>
-              <NoteContent />
-            </div>
-            <div class="note-footer">
-              <div class="tag-row">
-                {note.tags.map((tag: string) => (
-                  <span class="tag-pill">{tag}</span>
-                ))}
-              </div>
-              <button
-                class="toggle-body"
-                data-label-open="展开"
-                data-label-close="收起"
-                aria-expanded="false"
-              >
-                展开
-              </button>
-            </div>
-          </article>
-        );
-      })
+            <button
+              class="toggle-body"
+              data-label-open="展开"
+              data-label-close="收起"
+              aria-expanded="false"
+            >
+              展开
+            </button>
+          </div>
+        </article>
+      ))
     }
   </div>
 </MainLayout>
 
 <script>
-  const toggleButtons = Array.from(
-    document.querySelectorAll<HTMLButtonElement>(".toggle-body"),
-  );
+  import { bindNoteToggles, prefetchBodiesWhenIdle } from "../../../../../scripts/noteBody";
 
-  const expandCard = (card: HTMLElement) => {
-    card.setAttribute("data-state", "open");
-    card.classList.add("expanded");
-    card.querySelector(".note-body")?.removeAttribute("hidden");
-    const toggle = card.querySelector<HTMLElement>(".toggle-body");
-    if (toggle) {
-      toggle.textContent = toggle.dataset.labelClose || "收起";
-      toggle.setAttribute("aria-expanded", "true");
-    }
-  };
-
-  const collapseCard = (card: HTMLElement) => {
-    card.setAttribute("data-state", "closed");
-    card.classList.remove("expanded");
-    card.querySelector(".note-body")?.setAttribute("hidden", "true");
-    const toggle = card.querySelector<HTMLElement>(".toggle-body");
-    if (toggle) {
-      toggle.textContent = toggle.dataset.labelOpen || "展开";
-      toggle.setAttribute("aria-expanded", "false");
-    }
-  };
-
-  toggleButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const card = btn.closest<HTMLElement>(".note-card");
-      if (!card) return;
-      const isOpen = card.getAttribute("data-state") === "open";
-      isOpen ? collapseCard(card) : expandCard(card);
-    });
-  });
+  bindNoteToggles();
+  prefetchBodiesWhenIdle();
 </script>

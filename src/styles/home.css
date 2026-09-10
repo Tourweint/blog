@@ -52,7 +52,7 @@ body.page-home .page-content {
   opacity: 0.86;
 }
 
-/* Hero：左对齐 + 右侧留白 */
+/* ========== Hero：保持开放，不做卡片框 ========== */
 .hero {
   padding-top: 12vh;
   padding-bottom: 8vh;
@@ -93,7 +93,7 @@ body.page-home .page-content {
 .hero-cta {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: 0.75rem;
   margin-top: 1.75rem;
 }
 
@@ -101,15 +101,22 @@ body.page-home .page-content {
   text-decoration: none;
   color: var(--accent);
   font-weight: 600;
-  border-bottom: 1px solid transparent;
-  padding-bottom: 2px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition:
+    background-color 0.2s var(--t-ease),
+    border-color 0.2s var(--t-ease),
+    color 0.2s var(--t-ease);
 }
 
 .hero-link:hover {
-  border-bottom-color: currentColor;
+  background-color: color-mix(in oklab, var(--t-text) 6%, transparent);
+  border-color: var(--rule);
+  opacity: 1;
 }
 
-/* Section header：克制的底线与留白 */
+/* ========== Section header ========== */
 .section-header {
   grid-column: 1 / -1;
   display: flex;
@@ -136,9 +143,20 @@ body.page-home .page-content {
   color: var(--text-muted);
   font-weight: 600;
   white-space: nowrap;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  transition:
+    background-color 0.2s var(--t-ease),
+    color 0.2s var(--t-ease);
 }
 
-/* 最新原创：封面文章 + 右侧列表 */
+.more:hover {
+  background-color: color-mix(in oklab, var(--t-text) 5%, transparent);
+  color: var(--text-main);
+  opacity: 1;
+}
+
+/* ========== 最新原创：卡片化 ========== */
 .originals-section {
   margin-top: 4rem;
 }
@@ -147,7 +165,7 @@ body.page-home .page-content {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 1.5fr 1fr;
-  gap: 4rem;
+  gap: 1.5rem;
   margin-top: 2rem;
 }
 
@@ -155,43 +173,57 @@ body.page-home .page-content {
 .standard-card {
   text-decoration: none;
   color: inherit;
+  background: var(--t-surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--t-radius);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  transition:
+    box-shadow 0.2s var(--t-ease),
+    transform 0.2s var(--t-ease),
+    border-color 0.2s var(--t-ease);
+}
+
+.featured-card:hover,
+.standard-card:hover {
+  box-shadow: var(--c-shadow-hover);
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--t-text) 20%, var(--t-rule));
+  opacity: 1;
 }
 
 .featured-card {
   grid-row: span 2;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
-  padding: 0.5rem 0;
 }
 
 .standard-card {
-  padding: 1.5rem 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  justify-content: center;
 }
 
 .card-meta {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .card-title {
-  margin: 1rem 0 0.75rem;
+  margin: 0.85rem 0 0.65rem;
   font-family: var(--font-serif);
   letter-spacing: -0.01em;
 }
 
 .featured-card .card-title {
-  font-size: clamp(1.9rem, 3.2vw, 2.5rem);
-  line-height: 1.15;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.2;
 }
 
 .standard-card .card-title {
   font-size: 1.15rem;
   line-height: 1.35;
-  margin: 0.75rem 0 0.25rem;
+  margin: 0.65rem 0 0.25rem;
 }
 
 .card-desc {
@@ -204,24 +236,29 @@ body.page-home .page-content {
 .card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  margin-top: auto;
 }
 
 .card-tag {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--t-text) 4%, transparent);
 }
 
-/* 精选摘录：页边笔记 / 瀑布流 */
+/* ========== 精选摘录：卡片化 ========== */
 .excerpts-section {
   margin-top: 5rem;
 }
 
 .excerpt-waterfall {
-  column-count: 2;
-  column-gap: 4rem;
-  max-width: 1000px;
-  margin: 3.5rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 2.5rem auto 0;
   padding: 0 1.5rem;
 }
 
@@ -235,24 +272,30 @@ body.page-home .page-content {
 
 .excerpt-item {
   break-inside: avoid;
-  margin-bottom: 4rem;
-  padding: 0.75rem 0.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--t-surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--t-radius);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  transition:
+    box-shadow 0.2s var(--t-ease),
+    transform 0.2s var(--t-ease),
+    border-color 0.2s var(--t-ease);
+}
+
+.excerpt-item:hover {
+  box-shadow: var(--c-shadow-hover);
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--t-text) 20%, var(--t-rule));
 }
 
 .excerpt-text {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
-  line-height: 1.85;
-  margin: 0 0 1rem;
-  position: relative;
-}
-
-.excerpt-text::before {
-  content: "「";
-  position: absolute;
-  left: -1.6rem;
-  top: -0.2rem;
-  color: rgba(0, 0, 0, 0.14);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  margin: 0;
 }
 
 .excerpt-meta {
@@ -260,18 +303,20 @@ body.page-home .page-content {
   gap: 0.75rem;
   align-items: baseline;
   flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 1rem;
 }
 
 .excerpt-date {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   letter-spacing: 0.06em;
 }
 
 .excerpt-cite {
   font-style: normal;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .empty-state {
@@ -280,7 +325,7 @@ body.page-home .page-content {
   color: var(--text-muted);
 }
 
-/* 继续探索：更轻的目录感 */
+/* ========== 继续探索：卡片化 ========== */
 .explore-section {
   margin-top: 5rem;
 }
@@ -289,18 +334,31 @@ body.page-home .page-content {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 2rem;
+  gap: 1.5rem;
   margin-top: 2rem;
 }
 
 .explore-link {
   grid-column: span 4;
   display: grid;
-  gap: 0.35rem;
+  gap: 0.4rem;
   text-decoration: none;
   color: inherit;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--t-surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--t-radius);
+  padding: 1.5rem 1.75rem;
+  transition:
+    box-shadow 0.2s var(--t-ease),
+    transform 0.2s var(--t-ease),
+    border-color 0.2s var(--t-ease);
+}
+
+.explore-link:hover {
+  box-shadow: var(--c-shadow-hover);
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--t-text) 20%, var(--t-rule));
+  opacity: 1;
 }
 
 .explore-title {
@@ -312,8 +370,10 @@ body.page-home .page-content {
 .explore-desc {
   color: var(--text-muted);
   line-height: 1.6;
+  font-size: 0.95rem;
 }
 
+/* ========== 响应式 ========== */
 @media (max-width: 960px) {
   .hero-content {
     grid-column: 1 / -1;
@@ -321,17 +381,15 @@ body.page-home .page-content {
 
   .originals-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.25rem;
   }
 
   .featured-card {
     grid-row: auto;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   }
 
   .excerpt-waterfall {
-    column-count: 1;
+    grid-template-columns: 1fr;
   }
 
   .explore-link {
@@ -343,6 +401,13 @@ body.page-home .page-content {
   .grid-layout {
     padding: 0 1.25rem;
     gap: 1.5rem;
+  }
+
+  .featured-card,
+  .standard-card,
+  .excerpt-item,
+  .explore-link {
+    padding: 1.25rem 1.4rem;
   }
 }
 
@@ -371,6 +436,11 @@ body.page-home .page-content {
     margin-left: 0;
     display: block;
     margin-top: 0.35rem;
+  }
+
+  .hero-link {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.95rem;
   }
 }
 

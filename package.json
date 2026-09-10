@@ -17,11 +17,12 @@
     "@fontsource-variable/noto-sans-sc": "^5.2.10",
     "@fontsource-variable/noto-serif-sc": "^5.2.10",
     "astro": "^5.17.2",
+    "marked": "^18.0.12",
     "rehype-external-links": "^3.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
-    "typescript": "^5.9.3",
-    "pagefind": "^1.4.0"
+    "pagefind": "^1.4.0",
+    "typescript": "^5.9.3"
   }
 }
