@@ -3,8 +3,8 @@
 body.page-originals-systems {
   --bg-body: var(--t-bg);
   --bg-card: var(--c-surface);
-  --o-accent: #667eea;
-  --o-accent-2: #764ba2;
+  --o-accent: var(--t-link);
+  --o-accent-2: color-mix(in oklab, var(--t-link) 80%, var(--c-text));
   color: var(--c-text);
 }
 
@@ -122,11 +122,6 @@ body.page-originals-systems .systems-title {
   color: var(--c-text);
 }
 
-body.page-originals-systems .title-icon {
-  margin-right: 0.35rem;
-  font-size: 1.05em;
-}
-
 body.page-originals-systems .systems-intro {
   margin: 0 auto;
   max-width: 60ch;
@@ -147,12 +142,6 @@ body.page-originals-systems .systems-placeholder {
   border: 1px dashed color-mix(in oklab, var(--o-accent) 35%, var(--c-rule));
   border-radius: var(--c-radius);
   margin-bottom: 3rem;
-}
-
-body.page-originals-systems .placeholder-icon {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
-  opacity: 0.6;
 }
 
 body.page-originals-systems .placeholder-title {
@@ -238,10 +227,6 @@ body.page-originals-systems .systems-list {
 
   body.page-originals-systems .systems-intro {
     font-size: 14px;
-  }
-
-  body.page-originals-systems .placeholder-icon {
-    font-size: 3rem;
   }
 
   body.page-originals-systems .placeholder-title {

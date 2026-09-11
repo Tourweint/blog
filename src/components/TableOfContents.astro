@@ -1,25 +1,26 @@
 ---
 // 文章目录组件 - 用于长文导航
+// mobile=true 时渲染为文章顶部的折叠式目录（窄屏使用）
 export interface Props {
   headings: {
     depth: number;
     slug: string;
     text: string;
   }[];
+  mobile?: boolean;
 }
 
-const { headings } = Astro.props;
+const { headings, mobile = false } = Astro.props;
 
 // 只显示 h2 和 h3 级别的标题
 const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
 {
-  filteredHeadings.length > 0 && (
+  filteredHeadings.length > 0 && !mobile && (
     <aside class="toc-container" id="toc">
       <div class="toc-header">
-        <span class="toc-icon">📑</span>
-        <span class="toc-title">目录</span>
+        <span class="toc-title">目 录</span>
       </div>
       <nav class="toc-nav">
         <ul class="toc-list">
@@ -40,6 +41,31 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   )
 }
 
+{
+  filteredHeadings.length > 0 && mobile && (
+    <details class="toc-container toc-container--mobile">
+      <summary class="toc-mobile-summary">
+        <span class="toc-title">目 录</span>
+      </summary>
+      <nav class="toc-nav">
+        <ul class="toc-list">
+          {filteredHeadings.map((heading) => (
+            <li class={`toc-item toc-item-h${heading.depth}`}>
+              <a
+                href={`#${heading.slug}`}
+                class="toc-link"
+                data-slug={heading.slug}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  )
+}
+
 <script>
   // 目录高亮和滚动监听
   document.addEventListener("DOMContentLoaded", () => {
@@ -55,12 +81,24 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         const targetId = link.getAttribute("href")?.slice(1);
         const targetElement = document.getElementById(targetId || "");
         if (targetElement) {
-          const navHeight = 70; // 导航栏高度
+          // 与全局 --nav-height 保持一致（桌面 64px / 移动 56px）
+          const navHeight =
+            parseFloat(
+              getComputedStyle(document.documentElement)
+                .getPropertyValue("--nav-height")
+                .trim(),
+            ) || 64;
           const targetPosition = targetElement.offsetTop - navHeight - 20;
           window.scrollTo({
             top: targetPosition,
             behavior: "smooth",
           });
+
+          // 窄屏折叠目录：跳转后收起
+          const mobileToc = link.closest(
+            "details.toc-container--mobile",
+          ) as HTMLDetailsElement | null;
+          if (mobileToc) mobileToc.open = false;
         }
       });
     });
@@ -129,11 +167,11 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 <style>
   .toc-container {
     width: 100%;
-    background: var(--c-surface);
-    border-radius: var(--c-radius);
-    border: 1px solid var(--c-rule);
-    box-shadow: var(--c-shadow);
-    overflow: hidden;
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
     display: flex;
     flex-direction: column;
   }
@@ -141,21 +179,17 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   .toc-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 14px 18px 10px;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--c-rule);
     background: transparent;
-  }
-
-  .toc-icon {
-    font-size: 1.1rem;
   }
 
   .toc-title {
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--c-text);
     font-family: var(--t-font-serif);
-    letter-spacing: 0.06em; /* 轻微字距提升层级感 */
+    letter-spacing: 0.24em; /* 刊头式宽字距 */
   }
 
   .toc-nav {
@@ -228,16 +262,90 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   }
 
   .toc-link.active {
-    color: var(--c-text);
-    background: rgba(0, 0, 0, 0.04);
-    border-left-color: rgba(0, 0, 0, 0.28);
+    color: var(--t-link);
+    background: color-mix(in oklab, var(--t-link) 6%, transparent);
+    border-left-color: color-mix(in oklab, var(--t-link) 60%, transparent);
     font-weight: 600;
   }
 
-  /* 移动端隐藏目录 */
+  /* 桌面侧栏目录：窄屏隐藏，由正文内折叠目录取代 */
   @media (max-width: 1200px) {
-    .toc-container {
+    .toc-container:not(.toc-container--mobile) {
       display: none;
+    }
+  }
+
+  /* ===== 窄屏折叠式目录 ===== */
+  .toc-container--mobile {
+    display: none;
+  }
+
+  @media (max-width: 1200px) {
+    .toc-container--mobile {
+      display: block;
+      margin: 2px 0 20px;
+      background: transparent;
+      border: 0;
+      border-top: 1px solid var(--c-rule);
+      border-bottom: 1px solid var(--c-rule);
+      border-radius: 0;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .toc-mobile-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 2px;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+
+    .toc-mobile-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .toc-mobile-summary .toc-title {
+      font-size: 0.85rem;
+      letter-spacing: 0.24em;
+      color: var(--c-text);
+    }
+
+    .toc-mobile-summary::after {
+      content: "+";
+      font-size: 1.15rem;
+      line-height: 1;
+      font-weight: 400;
+      color: var(--c-muted);
+      transition: transform var(--c-dur) var(--c-ease);
+    }
+
+    .toc-container--mobile[open] .toc-mobile-summary {
+      border-bottom: 1px solid var(--c-rule);
+    }
+
+    .toc-container--mobile[open] .toc-mobile-summary::after {
+      content: "\2212"; /* − */
+    }
+
+    .toc-container--mobile .toc-nav {
+      padding: 6px 0 8px;
+      max-height: 48vh;
+      overflow-y: auto;
+      border-left: 0;
+    }
+
+    .toc-container--mobile .toc-link {
+      padding: 9px 8px 9px 10px;
+      font-size: 0.88rem;
+    }
+
+    .toc-container--mobile .toc-item-h3 .toc-link {
+      padding-left: 26px;
+      font-size: 0.85rem;
     }
   }
 </style>

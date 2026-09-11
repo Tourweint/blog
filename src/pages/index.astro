@@ -49,9 +49,9 @@ const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
           每一篇文章，都是我在认真打磨的作品。
         </p>
         <div class="hero-cta">
-          <a href="/originals" class="hero-link">探索原创 →</a>
-          <a href={excerpts.postsIndex} class="hero-link">浏览摘录 →</a>
-          <a href={excerpts.categoryIndex} class="hero-link">按主题阅读 →</a>
+          <a href="/originals" class="hero-link hero-link--primary">探索原创 →</a>
+          <a href={excerpts.postsIndex} class="hero-link hero-link--text">浏览摘录</a>
+          <a href={excerpts.categoryIndex} class="hero-link hero-link--text">按主题阅读</a>
         </div>
       </div>
     </section>
@@ -81,7 +81,7 @@ const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
                 {post.data.tags.length > 0 && (
                   <div class="card-tags">
                     {post.data.tags.slice(0, 2).map((tag) => (
-                      <span class="card-tag">#{tag}</span>
+                      <span class="card-tag">{tag}</span>
                     ))}
                   </div>
                 )}

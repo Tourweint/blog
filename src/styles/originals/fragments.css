@@ -3,8 +3,8 @@
 body.page-originals-fragments {
   --bg-body: var(--t-bg);
   --bg-card: var(--c-surface);
-  --o-accent: #f093fb;
-  --o-accent-2: #f5576c;
+  --o-accent: var(--t-link);
+  --o-accent-2: color-mix(in oklab, var(--t-link) 80%, var(--c-text));
   color: var(--c-text);
 }
 
@@ -122,11 +122,6 @@ body.page-originals-fragments .fragments-title {
   color: var(--c-text);
 }
 
-body.page-originals-fragments .title-icon {
-  margin-right: 0.35rem;
-  font-size: 1.05em;
-}
-
 body.page-originals-fragments .fragments-intro {
   margin: 0 auto;
   max-width: 60ch;
@@ -147,12 +142,6 @@ body.page-originals-fragments .fragments-placeholder {
   border: 1px dashed color-mix(in oklab, var(--o-accent) 35%, var(--c-rule));
   border-radius: var(--c-radius);
   margin-bottom: 3rem;
-}
-
-body.page-originals-fragments .placeholder-icon {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
-  opacity: 0.6;
 }
 
 body.page-originals-fragments .placeholder-title {
@@ -240,10 +229,6 @@ body.page-originals-fragments .fragments-list {
 
   body.page-originals-fragments .fragments-intro {
     font-size: 14px;
-  }
-
-  body.page-originals-fragments .placeholder-icon {
-    font-size: 3rem;
   }
 
   body.page-originals-fragments .placeholder-title {

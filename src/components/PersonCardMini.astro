@@ -35,19 +35,31 @@ const personHref = excerpts.personDetail(personSlug);
   .person-card-mini {
     display: flex;
     gap: 0.75rem;
-    padding: 1rem;
-    background: var(--c-surface);
-    border: 1px solid var(--c-rule);
-    border-radius: 8px;
-    margin-bottom: 0.75rem;
-    box-shadow: var(--c-shadow);
-    transition: all var(--c-dur) var(--c-ease);
+    padding: 0 0 1.2rem;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    margin-bottom: 1.2rem;
+    box-shadow: none;
+    position: relative;
+    transition: none;
   }
 
-  .person-card-mini:hover {
-    border-color: rgba(0, 0, 0, 0.18);
-    box-shadow: var(--c-shadow-hover);
-    transform: translateY(-1px);
+  /* 多位嘉宾之间：32px 居中短横线 */
+  .person-card-mini:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .person-card-mini:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
 
   .mini-avatar {
@@ -93,7 +105,7 @@ const personHref = excerpts.personDetail(personSlug);
     display: inline-block;
     margin-top: 0.5rem;
     font-size: 0.8rem;
-    color: var(--c-text);
+    color: var(--t-link);
     text-decoration: none;
     font-weight: 500;
   }
@@ -106,6 +118,6 @@ const personHref = excerpts.personDetail(personSlug);
   .mini-link:focus-visible {
     outline: 3px solid var(--c-focus);
     outline-offset: 2px;
-    border-radius: 8px;
+    border-radius: 4px;
   }
 </style>

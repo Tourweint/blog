@@ -125,7 +125,7 @@ body.page-tools .category-title::before {
   display: inline-block;
   width: 4px;
   height: 1rem;
-  background: linear-gradient(135deg, #4b60d4 0%, #4fabc2 100%);
+  background: var(--t-link);
   border-radius: 2px;
   margin-right: 0.75rem;
   vertical-align: middle;

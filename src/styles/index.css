@@ -1,11 +1,14 @@
+/* =========================================================
+   摘录 · 文章 / 主题列表：中文编辑部刊物式索引
+   - 去白卡片：刊头与侧栏无框，列表为细线分隔的索引行
+   - 类名与四个调用页保持契约，不改动任何 DOM
+   ========================================================= */
+
 body.page-excerpts-posts {
-    /* 让 posts 列表页不再像“旧首页”一样自带一套主题；
-         统一改为基于 tokens 的频道样式，并且只在本频道作用域生效。 */
     --bg-body: var(--t-bg);
-    --bg-card: var(--c-surface);
+    --bg-card: var(--t-surface);
 
     --posts-max: 1100px;
-    --posts-gap: 18px;
 
     scrollbar-gutter: stable;
     overflow-x: hidden;
@@ -17,28 +20,21 @@ body.page-excerpts-posts .excerpts-posts {
     width: 100%;
     max-width: var(--posts-max);
     margin: 0 auto;
-    padding: 28px 1.5rem 64px;
+    padding: 36px 1.5rem 72px;
     box-sizing: border-box;
 }
 
+/* ===== 刊头：无框，底部一条细线 ===== */
+
 body.page-excerpts-posts .excerpts-posts__header {
-    padding: 28px 22px;
-    border-radius: var(--c-radius);
-    border: 1px solid var(--c-rule);
-    background-color: var(--c-surface);
-    background-image: radial-gradient(
-        circle at 20% 20%,
-        color-mix(in oklab, var(--c-bg) 60%, white 40%) 0%,
-        color-mix(in oklab, var(--c-bg) 25%, var(--c-surface) 75%) 60%,
-        var(--c-surface) 100%
-    );
-    box-shadow: var(--c-shadow);
+    padding: 4px 2px 26px;
+    border-bottom: 1px solid var(--c-rule);
 }
 
 body.page-excerpts-posts .excerpts-posts__eyebrow {
-    margin: 0 0 8px;
+    margin: 0 0 10px;
     font-size: 12px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--c-muted);
 }
@@ -47,27 +43,30 @@ body.page-excerpts-posts .excerpts-posts__title {
     margin: 0;
     font-size: 34px;
     line-height: 1.2;
+    font-weight: 700;
     font-family: var(--t-font-serif);
+    letter-spacing: 0.01em;
 }
 
 body.page-excerpts-posts .excerpts-posts__sub {
-    margin: 10px 0 0;
+    margin: 12px 0 0;
     font-size: 15px;
+    line-height: 1.7;
     color: var(--c-muted);
 }
 
 body.page-excerpts-posts .excerpts-posts__meta {
-    margin-top: 12px;
+    margin-top: 14px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    align-items: center;
+    align-items: baseline;
     color: var(--c-muted);
-    font-size: 0.875rem;
+    font-size: 0.85rem;
 }
 
 body.page-excerpts-posts .excerpts-posts__meta .meta-item {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--c-text);
 }
 
@@ -79,25 +78,22 @@ body.page-excerpts-posts .meta-link {
     color: inherit;
     text-decoration: none;
     border-bottom: 1px solid transparent;
-    transition: border-color var(--c-dur) var(--c-ease),
-        opacity var(--c-dur) var(--c-ease);
+    transition: color var(--c-dur) var(--c-ease),
+        border-color var(--c-dur) var(--c-ease);
 }
 
 body.page-excerpts-posts .meta-link:hover {
-    border-bottom-color: var(--c-rule);
+    color: var(--t-link);
+    border-bottom-color: color-mix(in oklab, var(--t-link) 40%, transparent);
 }
 
-body.page-excerpts-posts .meta-link:focus-visible {
-    outline: 3px solid var(--c-focus);
-    outline-offset: 3px;
-    border-radius: 8px;
-}
+/* ===== 布局：主题索引侧栏 ===== */
 
 body.page-excerpts-posts .excerpts-posts__layout {
     display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 22px;
-    margin-top: 18px;
+    grid-template-columns: 220px 1fr;
+    gap: 44px;
+    margin-top: 34px;
     align-items: start;
     width: 100%;
     box-sizing: border-box;
@@ -105,36 +101,37 @@ body.page-excerpts-posts .excerpts-posts__layout {
 
 body.page-excerpts-posts .excerpts-posts__aside {
     position: sticky;
-    top: calc(var(--nav-height) + 18px);
-    width: 240px;
+    top: calc(var(--nav-height) + 24px);
+    width: 220px;
     box-sizing: border-box;
-    overflow: hidden;
 }
 
 body.page-excerpts-posts .aside-card {
-    background: var(--bg-card);
-    border: 1px solid var(--c-rule);
-    border-radius: var(--c-radius);
-    box-shadow: var(--c-shadow);
-    padding: 14px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
     width: 100%;
     box-sizing: border-box;
 }
 
 body.page-excerpts-posts .aside-title {
     font-size: 12px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--c-muted);
     font-weight: 700;
-    margin: 2px 2px 10px;
+    margin: 0 0 2px;
+    padding: 0 2px 12px;
+    border-bottom: 1px solid var(--c-rule);
 }
 
 body.page-excerpts-posts .aside-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    max-height: min(62vh, 520px);
+    gap: 0;
+    max-height: min(62vh, 560px);
     overflow: auto;
     padding-right: 6px;
     width: 100%;
@@ -143,60 +140,68 @@ body.page-excerpts-posts .aside-list {
 
 body.page-excerpts-posts .aside-link {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: 10px;
-    padding: 10px 10px;
-    border-radius: 10px;
+    padding: 9px 2px;
+    border-radius: 0;
     text-decoration: none;
     color: var(--c-text);
-    border: 1px solid transparent;
-    transition: background-color var(--c-dur) var(--c-ease),
-        border-color var(--c-dur) var(--c-ease),
-        transform var(--c-dur) var(--c-ease);
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--c-rule) 55%, transparent);
+    transition: color var(--c-dur) var(--c-ease);
 }
 
 body.page-excerpts-posts .aside-link:hover {
-    background: color-mix(in oklab, var(--c-accent) 6%, var(--bg-card));
-    border-color: var(--c-rule);
+    background: none;
+    border-color: color-mix(in oklab, var(--c-rule) 55%, transparent);
+    color: var(--t-link);
 }
 
 body.page-excerpts-posts .aside-link.is-active {
-    background: color-mix(in oklab, var(--c-accent) 10%, var(--bg-card));
-    border-color: color-mix(in oklab, var(--c-accent) 34%, var(--c-rule));
-}
-
-body.page-excerpts-posts .aside-link:focus-visible {
-    outline: 3px solid var(--c-focus);
-    outline-offset: 3px;
+    color: var(--t-link);
 }
 
 body.page-excerpts-posts .aside-link__label {
-    font-weight: 650;
+    font-weight: 500;
     font-size: 14px;
+}
+
+body.page-excerpts-posts .aside-link.is-active .aside-link__label {
+    font-weight: 700;
 }
 
 body.page-excerpts-posts .aside-link__count {
     font-size: 12px;
     color: var(--c-muted);
-    background: color-mix(in oklab, var(--c-bg) 65%, var(--bg-card));
-    border: 1px solid var(--c-rule);
-    padding: 2px 8px;
-    border-radius: 999px;
+    background: none;
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+    font-variant-numeric: tabular-nums;
 }
 
+body.page-excerpts-posts .aside-link.is-active .aside-link__count {
+    color: var(--t-link);
+}
+
+/* ===== 文章索引：细线分隔的行 ===== */
+
 body.page-excerpts-posts .excerpts-posts__section-title {
-    margin: 4px 0 12px;
-    font-size: 18px;
-    font-weight: 800;
+    margin: 6px 0 0;
+    padding: 0 2px;
+    font-size: 15px;
+    font-weight: 700;
     font-family: var(--t-font-serif);
+    letter-spacing: 0.12em;
+    color: var(--c-text);
 }
 
 body.page-excerpts-posts .post-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--posts-gap);
-    margin-bottom: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 6px 0 40px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -206,206 +211,220 @@ body.page-excerpts-posts .post-card-link {
     color: inherit;
     display: block;
     box-sizing: border-box;
+    border-top: 1px solid var(--c-rule);
+    padding: 24px 6px;
+    transition: background-color var(--c-dur) var(--c-ease);
+}
+
+body.page-excerpts-posts .post-grid .post-card-link:last-child {
+    border-bottom: 1px solid var(--c-rule);
+}
+
+body.page-excerpts-posts .post-card-link:hover {
+    background: color-mix(in oklab, var(--t-link) 4%, transparent);
+}
+
+body.page-excerpts-posts .post-card-link.highlight-card {
+    border-radius: 8px;
+    animation: posts-highlight-pulse 1.8s var(--c-ease) 1;
 }
 
 body.page-excerpts-posts .post-card {
-    background: var(--bg-card);
-    border: 1px solid var(--c-rule);
-    border-radius: var(--c-radius);
-    padding: 18px;
-    box-shadow: var(--c-shadow);
-    transition: transform var(--c-dur) var(--c-ease),
-        box-shadow var(--c-dur) var(--c-ease),
-        border-color var(--c-dur) var(--c-ease);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto;
     width: 100%;
     box-sizing: border-box;
 }
 
-body.page-excerpts-posts .post-card-link:hover .post-card {
-    transform: translateY(-2px);
-    box-shadow: var(--c-shadow-hover);
-    border-color: color-mix(in oklab, var(--c-accent) 30%, var(--c-rule));
-}
-
-body.page-excerpts-posts .post-card-link:focus-visible {
-    outline: 3px solid var(--c-focus);
-    outline-offset: 4px;
-    border-radius: calc(var(--c-radius) + 4px);
-}
-
 body.page-excerpts-posts .card-meta {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--c-muted);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     display: flex;
-    align-items: flex-start;
+    align-items: baseline;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
+    letter-spacing: 0.03em;
 }
 
 body.page-excerpts-posts .card-tags {
     display: flex;
-    gap: 6px;
+    gap: 4px 14px;
     flex-wrap: wrap;
     justify-content: flex-end;
 }
 
 body.page-excerpts-posts .card-tag {
-    background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
-    color: var(--c-text);
-    border: 1px solid var(--c-rule);
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-weight: 650;
-    font-size: 11px;
+    background: none;
+    color: var(--c-muted);
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+    font-weight: 400;
+    font-size: 12.5px;
+}
+
+body.page-excerpts-posts .card-tag::before {
+    content: "#";
+    margin-right: 2px;
+    opacity: 0.7;
 }
 
 body.page-excerpts-posts .post-title {
     margin: 0;
-    font-size: 16px;
+    font-size: 20px;
     font-family: var(--t-font-serif);
-    font-weight: 800;
-    line-height: 1.35;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    color: var(--c-text);
+    transition: color var(--c-dur) var(--c-ease);
+}
+
+body.page-excerpts-posts .post-card-link:hover .post-title {
+    color: var(--t-link);
 }
 
 body.page-excerpts-posts .post-desc {
-    font-size: 13px;
+    font-size: 14.5px;
+    line-height: 1.75;
     color: var(--c-muted);
-    margin: 10px 0 0;
+    margin: 8px 0 0;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
 body.page-excerpts-posts .read-more {
-    margin-top: auto;
+    margin-top: 10px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-weight: 700;
-    color: var(--c-text);
-    opacity: 0.82;
-    padding-top: 12px;
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--c-muted);
+    opacity: 0.9;
+    padding-top: 0;
+    transition: color var(--c-dur) var(--c-ease);
 }
 
 body.page-excerpts-posts .post-card-link:hover .read-more {
     opacity: 1;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    color: var(--t-link);
+    text-decoration: none;
 }
 
 body.page-excerpts-posts .no-results {
     text-align: center;
     color: var(--c-muted);
-    padding: 26px;
-    background: var(--bg-card);
-    border-radius: var(--c-radius);
-    border: 1px solid var(--c-rule);
-    box-shadow: var(--c-shadow);
+    padding: 48px 0;
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
 }
 
-/* ====== /excerpts/category（主题目录页） ====== */
+/* ===== 主题目录页：索引行 ===== */
 
 body.page-excerpts-posts .category-index__main {
-    margin-top: 18px;
+    margin-top: 34px;
 }
 
 body.page-excerpts-posts .category-index__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--posts-gap);
-    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 8px;
 }
 
 body.page-excerpts-posts .category-index__card {
-    background: var(--bg-card);
-    border: 1px solid var(--c-rule);
-    border-radius: var(--c-radius);
-    box-shadow: var(--c-shadow);
-    padding: 14px 16px;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--c-rule);
+    border-radius: 0;
+    box-shadow: none;
+    padding: 18px 6px;
     text-decoration: none;
     color: var(--c-text);
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: 12px;
-    transition: transform var(--c-dur) var(--c-ease),
-        box-shadow var(--c-dur) var(--c-ease),
-        border-color var(--c-dur) var(--c-ease),
-        background-color var(--c-dur) var(--c-ease);
+    transition: background-color var(--c-dur) var(--c-ease),
+        color var(--c-dur) var(--c-ease);
+}
+
+body.page-excerpts-posts .category-index__grid .category-index__card:last-child {
+    border-bottom: 1px solid var(--c-rule);
 }
 
 body.page-excerpts-posts .category-index__card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--c-shadow-hover);
-    border-color: color-mix(in oklab, var(--c-accent) 30%, var(--c-rule));
-    background: color-mix(in oklab, var(--c-accent) 6%, var(--bg-card));
-}
-
-body.page-excerpts-posts .category-index__card:focus-visible {
-    outline: 3px solid var(--c-focus);
-    outline-offset: 4px;
+    background: color-mix(in oklab, var(--t-link) 4%, transparent);
+    color: var(--t-link);
 }
 
 body.page-excerpts-posts .category-index__name {
-    font-weight: 800;
+    font-weight: 700;
+    font-size: 16px;
     font-family: var(--t-font-serif);
-    line-height: 1.25;
+    line-height: 1.4;
 }
 
 body.page-excerpts-posts .category-index__count {
     color: var(--c-muted);
-    font-size: 12px;
-    border: 1px solid var(--c-rule);
-    border-radius: 999px;
-    padding: 2px 10px;
-    background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
+    font-size: 12.5px;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    background: none;
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 
-body.page-excerpts-posts .highlight-card .post-card {
-    outline: 3px solid var(--c-focus);
-    outline-offset: 4px;
-}
-
-body.page-excerpts-posts .post-card-link.highlight-card .post-card {
-    animation: posts-highlight-pulse 1.6s var(--c-ease) 1;
+body.page-excerpts-posts .category-index__card:hover .category-index__count {
+    color: var(--t-link);
 }
 
 @keyframes posts-highlight-pulse {
     0% {
-        box-shadow: 0 0 0 0 color-mix(in oklab, var(--c-focus) 60%, transparent);
+        background: color-mix(in oklab, var(--t-link) 12%, transparent);
     }
-    35% {
-        box-shadow: 0 0 0 10px color-mix(in oklab, var(--c-focus) 30%, transparent);
+    70% {
+        background: color-mix(in oklab, var(--t-link) 5%, transparent);
     }
     100% {
-        box-shadow: var(--c-shadow);
+        background: transparent;
     }
 }
 
+/* ===== 响应式 ===== */
+
 @media (max-width: 920px) {
     body.page-excerpts-posts .excerpts-posts__layout {
-        grid-template-columns: 1fr;
+        /* minmax(0,1fr)：防止横滑分类条的 nowrap 内容经 min-content 撑爆单列轨道 */
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
     }
 
     body.page-excerpts-posts .excerpts-posts__aside {
         position: static;
         width: 100%;
         max-width: 100%;
-        box-sizing: border-box;
     }
 
     body.page-excerpts-posts .aside-card {
-        padding: 12px;
         width: 100%;
-        box-sizing: border-box;
     }
 
+    /* 主题在窄屏变为横向滑动索引条（纯文字） */
     body.page-excerpts-posts .aside-list {
         max-height: none;
         overflow-x: auto;
@@ -413,62 +432,64 @@ body.page-excerpts-posts .post-card-link.highlight-card .post-card {
         -webkit-overflow-scrolling: touch;
         flex-direction: row;
         padding-right: 0;
-        gap: 10px;
-        scroll-snap-type: x proximity;
+        gap: 0;
         width: 100%;
         max-width: 100%;
-        box-sizing: border-box;
+        scroll-snap-type: x proximity;
+        border-bottom: 1px solid var(--c-rule);
     }
 
     body.page-excerpts-posts .aside-link {
         white-space: nowrap;
         scroll-snap-align: start;
         flex-shrink: 0;
+        border-bottom: 2px solid transparent;
+        margin-right: 22px;
+        padding: 10px 0;
+    }
+
+    body.page-excerpts-posts .aside-link__count {
+        margin-left: 4px;
+    }
+
+    body.page-excerpts-posts .aside-link.is-active {
+        border-bottom-color: var(--t-link);
     }
 }
 
 @media (max-width: 768px) {
     body.page-excerpts-posts .excerpts-posts {
-        padding: 24px 1.25rem 52px;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__header {
-        padding: 24px 20px;
+        padding: 28px 1.25rem 60px;
     }
 
     body.page-excerpts-posts .excerpts-posts__title {
-        font-size: 30px;
+        font-size: 29px;
     }
 
-    body.page-excerpts-posts .post-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 16px;
-    }
-
-    body.page-excerpts-posts .post-card {
-        padding: 16px;
+    body.page-excerpts-posts .post-card-link {
+        padding: 20px 4px;
     }
 
     body.page-excerpts-posts .post-title {
-        font-size: 15px;
+        font-size: 18px;
     }
 
     body.page-excerpts-posts .post-desc {
-        font-size: 12px;
+        font-size: 14px;
     }
 }
 
 @media (max-width: 640px) {
     body.page-excerpts-posts .excerpts-posts {
-        padding: 20px 1rem 44px;
+        padding: 24px 1rem 52px;
     }
 
     body.page-excerpts-posts .excerpts-posts__header {
-        padding: 20px 16px;
+        padding: 2px 0 22px;
     }
 
     body.page-excerpts-posts .excerpts-posts__title {
-        font-size: 28px;
+        font-size: 27px;
     }
 
     body.page-excerpts-posts .excerpts-posts__sub {
@@ -476,148 +497,60 @@ body.page-excerpts-posts .post-card-link.highlight-card .post-card {
     }
 
     body.page-excerpts-posts .excerpts-posts__meta {
-        font-size: 12px;
-    }
-
-    body.page-excerpts-posts .post-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 12px;
-    }
-
-    body.page-excerpts-posts .post-card {
-        padding: 14px;
-    }
-
-    body.page-excerpts-posts .post-title {
-        font-size: 14px;
-        line-height: 1.3;
-    }
-
-    body.page-excerpts-posts .post-desc {
-        font-size: 12px;
-        line-height: 1.4;
-        -webkit-line-clamp: 2;
+        font-size: 12.5px;
     }
 
     body.page-excerpts-posts .card-meta {
         flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
+        gap: 5px;
     }
 
     body.page-excerpts-posts .card-tags {
         justify-content: flex-start;
     }
 
-    body.page-excerpts-posts .card-tag {
-        font-size: 10px;
-        padding: 2px 6px;
+    body.page-excerpts-posts .post-title {
+        font-size: 17px;
+        line-height: 1.4;
+    }
+
+    body.page-excerpts-posts .post-desc {
+        font-size: 14px;
+        line-height: 1.7;
     }
 }
 
 @media (max-width: 480px) {
     body.page-excerpts-posts .excerpts-posts {
-        padding: 18px 0.9rem 40px;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__header {
-        padding: 18px 14px;
-        border-radius: 10px;
+        padding: 20px 1rem 48px;
     }
 
     body.page-excerpts-posts .excerpts-posts__title {
-        font-size: 24px;
+        font-size: 25px;
     }
 
     body.page-excerpts-posts .excerpts-posts__eyebrow {
         font-size: 11px;
     }
 
-    body.page-excerpts-posts .post-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    body.page-excerpts-posts .post-card {
-        padding: 12px;
-    }
-
     body.page-excerpts-posts .post-title {
-        font-size: 13px;
+        font-size: 16.5px;
     }
 
     body.page-excerpts-posts .post-desc {
-        font-size: 11px;
-        -webkit-line-clamp: 2;
-        margin-top: 8px;
-    }
-
-    body.page-excerpts-posts .card-meta {
-        font-size: 11px;
-        gap: 6px;
-    }
-
-    body.page-excerpts-posts .read-more {
-        font-size: 12px;
-        padding-top: 8px;
-        gap: 4px;
-    }
-
-    body.page-excerpts-posts .aside-card {
-        padding: 10px;
-    }
-
-    body.page-excerpts-posts .aside-title {
-        font-size: 11px;
-    }
-
-    body.page-excerpts-posts .aside-link {
-        padding: 8px 8px;
-    }
-
-    body.page-excerpts-posts .aside-link__label {
-        font-size: 13px;
-    }
-
-    body.page-excerpts-posts .aside-link__count {
-        font-size: 11px;
-        padding: 2px 6px;
+        font-size: 14px;
+        margin-top: 7px;
     }
 }
 
 @media (max-width: 380px) {
     body.page-excerpts-posts .excerpts-posts {
-        padding-left: 0.8rem;
-        padding-right: 0.8rem;
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
     }
 
     body.page-excerpts-posts .excerpts-posts__title {
-        font-size: 22px;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__sub {
-        font-size: 13px;
-    }
-
-    body.page-excerpts-posts .post-card {
-        padding: 10px;
-    }
-
-    body.page-excerpts-posts .post-title {
-        font-size: 12px;
-    }
-
-    body.page-excerpts-posts .post-desc {
-        font-size: 10px;
-        margin-top: 6px;
-    }
-
-    body.page-excerpts-posts .card-meta {
-        font-size: 10px;
-    }
-
-    body.page-excerpts-posts .card-tag {
-        font-size: 9px;
-        padding: 1px 4px;
+        font-size: 23px;
     }
 }

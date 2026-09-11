@@ -21,16 +21,18 @@
   --brand: #0f172a;
   --brand-hover: #1f2937;
 
-  /* ===== Theme Tokens (Draft) =====
-     说明：先新增 tokens，不立刻改现有视觉；
-     下一轮会逐步把 body/链接/分隔线收敛到这些变量。
+  /* ===== Theme Tokens =====
+     暖纸 / 墨色 / 靛青：中文编辑部刊物配色
   */
   --t-bg: #fbfbf9;
   --t-surface: #ffffff;
   --t-text: #1a1a1a;
-  --t-muted: #86868b;
+  /* #6d6d72 在暖纸底上对比度约 4.9:1，满足 WCAG AA */
+  --t-muted: #6d6d72;
   --t-rule: rgba(0, 0, 0, 0.1);
   --t-accent: #333333;
+  /* 唯一品牌强调色：克制的靛青，仅用于链接/焦点/少量标记 */
+  --t-link: #3a4a6b;
 
   --t-font-serif: "Noto Serif SC Variable", "Noto Serif SC",
     "Source Han Serif CN", "Songti SC", "STSong", "SimSun", serif;
@@ -56,7 +58,18 @@
   --c-shadow-hover: 0 10px 26px rgba(0, 0, 0, 0.08);
   --c-ease: var(--t-ease);
   --c-dur: var(--t-dur);
-  --c-focus: rgba(79, 171, 194, 0.28);
+  --c-focus: color-mix(in oklab, var(--t-link) 30%, transparent);
+}
+
+/*
+  键盘焦点基线：
+  组件可自带 :focus-visible（优先级更高），未覆盖的交互元素统一用靛青焦点环。
+  :where() 零特异性，不会压制组件自身样式。
+*/
+:where(a[href], button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 * {

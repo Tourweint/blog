@@ -8,9 +8,9 @@ body.page-excerpts-notes {
 
   scrollbar-gutter: stable;
 
-  /* 轻量强调色：沿用全站“克制但有温度”的蓝绿系 */
-  --notes-accent: color-mix(in oklab, var(--c-text) 25%, #4fabc2);
-  --notes-accent-light: color-mix(in oklab, var(--c-bg) 88%, #4fabc2);
+  /* 强调色统一到全站靛青 token */
+  --notes-accent: var(--t-link);
+  --notes-accent-light: color-mix(in oklab, var(--c-bg) 90%, var(--t-link));
 
   --notes-border: var(--c-rule);
   --notes-border-hover: color-mix(in oklab, var(--c-rule) 60%, var(--c-text));

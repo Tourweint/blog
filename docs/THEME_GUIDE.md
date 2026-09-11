@@ -12,9 +12,15 @@
 补充（母主题系统要点）：
 
 - **基底统一，差异局部**：全局基础样式只在 `src/styles/global.css` 定义；频道样式只在各自 `body.page-xxx` 范围覆盖。
-- **默认去卡片化**：除非需要强调，否则优先留白 + 细分隔线，避免厚阴影/大位移。
+- **默认去卡片化**：辅助区块（元信息、导航、侧栏分区、标签等）优先留白 + 文字灰度，不用白卡/阴影/圆角；卡片只留给真正需要强调或承载操作的面板，且避免厚阴影/大位移。
+- **分隔线层级（避免满屏横线）**：一页之内水平线只分三级，宁少勿多——
+  1. **版头线**：仅标题区与正文之间可保留一条通栏淡线，颜色 `var(--t-rule)`（约 rgba(0,0,0,.1)），1px；
+  2. **章节短横线**：大区块边界（正文收束、页脚、并列条目之间）用居中短横线：48px / 1px / `rgba(0,0,0,.15)`（条目之间可用 32px），上下留约 2rem 白；正文 Markdown 的 `hr` 同语言（60px 居中）；
+  3. **章节内部无线**：H2/H3、提问标签等靠字重、字号、间距分章，不加通栏下划线。
+  - 禁止 2px 粗通栏线、禁止给每个区块上下都封线（线多即显锋利）。
+- **色彩克制**：强调色统一用 `--t-link`（靛青）；不使用暖棕/米色等频道私有色；灰色层次走 `--t-muted` 与 `rgba(0,0,0,.1~.15)`，不要硬编码灰阶。
 - **排版优先**：标题/摘录更适合衬线体，元信息小号、加字距、弱化。
-- **交互克制**：hover 以 `opacity` / `underline` 为主，避免过度动效。
+- **交互克制**：hover 以 `opacity` / `underline` / 颜色变化为主，避免位移、放大、发光等过度动效。
 
 ## 2. Tokens 速查
 
@@ -44,8 +50,9 @@ tokens 定义位置：
 推荐用法：
 
 - 文本弱化：`color: var(--c-muted)`
-- 卡片：`background: var(--c-surface); border: 1px solid var(--c-rule); box-shadow: var(--c-shadow)`
-- hover：`box-shadow: var(--c-shadow-hover)`
+- 卡片（仅限需要强调/承载操作的面板，默认不用）：`background: var(--c-surface); border: 1px solid var(--c-rule); box-shadow: var(--c-shadow)`
+- hover：`box-shadow: var(--c-shadow-hover)`（仅卡片；普通链接用下划线/变色）
+- 分隔：版头用 1px `var(--c-rule)` 通栏淡线；区块边界用居中短横线 `48px × 1px rgba(0,0,0,.15)`；章节内部不加线（见第 1 节）
 - focus：`outline/box-shadow` 使用 `var(--c-focus)`
 
 补充：尽量避免在频道 CSS 里直接写 `body {}` 和 `.page-content {}`。如需调整版心宽度或 padding，优先通过页面容器或公共类完成。
@@ -99,4 +106,7 @@ tokens 定义位置：
   - 最后跑一次 `npm run build`
 
 - 收敛硬编码颜色：
-  - `rgba(...)` / `#xxxxxx` 优先改为 `var(--c-muted)` / `var(--c-rule)` / `color-mix(...)`
+  `rgba(...)` / `#xxxxxx` 优先改为 `var(--c-muted)` / `var(--c-rule)` / `color-mix(...)`
+
+- 加区块前先想“分隔从哪来”：
+  先数当前页已有几条水平线；能用留白/字重/文字灰度解决就不加线；必须分隔时按第 1 节的三级层级选用，避免给区块上下同时封通栏线。

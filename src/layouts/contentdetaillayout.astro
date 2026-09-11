@@ -86,6 +86,10 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
         <BackLink href={backUrl} label={backLabel} />
       </nav>
 
+      {headings && headings.length > 0 && (
+        <TableOfContents headings={headings} mobile={true} />
+      )}
+
       <article class="post-detail">
         {eyebrowText && <p class="post-eyebrow">{eyebrowText}</p>}
         <h1 class="post-title">{contentTitle}</h1>
@@ -96,7 +100,6 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
           {
             typeof readingTime === "number" && (
               <span class="reading-time">
-                <span class="reading-icon">📖</span>
                 <span>{readingTime} 分钟阅读</span>
                 {typeof totalWords === "number" && (
                   <span class="word-count">· 约 {totalWords} 字</span>
@@ -126,6 +129,29 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
 
           <slot name="meta-extra" />
 
+          {
+            safeRereadStars > 0 && (
+              <div class="meta-stars-group">
+                <span class="meta-stars-label">推荐星级</span>
+                <div
+                  class="meta-stars"
+                  id="reread-stars"
+                  role="img"
+                  aria-label={`推荐星级 ${safeRereadStars} / ${safeMaxStars}`}
+                >
+                  {starStates.map((filled) => (
+                    <span
+                      class={`star${filled ? " star--filled" : ""}`}
+                      aria-hidden="true"
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+
           <div class="meta-categories" id="categories">
             {
               tags && tags.length > 0 ? (
@@ -147,29 +173,6 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
               )
             }
           </div>
-
-          {
-            safeRereadStars > 0 && (
-              <div class="meta-stars-group">
-                <span>推荐星级 :</span>
-                <div
-                  class="meta-stars"
-                  id="reread-stars"
-                  role="img"
-                  aria-label={`推荐星级 ${safeRereadStars} / ${safeMaxStars}`}
-                >
-                  {starStates.map((filled) => (
-                    <span
-                      class={`star${filled ? " star--filled" : ""}`}
-                      aria-hidden="true"
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )
-          }
         </div>
 
         <div class="content">
