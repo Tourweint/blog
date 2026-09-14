@@ -99,12 +99,7 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
 
           {
             typeof readingTime === "number" && (
-              <span class="reading-time">
-                <span>{readingTime} 分钟阅读</span>
-                {typeof totalWords === "number" && (
-                  <span class="word-count">· 约 {totalWords} 字</span>
-                )}
-              </span>
+              <span class="reading-time"><span>{readingTime} 分钟阅读</span>{typeof totalWords === "number" && <span class="word-count">约 {totalWords} 字</span>}</span>
             )
           }
 
@@ -118,7 +113,7 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
                     rel="noopener noreferrer"
                     class="author-link"
                   >
-                    {author.name}
+                    <span class="author-link-text">{author.name}</span>
                   </a>
                 ) : (
                   <span class="author-name">{author.name}</span>

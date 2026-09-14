@@ -1,6 +1,9 @@
-@import "@fontsource-variable/inter/index.css";
-@import "@fontsource-variable/noto-sans-sc/index.css";
-@import "@fontsource-variable/noto-serif-sc/index.css";
+/*
+ * 字体 @font-face 声明不在全局样式里 import：
+ * 三个 @fontsource-variable 包的全部切片声明（约 200 条）体积较大，
+ * 会被打进渲染阻塞的关键 CSS。改为在 MainLayout <head> 中
+ * 以 `?url` 引入并异步加载（media="print" + onload 切换）。
+ */
 
 /* 全局基础设置 */
 :root {

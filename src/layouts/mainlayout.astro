@@ -2,6 +2,10 @@
 // src/layouts/MainLayout.astro
 import "../styles/global.css";
 import { excerpts } from "../utils/excerptsPaths";
+// 字体声明单独成文件、异步加载，避免 ~200 条 @font-face 进入渲染阻塞 CSS
+import interFontCss from "@fontsource-variable/inter/index.css?url";
+import sansFontCss from "@fontsource-variable/noto-sans-sc/index.css?url";
+import serifFontCss from "@fontsource-variable/noto-serif-sc/index.css?url";
 
 interface Props {
   title?: string;
@@ -163,6 +167,44 @@ const bodyClass = bodyClasses.join(" ");
       href="/favicon/apple-touch-icon.png"
     />
     <link rel="manifest" href="/favicon/site.webmanifest" />
+
+    <!-- 字体 @font-face：preload 提升优先级，media="print" 异步加载避免阻塞首屏 -->
+    <link rel="preload" as="style" href={interFontCss} />
+    <link rel="preload" as="style" href={sansFontCss} />
+    <link rel="preload" as="style" href={serifFontCss} />
+    <link rel="stylesheet" href={interFontCss} media="print" />
+    <link rel="stylesheet" href={sansFontCss} media="print" />
+    <link rel="stylesheet" href={serifFontCss} media="print" />
+    <noscript>
+      <link rel="stylesheet" href={interFontCss} />
+      <link rel="stylesheet" href={sansFontCss} />
+      <link rel="stylesheet" href={serifFontCss} />
+    </noscript>
+    <script is:inline>
+      document
+        .querySelectorAll('link[rel="stylesheet"][media="print"]')
+        .forEach((link) => {
+          link.addEventListener("load", () => {
+            link.media = "all";
+          });
+          // 兼容：脚本执行时已加载完成的 link 不会再触发 load 事件
+          if (link.sheet) link.media = "all";
+        });
+    </script>
+
+    <!-- RSS 订阅 -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="摘录 RSS"
+      href={new URL("/rss.xml", site)}
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="原创 RSS"
+      href={new URL("/originals/rss.xml", site)}
+    />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content={type} />

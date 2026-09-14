@@ -381,16 +381,22 @@ body.page-home .page-content {
   color: inherit;
   background: transparent;
   border: 0;
-  border-top: 1px solid var(--rule);
   border-radius: 0;
-  padding: 1.5rem 0 0.4rem;
+  /* 右内边距为文字与栏间竖线留出呼吸空间 */
+  padding: 1.5rem 2rem 0.4rem 0;
   transition: color 0.2s var(--t-ease);
 }
 
+/* 最右一栏外缘开口，不保留右内边距 */
+.explore-link:last-child {
+  padding-right: 0;
+}
+
+/* 仅在栏目交界处画竖线；顶部不再画线
+   （“继续探索”标题下已有 section-header 的通栏长线） */
 .explore-link + .explore-link {
   border-left: 1px solid var(--rule);
   padding-left: 2rem;
-  margin-left: 2rem;
 }
 
 .explore-link:hover .explore-title {
@@ -444,9 +450,15 @@ body.page-home .page-content {
     grid-template-columns: 1fr;
   }
 
+  .explore-link {
+    padding-right: 0;
+  }
+
+  /* 堆叠态：栏间竖线转为行与行之间的横线；
+     第一行上方不画线，避免与标题下的长线重复 */
   .explore-link + .explore-link {
     border-left: 0;
-    margin-left: 0;
+    border-top: 1px solid var(--rule);
     padding-left: 0;
   }
 }

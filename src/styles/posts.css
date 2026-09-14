@@ -404,6 +404,14 @@ body.page-article .word-count {
     font-weight: 400;
 }
 
+/* 组内分隔点：两侧 0.4em，刻意紧于组间的 0.6em，
+   表明“分钟阅读 / 字数”同属一个阅读信息组 */
+body.page-article .word-count::before {
+    content: "·";
+    margin: 0 0.4em;
+    color: var(--article-muted);
+}
+
 /* 作者：纯文字；有链接时才给出链接 affordance */
 body.page-article .meta .author-name {
     color: var(--article-muted);
@@ -416,11 +424,15 @@ body.page-article .meta .author-link {
     font-weight: 400;
     font-size: 0.88rem;
     text-decoration: none;
+}
+
+/* 下划线只落在作者名上，不覆盖其前面由 ::before 生成的分隔点 */
+body.page-article .meta .author-link-text {
     border-bottom: 1px solid color-mix(in oklab, var(--t-link) 35%, transparent);
     transition: border-color var(--c-dur) var(--c-ease);
 }
 
-body.page-article .meta .author-link:hover {
+body.page-article .meta .author-link:hover .author-link-text {
     border-bottom-color: var(--t-link);
 }
 

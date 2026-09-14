@@ -24,8 +24,8 @@
 
 ## P2（增强项）
 
-- [ ] **RSS 订阅**（摘录与原创分流）。
-- [ ] **全站搜索**（可先覆盖 excerpts/posts）。
+- [x] **RSS 订阅**（摘录与原创分流）：`/rss.xml`（最近 100 篇摘录）与 `/originals/rss.xml`，head 中已加订阅自动发现。
+- [x] **全站搜索**（Pagefind 已接入 `/search`，按 `data-pagefind-body` 圈定索引范围）。
 - [ ] **暗色模式**（确保 tokens 完整）。
 - [ ] **代码块复制按钮** 与 **高亮主题**。
 - [ ] **图片懒加载**（内容卡片与详情页）。
@@ -33,6 +33,17 @@
 - [ ] **可访问性增强**：增加“跳到正文”链接、统一 `:focus-visible` 焦点样式，完善移动端抽屉导航的键盘体验。
 
 ## 记录区
+
+### 已知技术债（2026-09 排查，详见 ARCHITECTURE.md §7）
+
+- [ ] `originals` 集合迁移到 glob loader（统一新旧两套 content API）。
+- [ ] 三个分页列表页（`posts/index`、`posts/p/[page]`、`category/[category]`）抽成共享组件（各自重复约 190 行）。
+- [ ] 笔记 `bodies.json` 的 key 从数组下标改为内容派生 id，避免调整日期后正文错位。
+- [ ] 阅读时长估算逻辑抽取为 util（当前复制了 4 份）。
+- [ ] `home.css` 中 `--font-*` 别名与全局 `--t-*` token 收敛。
+- [ ] 制作专用 OG 分享图（当前用 96×96 favicon，`summary_large_image` 卡片效果差）。
+- [ ] `bodies.json` 缓存策略：内容哈希文件名 + 长缓存。
+- [ ] 清理 `notesData.ts` 等处的 `data: any`（AGENTS.md 禁用 `as any`）。
 
 - 问题：
   - 现象：
