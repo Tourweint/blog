@@ -26,7 +26,7 @@ npm run build:silent # 极安静构建：关闭 Astro 日志 + Pagefind 仅输�
 ## 代码与内容规范
 
 - 类型与严格模式：`tsconfig.json` 继承 `astro/tsconfigs/strict`，禁止使用 `@ts-ignore`、`as any`。
-- 前置数据校验：所有 frontmatter 经 `src/content/config.ts` 中的 Zod schema 校验。
+- 前置数据校验：所有 frontmatter 经 `src/content.config.ts` 中的 Zod schema 校验。
 - 类型引用：内容集合请使用 `CollectionEntry<"posts">` 等类型，示例见下。
 
 ```astro
@@ -45,16 +45,18 @@ const posts: CollectionEntry<"posts">[] = await getCollection("posts");
 ### 动态路由与渲染
 
 ```astro
+import { getCollection, render } from "astro:content";
+
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }));
 }
 
 const { post } = Astro.props;
-const { Content, headings } = await post.render();
+const { Content, headings } = await render(post);
 ```
 
 ### Frontmatter 规范（示例：posts）
@@ -77,7 +79,7 @@ image: "可选图片 URL"
 
 ## 文件与技能分布（核心入口）
 
-- 内容模型与验证：`src/content/config.ts`
+- 内容模型与验证：`src/content.config.ts`
 - 摘录文章：`src/content/excerpts/posts/`
 - 摘录短句：`src/content/excerpts/notes/`
 - 摘录对话：`src/content/excerpts/conversations/`
@@ -96,7 +98,7 @@ image: "可选图片 URL"
 
 ## 依赖与工具链
 
-- 主要依赖：`astro@5.16.6`、`@astrojs/sitemap`、`rehype-external-links`。
+- 主要依赖：`astro@7.3.5`（Vite 8，Node ≥ 22.12）、`@astrojs/sitemap`、`@astrojs/markdown-remark`（unified 处理器，承载 rehype 外链插件）、`rehype-external-links`。
 - 无 ESLint/Prettier 配置，遵循 TypeScript 严格模式即可。
 - 构建同时校验内容：`npm run build`。
 

@@ -1,5 +1,5 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import ContentDetailLayout from "../../../layouts/contentdetaillayout.astro";
 import "../../../styles/posts.css";
 import { excerpts } from "../../../utils/excerptsPaths";
@@ -7,24 +7,24 @@ import { excerpts } from "../../../utils/excerptsPaths";
 export async function getStaticPaths() {
   const originals = await getCollection("originals");
   const systemsPosts = originals
-    .filter((post) => post.slug.startsWith("systems/"))
+    .filter((post) => post.id.startsWith("systems/"))
     .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
   return systemsPosts.map((post, index) => ({
-    params: { slug: post.slug.replace("systems/", "") },
+    params: { slug: post.id.replace("systems/", "") },
     props: {
       post,
       prevItem:
         index > 0
           ? {
-              href: `/originals/${systemsPosts[index - 1].slug}`,
+              href: `/originals/${systemsPosts[index - 1].id}`,
               title: systemsPosts[index - 1].data.title,
             }
           : null,
       nextItem:
         index < systemsPosts.length - 1
           ? {
-              href: `/originals/${systemsPosts[index + 1].slug}`,
+              href: `/originals/${systemsPosts[index + 1].id}`,
               title: systemsPosts[index + 1].data.title,
             }
           : null,
@@ -33,7 +33,7 @@ export async function getStaticPaths() {
 }
 
 const { post, prevItem, nextItem } = Astro.props;
-const { Content, headings } = await post.render();
+const { Content, headings } = await render(post);
 
 const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 

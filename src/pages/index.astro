@@ -70,7 +70,7 @@ const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
           recentOriginals.length > 0 ? (
             recentOriginals.map((post, index) => (
               <a
-                href={`/originals/${post.slug}`}
+                href={`/originals/${post.id}`}
                 class={index === 0 ? "featured-card" : "standard-card"}
               >
                 <div class="card-meta">{formatDate(post.data.pubDate)}</div>

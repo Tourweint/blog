@@ -14,7 +14,7 @@ const stripMarkdown = (markdown: string) =>
 
 export const GET: APIRoute = async (context) => {
   const posts = (await getCollection("originals"))
-    .filter((post) => !post.slug.startsWith("_"))
+    .filter((post) => !post.id.startsWith("_"))
     .sort(
       (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
     );
@@ -28,7 +28,7 @@ export const GET: APIRoute = async (context) => {
       pubDate: post.data.pubDate,
       description:
         post.data.description ?? stripMarkdown(post.body ?? ""),
-      link: `/originals/${post.slug}`,
+      link: `/originals/${post.id}`,
       categories: post.data.tags,
     })),
     customData: "<language>zh-cn</language>",

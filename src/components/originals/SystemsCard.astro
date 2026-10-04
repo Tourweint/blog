@@ -18,7 +18,7 @@ const tagHref = (tag: string) => `${listHref}?tag=${encodeURIComponent(tag)}`;
 >
   <a
     class="stretched-link"
-    href={`/originals/${post.slug}`}
+    href={`/originals/${post.id}`}
     aria-label={`打开原论：${post.data.title}`}></a>
   <header class="header">
     <h2 class="title">{post.data.title}</h2>

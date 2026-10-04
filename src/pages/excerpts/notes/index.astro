@@ -46,7 +46,7 @@ const buildGroups = (list: NoteView[]): Group[] => {
 const displayGroups = buildGroups(notes.slice(0, INITIAL_RENDER));
 
 // 只下发元数据（不含正文）；正文由 /excerpts/notes/bodies.json 异步加载。
-// 转义 "<" 防止闭合 <script>。
+// 转义 "<" 防止 JSON 内容提前闭合 script 标签。
 const notesMetaJson = JSON.stringify(notes.map(toNoteMeta)).replace(
   /</g,
   "\\u003c",

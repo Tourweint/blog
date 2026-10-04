@@ -1,5 +1,6 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/excerpts/posts" }),
@@ -72,8 +73,10 @@ const persons = defineCollection({
   }),
 });
 
+// v6 起旧版 type: 'content' 集合被移除，统一走 glob 加载器；
+// id = 相对 originals/ 的路径（不含扩展名），与旧版 slug 一致，URL 保持不变
 const originals = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/originals" }),
   schema: z.object({
     title: z.string(),                          // 标题
     description: z.string().optional(),         // 描述/摘要
@@ -82,10 +85,10 @@ const originals = defineCollection({
     status: z.enum(['wip', 'done']).optional(),  // 进度（projects 常用）
     githubUrl: z.string().optional(),            // GitHub 仓库链接（可选）
     demoUrl: z.string().optional(),              // Demo/线上地址（可选）
-    tags: z.array(z.string()).default([]),      // 标签
-    image: z.string().optional(),               // 封面图
-    readingTime: z.number().optional(),         // 阅读时间（分钟）
-    featured: z.boolean().default(false),       // 是否推荐
+    tags: z.array(z.string()).default([]),       // 标签
+    image: z.string().optional(),                // 封面图
+    readingTime: z.number().optional(),          // 阅读时间（分钟）
+    featured: z.boolean().default(false),        // 是否推荐
   }),
 });
 
