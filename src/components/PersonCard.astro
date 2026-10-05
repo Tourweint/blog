@@ -70,17 +70,15 @@ const personHref = excerpts.personDetail(personSlug);
     border: 1px solid var(--c-rule);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: var(--c-shadow);
-    transition: all var(--c-dur) var(--c-ease);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    transition: border-color var(--c-dur) var(--c-ease);
     display: flex;
     flex-direction: column;
     height: 100%;
   }
 
   .person-card:hover {
-    border-color: rgba(0, 0, 0, 0.18);
-    box-shadow: var(--c-shadow-hover);
-    transform: translateY(-1px);
+    border-color: color-mix(in oklab, var(--c-rule) 60%, var(--c-text));
   }
 
   .card-header {
@@ -204,7 +202,7 @@ const personHref = excerpts.personDetail(personSlug);
   .view-link:focus-visible {
     outline: 3px solid var(--c-focus);
     outline-offset: 2px;
-    border-radius: 10px;
+    border-radius: 6px;
   }
 
   .arrow-icon {

@@ -37,21 +37,18 @@ const computedRel = target === "_blank" ? (rel ?? "noopener noreferrer") : rel;
     display: block;
     text-decoration: none;
     color: inherit;
-    padding: 14px 16px;
-    border-radius: var(--c-radius);
+    padding: 18px 20px;
+    border-radius: 12px;
     background: var(--c-surface);
     border: 1px solid var(--c-rule);
-    box-shadow: var(--c-shadow);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     transition:
-      transform var(--c-dur) var(--c-ease),
-      box-shadow var(--c-dur) var(--c-ease),
-      border-color var(--c-dur) var(--c-ease);
+      border-color var(--c-dur) var(--c-ease),
+      background-color var(--c-dur) var(--c-ease);
   }
 
   .page-entry:hover {
-    transform: translateY(-1px);
-    border-color: color-mix(in oklab, var(--c-rule) 65%, var(--c-text) 35%);
-    box-shadow: var(--c-shadow-hover);
+    border-color: color-mix(in oklab, var(--c-rule) 60%, var(--c-text));
   }
 
   .page-entry:focus-visible {
@@ -62,7 +59,7 @@ const computedRel = target === "_blank" ? (rel ?? "noopener noreferrer") : rel;
   .page-entry__eyebrow {
     margin: 0 0 6px;
     font-size: 12px;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--c-muted);
   }

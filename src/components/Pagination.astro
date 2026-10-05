@@ -115,30 +115,22 @@ const nextUrl = currentPage < totalPages ? getPageUrl(currentPage + 1) : null;
     height: 38px;
     padding: 0 12px;
     border: 1px solid var(--c-rule);
-    background: var(--c-surface);
+    background: transparent;
     color: var(--c-text);
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.95rem;
     line-height: 1;
-    box-shadow: 0 1px 2px color-mix(in oklab, var(--c-text) 10%, transparent);
     transition:
-      transform var(--c-dur) var(--c-ease),
-      box-shadow var(--c-dur) var(--c-ease),
       border-color var(--c-dur) var(--c-ease),
-      background-color var(--c-dur) var(--c-ease);
+      background-color var(--c-dur) var(--c-ease),
+      color var(--c-dur) var(--c-ease);
     text-decoration: none;
   }
 
   .page-btn:hover:not([aria-disabled="true"]):not(.disabled):not(:disabled) {
-    background: color-mix(in oklab, var(--c-text) 3%, transparent);
+    background: color-mix(in oklab, var(--c-text) 4%, transparent);
     border-color: color-mix(in oklab, var(--c-text) 18%, transparent);
-    box-shadow: 0 6px 16px color-mix(in oklab, var(--c-text) 14%, transparent);
-    transform: translateY(-1px);
-  }
-
-  .page-btn:active:not([aria-disabled="true"]):not(.disabled):not(:disabled) {
-    transform: translateY(0);
   }
 
   .page-btn:focus-visible {
