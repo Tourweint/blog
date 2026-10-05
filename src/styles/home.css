@@ -50,9 +50,13 @@ body.page-home .page-content {
   }
 }
 
-/* ========== Hero：刊物刊头，开放排版 ========== */
+/* ========== Hero：刊物刊头，屏幕居中 ========== */
 .hero {
-  padding-top: clamp(56px, 9vh, 88px);
+  min-height: calc(100vh - var(--nav-height));
+  min-height: calc(100svh - var(--nav-height));
+  display: flex;
+  align-items: center;
+  padding-top: 0;
   padding-bottom: 3rem;
 }
 
@@ -67,6 +71,8 @@ body.page-home .page-content {
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--text-muted);
+  opacity: 0;
+  animation: hero-fade 0.6s var(--t-ease) 0.1s forwards;
 }
 
 /* 刊头短横线 */
@@ -88,10 +94,51 @@ body.page-home .page-content {
   letter-spacing: -0.02em;
 }
 
+.hero-line {
+  display: block;
+  opacity: 0;
+  transform: translateY(28px);
+  animation: hero-rise 0.9s var(--t-ease) forwards;
+}
+
+.hero-line + .hero-line {
+  margin-top: 0.2em;
+}
+
+.hero-line:nth-of-type(1) {
+  animation-delay: 0.15s;
+}
+
+.hero-line:nth-of-type(2) {
+  animation-delay: 0.35s;
+}
+
 .indent-text {
   margin-left: 2.2rem;
   color: var(--text-muted);
   font-weight: 400;
+}
+
+@keyframes hero-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-eyebrow,
+  .hero-line {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .hero-sub {
