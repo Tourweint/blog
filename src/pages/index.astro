@@ -28,7 +28,12 @@ const pickExcerptSource = (post: CollectionEntry<"posts">) => {
   return post.data.sourceUrl ?? null;
 };
 
-const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
+const formatDate = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}.${m}.${d}`;
+};
 ---
 
 <MainLayout
@@ -44,15 +49,6 @@ const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
           思考、摘录、写作<br />
           <span class="indent-text">在这里交织成网</span>
         </h1>
-        <p class="hero-sub">
-          记录对世界的理解，以及思考的过程。<br />
-          每一篇文章，都是我在认真打磨的作品。
-        </p>
-        <div class="hero-cta">
-          <a href="/originals" class="hero-link hero-link--primary">探索原创 →</a>
-          <a href={excerpts.postsIndex} class="hero-link hero-link--text">浏览摘录</a>
-          <a href={excerpts.categoryIndex} class="hero-link hero-link--text">按主题阅读</a>
-        </div>
       </div>
     </section>
 
@@ -61,8 +57,11 @@ const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
       aria-labelledby="home-originals-title"
     >
       <div class="section-header">
-        <h2 id="home-originals-title">最新原创</h2>
-        <a href="/originals" class="more">Archive →</a>
+        <h2 id="home-originals-title">
+          <span class="section-num" aria-hidden="true">01</span>
+          最新原创
+        </h2>
+        <a href="/originals" class="more">全部 →</a>
       </div>
 
       <div class="originals-grid">
@@ -97,8 +96,11 @@ const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
     <section class="excerpts-section" aria-labelledby="home-excerpts-title">
       <div class="grid-layout">
         <div class="section-header section-header--compact">
-          <h2 id="home-excerpts-title">精选摘录</h2>
-          <a class="more" href={excerpts.postsIndex}>All →</a>
+          <h2 id="home-excerpts-title">
+            <span class="section-num" aria-hidden="true">02</span>
+            精选摘录
+          </h2>
+          <a class="more" href={excerpts.postsIndex}>全部 →</a>
         </div>
       </div>
 
@@ -129,27 +131,5 @@ const formatDate = (date: Date) => date.toLocaleDateString("zh-cn");
       }
     </section>
 
-    <section
-      class="explore-section grid-layout"
-      aria-labelledby="home-explore-title"
-    >
-      <div class="section-header section-header--compact">
-        <h2 id="home-explore-title">继续探索</h2>
-      </div>
-      <div class="explore-list">
-        <a class="explore-link" href="/originals">
-          <span class="explore-title">原触发</span>
-          <span class="explore-desc">我的思考、片段与实验。</span>
-        </a>
-        <a class="explore-link" href={excerpts.postsIndex}>
-          <span class="explore-title">摘录</span>
-          <span class="explore-desc">我收藏与消化的文字片段。</span>
-        </a>
-        <a class="explore-link" href={excerpts.notesIndex}>
-          <span class="explore-title">摘录笔记</span>
-          <span class="explore-desc">更私人的旁注、感受与灵感。</span>
-        </a>
-      </div>
-    </section>
   </div>
 </MainLayout>

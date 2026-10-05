@@ -52,8 +52,8 @@ body.page-home .page-content {
 
 /* ========== Hero：刊物刊头，开放排版 ========== */
 .hero {
-  padding-top: 11vh;
-  padding-bottom: 8vh;
+  padding-top: clamp(56px, 9vh, 88px);
+  padding-bottom: 3rem;
 }
 
 .hero-content {
@@ -85,7 +85,7 @@ body.page-home .page-content {
   margin: 1.6rem 0 1.4rem;
   line-height: 1.12;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .indent-text {
@@ -97,57 +97,19 @@ body.page-home .page-content {
 .hero-sub {
   font-size: 1.05rem;
   line-height: 1.8;
-  max-width: 42ch;
+  max-width: 38ch;
   color: var(--accent);
 }
 
-.hero-cta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 1.6rem;
-  margin-top: 2.2rem;
-}
-
-/* 主 CTA：墨色实心按钮 */
-.hero-link {
-  text-decoration: none;
-  font-size: 0.98rem;
-}
-
-.hero-link--primary {
-  color: var(--t-bg);
-  background: var(--t-text);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  padding: 0.72rem 1.6rem;
-  border-radius: 2px;
-  border: 1px solid var(--t-text);
-  transition:
-    background-color 0.2s var(--t-ease),
-    border-color 0.2s var(--t-ease),
-    color 0.2s var(--t-ease);
-}
-
-.hero-link--primary:hover {
-  background: var(--t-link);
-  border-color: var(--t-link);
-}
-
-/* 次 CTA：纯文字，hover 出下划线 */
-.hero-link--text {
-  color: var(--text-muted);
-  font-weight: 400;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid transparent;
-  transition:
-    color 0.2s var(--t-ease),
-    border-color 0.2s var(--t-ease);
-}
-
-.hero-link--text:hover {
-  color: var(--text-main);
-  border-bottom-color: var(--t-rule);
+/* 章节编号：刊物目录感，小字号、弱色、与标题基线对齐 */
+.section-num {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--t-link);
+  margin-right: 0.6rem;
+  vertical-align: 0.18em;
 }
 
 /* ========== Section header ========== */
@@ -170,7 +132,7 @@ body.page-home .page-content {
   font-family: var(--font-serif);
   font-size: 1.3rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
 }
 
 .more {
@@ -193,7 +155,7 @@ body.page-home .page-content {
 
 /* ========== 最新原创：头条 + 两条 ========== */
 .originals-section {
-  margin-top: 3.5rem;
+  margin-top: 2.5rem;
 }
 
 .originals-grid {
@@ -254,6 +216,7 @@ body.page-home .page-content {
 .featured-card .card-title {
   font-size: clamp(1.7rem, 2.8vw, 2.15rem);
   line-height: 1.28;
+  text-wrap: balance;
 }
 
 .standard-card .card-title {
@@ -293,7 +256,7 @@ body.page-home .page-content {
 
 /* ========== 精选摘录：引文排印 ========== */
 .excerpts-section {
-  margin-top: 5.5rem;
+  margin-top: 4.5rem;
 }
 
 .excerpt-waterfall {
@@ -361,61 +324,6 @@ body.page-home .page-content {
   color: var(--text-muted);
 }
 
-/* ========== 继续探索：索引式三栏 ========== */
-.explore-section {
-  margin-top: 5.5rem;
-}
-
-.explore-list {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin-top: 0;
-}
-
-.explore-link {
-  display: grid;
-  gap: 0.45rem;
-  text-decoration: none;
-  color: inherit;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  /* 右内边距为文字与栏间竖线留出呼吸空间 */
-  padding: 1.5rem 2rem 0.4rem 0;
-  transition: color 0.2s var(--t-ease);
-}
-
-/* 最右一栏外缘开口，不保留右内边距 */
-.explore-link:last-child {
-  padding-right: 0;
-}
-
-/* 仅在栏目交界处画竖线；顶部不再画线
-   （“继续探索”标题下已有 section-header 的通栏长线） */
-.explore-link + .explore-link {
-  border-left: 1px solid var(--rule);
-  padding-left: 2rem;
-}
-
-.explore-link:hover .explore-title {
-  color: var(--t-link);
-}
-
-.explore-title {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  font-weight: 700;
-  transition: color 0.2s var(--t-ease);
-}
-
-.explore-desc {
-  color: var(--text-muted);
-  line-height: 1.65;
-  font-size: 0.92rem;
-}
-
 /* ========== 响应式 ========== */
 @media (max-width: 960px) {
   .hero-content {
@@ -444,22 +352,6 @@ body.page-home .page-content {
   .excerpt-waterfall {
     grid-template-columns: 1fr;
     row-gap: 2rem;
-  }
-
-  .explore-list {
-    grid-template-columns: 1fr;
-  }
-
-  .explore-link {
-    padding-right: 0;
-  }
-
-  /* 堆叠态：栏间竖线转为行与行之间的横线；
-     第一行上方不画线，避免与标题下的长线重复 */
-  .explore-link + .explore-link {
-    border-left: 0;
-    border-top: 1px solid var(--rule);
-    padding-left: 0;
   }
 }
 
@@ -499,15 +391,6 @@ body.page-home .page-content {
     margin-left: 0;
     display: block;
     margin-top: 0.35rem;
-  }
-
-  .hero-cta {
-    gap: 0.6rem 1.3rem;
-  }
-
-  .hero-link--primary {
-    padding: 0.62rem 1.3rem;
-    font-size: 0.95rem;
   }
 
   .hero-eyebrow::before {
