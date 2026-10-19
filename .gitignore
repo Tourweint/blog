@@ -28,6 +28,7 @@ pnpm-debug.log*
 # AI / tooling temp files
 .opencode/
 .temp/
+.superpowers/
 
 # Large audio artifacts (keep repo small)
 *.mp3
