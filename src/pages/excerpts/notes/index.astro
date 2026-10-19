@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../components/ChannelHero.astro";
 import { excerpts } from "../../../utils/excerptsPaths";
 import { getNoteViews, toNoteMeta } from "../../../utils/notesData";
 import type { NoteView } from "../../../utils/notesData";
@@ -54,27 +55,19 @@ const notesMetaJson = JSON.stringify(notes.map(toNoteMeta)).replace(
 ---
 
 <MainLayout title="句子簿 - Tourweint/多鸣" description="轻量想法与摘抄">
-  <section class="notes-hero">
-    <div class="notes-hero__content">
-      <p class="notes-hero__eyebrow">摘录</p>
-      <h1 class="notes-hero__title">摘录 · 短句</h1>
-      <p class="notes-hero__sub">
-        把瞬间的灵感、摘录与想法归档成可检索的句子簿。
-      </p>
-      <div class="notes-hero__meta">
-        <span class="meta-item">共 {notes.length} 条</span>
-        <span class="meta-sep">·</span>
-        <a class="meta-link" href={excerpts.notesMonthsIndex}> 按月份浏览 </a>
-        <span class="meta-sep">·</span>
-        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
-      </div>
-    </div>
-    <div class="notes-hero__actions">
-      <button class="random-btn" id="random-note">
-        <span>随机一条</span>
-      </button>
-    </div>
-  </section>
+<main class="channel-page">
+  <ChannelHero eyebrow="摘录" title="摘录 · 短句">
+    <span slot="meta">
+      <span class="meta-item">共 {notes.length} 条</span>
+      <span class="meta-sep">·</span>
+      <a class="meta-link" href={excerpts.notesMonthsIndex}>按月份浏览</a>
+      <span class="meta-sep">·</span>
+      <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
+    </span>
+    <button slot="actions" class="random-btn" id="random-note">
+      <span>随机一条</span>
+    </button>
+  </ChannelHero>
 
   <section class="notes-filters">
     <div class="filter-head">
@@ -159,6 +152,7 @@ const notesMetaJson = JSON.stringify(notes.map(toNoteMeta)).replace(
   <div class="load-more-container">
     <button class="load-more-btn" id="load-more">加载更多</button>
   </div>
+</main>
 
   <script
     is:inline

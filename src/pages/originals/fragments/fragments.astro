@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import MainLayout from "../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../components/ChannelHero.astro";
 import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
 import FragmentCard from "../../../components/originals/FragmentCard.astro";
 import Pagination from "../../../components/Pagination.astro";
@@ -56,18 +57,9 @@ const tagCounts = Array.from(tagCountsMap.entries())
   wide={true}
 >
   <div class="fragments-page">
-    <header class="fragments-header">
-      <p class="eyebrow">原触发</p>
-      <h1 class="fragments-title">
-        片段
-      </h1>
-      <p class="fragments-intro">
-        灵感闪现、未完成的想法、随性的判断。<br />
-        它们可能演化为体系，也可能仅存于此刻。
-      </p>
-
-      <OriginalsFilter active="fragments" counts={counts} />
-    </header>
+    <ChannelHero eyebrow="原触发" title="片段">
+      <OriginalsFilter slot="meta" active="fragments" counts={counts} />
+    </ChannelHero>
 
     <div class="originals-layout">
       {

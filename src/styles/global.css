@@ -45,6 +45,8 @@
   --t-font-sans: "Noto Sans SC Variable", "Noto Sans SC",
     "Inter Variable", "Inter", "Source Han Sans CN", system-ui, -apple-system,
     "Segoe UI", sans-serif;
+  /* Logo/品牌专用：圆润卡通感，仅覆盖 Latin 字符（Tourweint 为纯英文） */
+  --t-font-logo: "Fredoka Variable", "Baloo 2", "Comic Sans MS", var(--t-font-sans);
 
   --t-leading: 1.75;
   --t-radius: 12px;
@@ -182,14 +184,29 @@ body {
   text-decoration: none;
   display: flex;
   align-items: center;
+  gap: 0.55rem;
+}
+
+.logo-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  /* 细描边让浅色头像在亮背景上有边界感 */
+  box-shadow: 0 0 0 1px var(--t-rule);
+  transition: transform var(--t-dur) var(--t-ease);
+}
+
+.logo:hover .logo-avatar {
+  transform: scale(1.08) rotate(-4deg);
 }
 
 .logo-text {
-  font-family: var(--t-font-serif);
+  font-family: var(--t-font-logo);
   font-size: 1.35rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--brand);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   position: relative;
 }
 
@@ -370,13 +387,22 @@ body.drawer-open .mobile-drawer {
 }
 
 /*
-  Notes excerpts page container:
-  Keep layout stable even if page-scoped CSS loads slightly later (e.g. dev/HMR).
+  频道页通用容器（公共类）：
+  提供与其他页面容器一致的版心与顶部留白。
+  凡内容直接放在 .page-content 下的频道页（短句/对话/人物/月份），
+  用它包裹内容；不要再在频道 CSS 里改 .page-content 的 padding。
 */
-body.page-excerpts-notes .page-content {
+.channel-page {
+  width: 100%;
   max-width: var(--content-max);
   margin: 0 auto;
-  width: 100%;
+  padding: 28px 1.5rem 56px;
+}
+
+@media (max-width: 640px) {
+  .channel-page {
+    padding: 20px 1rem 44px;
+  }
 }
 
 @supports (padding-left: max(0px, 0px)) {
@@ -595,6 +621,11 @@ body.page-excerpts-notes .page-content {
 
   .logo {
     font-size: 1.05rem;
+  }
+
+  .logo-avatar {
+    width: 24px;
+    height: 24px;
   }
 
   .nav-links {

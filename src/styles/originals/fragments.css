@@ -89,9 +89,9 @@ body.page-originals-fragments .originals-main {
 
 /* 页面头部：对齐频道 header */
 body.page-originals-fragments .fragments-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 18px;
-  padding: 28px 22px;
+  padding: 28px 24px;
   border-radius: var(--c-radius);
   border: 1px solid var(--c-rule);
   background-color: var(--bg-card);
@@ -107,27 +107,20 @@ body.page-originals-fragments .fragments-header {
 body.page-originals-fragments .fragments-header .eyebrow {
   margin: 0 0 8px;
   font-size: 12px;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(75, 85, 99, 0.75);
+  color: var(--c-muted);
 }
 
 body.page-originals-fragments .fragments-title {
-  margin: 0 0 10px;
-  font-size: 32px;
+  margin: 0 0 14px;
+  font-size: 34px;
   line-height: 1.2;
   font-family: var(--t-font-serif);
-  font-weight: 900;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: var(--c-text);
-}
-
-body.page-originals-fragments .fragments-intro {
-  margin: 0 auto;
-  max-width: 60ch;
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--c-muted);
 }
 
 /* 占位区域 */
@@ -223,12 +216,22 @@ body.page-originals-fragments .fragments-list {
     position: static;
   }
 
-  body.page-originals-fragments .fragments-title {
-    font-size: 26px;
+  body.page-originals-fragments .originals-aside-list {
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
   }
 
-  body.page-originals-fragments .fragments-intro {
-    font-size: 14px;
+  body.page-originals-fragments .tagpill {
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+  }
+
+  body.page-originals-fragments .fragments-title {
+    font-size: 28px;
   }
 
   body.page-originals-fragments .placeholder-title {
@@ -236,7 +239,7 @@ body.page-originals-fragments .fragments-list {
   }
 
   body.page-originals-fragments .fragments-header {
-    padding: 22px 16px;
+    padding: 20px 16px;
   }
 
   body.page-originals-fragments .fragments-info {

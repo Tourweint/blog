@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import MainLayout from "../../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../../components/ChannelHero.astro";
 import Pagination from "../../../../components/Pagination.astro";
 import { excerpts } from "../../../../utils/excerptsPaths";
 
@@ -66,18 +67,15 @@ const listBaseUrl = excerpts.category(category!, page.currentPage);
   wide={true}
 >
   <div class="excerpts-posts">
-    <header class="excerpts-posts__header">
-      <p class="excerpts-posts__eyebrow">摘录</p>
-      <h1 class="excerpts-posts__title">按主题阅读</h1>
-      <p class="excerpts-posts__sub">当前主题：{category}</p>
-      <div class="excerpts-posts__meta">
+    <ChannelHero eyebrow="摘录" title={category}>
+      <span slot="meta">
         <a class="meta-link" href={excerpts.postsIndex}>查看全部摘录</a>
         <span class="meta-sep">·</span>
         <a class="meta-link" href={excerpts.categoryIndex}>主题目录</a>
         <span class="meta-sep">·</span>
         <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
-      </div>
-    </header>
+      </span>
+    </ChannelHero>
 
     <div class="excerpts-posts__layout">
       <aside class="excerpts-posts__aside" aria-label="主题目录">

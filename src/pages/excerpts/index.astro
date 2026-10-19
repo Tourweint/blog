@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../layouts/mainlayout.astro";
+import ChannelHero from "../../components/ChannelHero.astro";
 import "../../styles/excerpts.css";
 
 import EntryExcerptsConversations from "../../components/entries/EntryExcerptsConversations.astro";
@@ -13,13 +14,11 @@ import EntryExcerptsPosts from "../../components/entries/EntryExcerptsPosts.astr
   description="进入摘录内容：文章、短句、人物、对话"
 >
   <section class="excerpts-home">
-    <header class="excerpts-home__header">
-      <p class="excerpts-home__eyebrow">摘录</p>
-      <h1 class="excerpts-home__title">摘录主页</h1>
-      <p class="excerpts-home__sub">
-        这里是摘录内容的总入口：文章、短句、人物与对话
-      </p>
-    </header>
+    <ChannelHero eyebrow="摘录" title="摘录主页">
+      <span slot="meta">
+        <span class="meta-item">4 个栏目</span>
+      </span>
+    </ChannelHero>
 
     <div class="excerpts-home__grid" role="list">
       <div role="listitem"><EntryExcerptsPosts /></div>

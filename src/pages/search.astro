@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../layouts/mainlayout.astro";
+import ChannelHero from "../components/ChannelHero.astro";
 import "../styles/search.css";
 ---
 
@@ -8,11 +9,15 @@ import "../styles/search.css";
   description="在站内搜索摘录与原创内容"
 >
   <section class="search-page" aria-labelledby="search-title">
-    <header class="search-page__header">
-      <p class="search-page__eyebrow">站内检索</p>
-      <h1 id="search-title" class="search-page__title">搜索文章与摘录</h1>
-      <p class="search-page__sub">输入关键词，快速查找你想读的内容。</p>
-    </header>
+    <ChannelHero
+      eyebrow="站内检索"
+      title="搜索文章与摘录"
+      id="search-title"
+    >
+      <span slot="meta">
+        <span class="meta-item">支持正文与标题检索</span>
+      </span>
+    </ChannelHero>
 
     <form
       class="search-form"

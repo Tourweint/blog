@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../components/ChannelHero.astro";
 import "../../../styles/persons.css";
 import { getCollection } from "astro:content";
 import PersonCard from "../../../components/PersonCard.astro";
@@ -26,20 +27,14 @@ const ITEMS_PER_PAGE = 12;
   title="人物志 - Tourweint/多鸣"
   description="广泛收录各领域的人物，包括科技领袖、思想家、企业家、博主等"
 >
-  <section class="persons-hero">
-    <div class="persons-hero__content">
-      <p class="persons-hero__eyebrow">摘录</p>
-      <h1 class="persons-hero__title">摘录 · 人物</h1>
-      <p class="persons-hero__sub">
-        广泛收录各领域人物，建立可检索的思想与经历索引。
-      </p>
-      <div class="persons-hero__meta">
-        <span class="meta-item">共 {persons.length} 位</span>
-        <span class="meta-sep">·</span>
-        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
-      </div>
-    </div>
-  </section>
+<main class="channel-page">
+  <ChannelHero eyebrow="摘录" title="摘录 · 人物">
+    <span slot="meta">
+      <span class="meta-item">共 {persons.length} 位</span>
+      <span class="meta-sep">·</span>
+      <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
+    </span>
+  </ChannelHero>
 
   <div class="persons-filters">
     <div class="filter-header">
@@ -80,6 +75,7 @@ const ITEMS_PER_PAGE = 12;
   >
     <button class="load-more-btn" id="load-more">加载更多</button>
   </div>
+</main>
 </MainLayout>
 
 <script is:inline define:vars={{ ITEMS_PER_PAGE, totalPersons: persons.length }}

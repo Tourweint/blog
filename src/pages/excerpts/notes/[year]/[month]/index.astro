@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../../../components/ChannelHero.astro";
 import { excerpts } from "../../../../../utils/excerptsPaths";
 import { getNoteViews } from "../../../../../utils/notesData";
 import type { NoteView } from "../../../../../utils/notesData";
@@ -69,26 +70,24 @@ const monthTitle = `${year}年${month}月`;
   title={`短句 · ${monthTitle} - Tourweint/多鸣`}
   description={`${monthTitle} 的全部短句摘录`}
 >
-  <section class="notes-months-hero">
-    <p class="notes-months-hero__eyebrow">摘录</p>
-    <h1 class="notes-months-hero__title">{monthTitle}</h1>
-    <p class="notes-months-hero__sub">
-      共 {notes.length} 条短句，按时间倒序排列。
-    </p>
-    <div class="notes-months-hero__meta">
-      {
-        prev && (
-          <>
-            <a
-              class="meta-link"
-              href={excerpts.notesMonth(prev.year, prev.month)}
-            >
-              ← {prev.year} 年 {prev.month} 月
-            </a>
-            <span class="meta-sep">·</span>
-          </>
-        )
-      }
+  <main class="channel-page">
+    <ChannelHero eyebrow="摘录" title={monthTitle}>
+      <span slot="meta">
+        <span class="meta-item">共 {notes.length} 条</span>
+        <span class="meta-sep">·</span>
+        {
+          prev && (
+            <>
+              <a
+                class="meta-link"
+                href={excerpts.notesMonth(prev.year, prev.month)}
+              >
+                ← {prev.year} 年 {prev.month} 月
+              </a>
+              <span class="meta-sep">·</span>
+            </>
+          )
+        }
       {
         next && (
           <>
@@ -102,13 +101,13 @@ const monthTitle = `${year}年${month}月`;
           </>
         )
       }
-      <a class="meta-link" href={excerpts.notesMonthsIndex}> 返回月份列表 </a>
-      <span class="meta-sep">·</span>
-      <a class="meta-link" href={excerpts.notesIndex}>返回短句首页</a>
-      <span class="meta-sep">·</span>
-      <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
-    </div>
-  </section>
+      <a class="meta-link" href={excerpts.notesMonthsIndex}>返回月份列表</a>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.notesIndex}>返回短句首页</a>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
+      </span>
+    </ChannelHero>
 
   <div class="notes-stream">
     {
@@ -145,6 +144,7 @@ const monthTitle = `${year}年${month}月`;
       ))
     }
   </div>
+  </main>
 </MainLayout>
 
 <script>

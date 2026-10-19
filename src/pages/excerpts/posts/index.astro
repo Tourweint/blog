@@ -3,6 +3,7 @@ import "../../../styles/index.css";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import MainLayout from "../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../components/ChannelHero.astro";
 import Pagination from "../../../components/Pagination.astro";
 import { excerpts } from "../../../utils/excerptsPaths";
 
@@ -35,20 +36,15 @@ const getPageUrl = (page: number) => excerpts.postsPage(page);
   wide={true}
 >
   <div class="excerpts-posts">
-    <header class="excerpts-posts__header">
-      <p class="excerpts-posts__eyebrow">摘录</p>
-      <h1 class="excerpts-posts__title">摘录 · 文章</h1>
-      <p class="excerpts-posts__sub">
-        把值得反复读的内容整理成可检索的卡片库。
-      </p>
-      <div class="excerpts-posts__meta">
+    <ChannelHero eyebrow="摘录" title="摘录 · 文章">
+      <span slot="meta">
         <span class="meta-item">共 {posts.length} 篇</span>
         <span class="meta-sep">·</span>
         <a class="meta-link" href={excerpts.categoryIndex}>按主题浏览</a>
         <span class="meta-sep">·</span>
         <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
-      </div>
-    </header>
+      </span>
+    </ChannelHero>
 
     <div class="excerpts-posts__layout">
       <aside class="excerpts-posts__aside" aria-label="主题目录">

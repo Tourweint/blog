@@ -11,42 +11,6 @@ body.page-excerpts-index .excerpts-home {
   padding: 28px 1.5rem 56px;
 }
 
-body.page-excerpts-index .excerpts-home__header {
-  margin-bottom: 18px;
-  padding: 28px 22px;
-  border-radius: var(--c-radius);
-  border: 1px solid var(--c-rule);
-  background-color: var(--c-surface);
-  background-image: radial-gradient(
-    circle at 20% 20%,
-    color-mix(in oklab, var(--c-bg) 60%, white 40%) 0%,
-    color-mix(in oklab, var(--c-bg) 25%, var(--c-surface) 75%) 60%,
-    var(--c-surface) 100%
-  );
-  box-shadow: var(--c-shadow);
-}
-
-body.page-excerpts-index .excerpts-home__eyebrow {
-  margin: 0 0 8px;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--c-muted);
-}
-
-body.page-excerpts-index .excerpts-home__title {
-  margin: 0;
-  font-size: 32px;
-  line-height: 1.2;
-  font-family: var(--t-font-serif);
-}
-
-body.page-excerpts-index .excerpts-home__sub {
-  margin: 10px 0 0;
-  font-size: 15px;
-  color: var(--c-muted);
-}
-
 body.page-excerpts-index .excerpts-home__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -57,18 +21,6 @@ body.page-excerpts-index .excerpts-home__grid {
 @media (max-width: 768px) {
   body.page-excerpts-index .excerpts-home {
     padding: 20px 1rem 44px;
-  }
-
-  body.page-excerpts-index .excerpts-home__header {
-    padding: 20px 16px;
-  }
-
-  body.page-excerpts-index .excerpts-home__title {
-    font-size: 26px;
-  }
-
-  body.page-excerpts-index .excerpts-home__sub {
-    font-size: 14px;
   }
 
   body.page-excerpts-index .excerpts-home__grid {

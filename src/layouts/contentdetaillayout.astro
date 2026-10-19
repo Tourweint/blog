@@ -179,7 +179,10 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
             <nav class="post-nav">
               {prevItem ? (
                 <a href={prevItem.href} class="post-nav-link post-nav-prev">
-                  <span class="post-nav-label">← 上一篇</span>
+                  <span class="post-nav-label">
+                    <span class="post-nav-arrow" aria-hidden="true">←</span>
+                    上一篇
+                  </span>
                   <span class="post-nav-title">{prevItem.title}</span>
                 </a>
               ) : (
@@ -187,7 +190,10 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
               )}
               {nextItem ? (
                 <a href={nextItem.href} class="post-nav-link post-nav-next">
-                  <span class="post-nav-label">下一篇 →</span>
+                  <span class="post-nav-label">
+                    下一篇
+                    <span class="post-nav-arrow" aria-hidden="true">→</span>
+                  </span>
                   <span class="post-nav-title">{nextItem.title}</span>
                 </a>
               ) : (

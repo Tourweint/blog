@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import "../../styles/originals/index.css";
 import MainLayout from "../../layouts/mainlayout.astro";
+import ChannelHero from "../../components/ChannelHero.astro";
 
 const allOriginals = await getCollection("originals");
 
@@ -50,11 +51,17 @@ const projectsStatusText = buildStatusText(
 >
   <div class="originals-page">
     {/* 顶部标题区 */}
-    <header class="originals-header">
-      <p class="eyebrow">原触发</p>
-      <h1 class="page-title">原触发</h1>
-      <p class="page-subtitle">独立的思考，未完成的想法</p>
-    </header>
+    <ChannelHero eyebrow="Originals" title="原触发">
+      <span slot="meta">
+        <span class="meta-item">
+          3 个栏目 · 共
+          {systemsPosts.length + fragmentsPosts.length + projectsPosts.length}
+          篇
+        </span>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href="/search">站内搜索</a>
+      </span>
+    </ChannelHero>
 
     {/* 内容卡片网格 */}
     <div class="content-grid">

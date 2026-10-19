@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 
 import MainLayout from "../../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../../components/ChannelHero.astro";
 import { excerpts } from "../../../../utils/excerptsPaths";
 import "../../../../styles/notes.css";
 
@@ -55,22 +56,16 @@ const totalMonths = months.length;
   title="短句 · 按月份浏览 - Tourweint/多鸣"
   description="按月份浏览所有短句摘录"
 >
-  <section class="notes-months-hero">
-    <p class="notes-months-hero__eyebrow">摘录</p>
-    <h1 class="notes-months-hero__title">按月份浏览</h1>
-    <p class="notes-months-hero__sub">
-      从时间轴进入每个月的句子簿，快速定位回顾。
-    </p>
-    <div class="notes-months-hero__meta">
-      <span class="meta-item">{totalMonths} 个月份</span>
-      <span class="meta-sep">·</span>
-      <span class="meta-item">{totalNotes} 条短句</span>
-      <span class="meta-sep">·</span>
-      <a class="meta-link" href={excerpts.notesIndex}>返回短句首页</a>
-      <span class="meta-sep">·</span>
-      <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
-    </div>
-  </section>
+  <main class="channel-page">
+    <ChannelHero eyebrow="摘录" title="按月份浏览">
+      <span slot="meta">
+        <span class="meta-item">{totalMonths} 个月份 · {totalNotes} 条短句</span>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.notesIndex}>返回短句首页</a>
+        <span class="meta-sep">·</span>
+        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
+      </span>
+    </ChannelHero>
 
   {
     sortedYears.map((year) => (
@@ -95,4 +90,5 @@ const totalMonths = months.length;
       </section>
     ))
   }
+  </main>
 </MainLayout>

@@ -6,9 +6,21 @@ body.page-article {
     --bg-body: var(--t-bg);
     --bg-card: var(--c-surface);
 
-    --article-text: var(--c-text);
+    /* 墨色略退（#1a1a1a → #2b2b30）、细线变浅一档：锋利感主要来自硬黑与深细线 */
+    --article-text: #2b2b30;
     --article-muted: var(--c-muted);
-    --article-rule: var(--c-rule);
+    --article-rule: rgba(0, 0, 0, 0.07);
+
+    /* "有软有硬"的圆角刻度：行内代码 / 代码块 / 引用软卡 / 图片 */
+    --article-radius-sm: 8px;
+    --article-radius-md: 12px;
+    --article-radius-lg: 20px;
+    --article-radius-img: 14px;
+
+    /* 星级金：既是推荐星级的颜色，也是引用软卡暖调的来源（全站唯一暖点缀） */
+    --article-gold: #c08a2e;
+    --article-shadow-soft: 0 4px 18px rgba(150, 115, 80, 0.08);
+
     --article-radius: var(--c-radius);
     --article-shadow: var(--c-shadow);
     --article-shadow-hover: var(--c-shadow-hover);
@@ -72,11 +84,11 @@ body.page-article .post-sidebar .toc-nav {
     min-height: 0;
 }
 
-/* 观看原视频：安静的纯文字 CTA，无卡无横线（侧栏靠 gap 留白） */
+/* 观看原视频：小框 CTA —— 圆角取最方一档（10px，同返回摘录页），
+   底色与代码块/返回链接同族，边线用软化后的 --article-rule */
 body.page-article .watch-video-section {
     background: transparent;
     border: 0;
-    border-radius: 0;
     padding: 0;
     box-shadow: none;
     margin-bottom: 20px;
@@ -87,24 +99,28 @@ body.page-article .watch-video-link {
     align-items: center;
     justify-content: flex-start;
     gap: 8px;
-    padding: 0;
+    padding: 7px 12px;
     color: var(--article-muted);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
+    border: 1px solid var(--article-rule);
+    border-radius: 10px;
+    background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
     transition: color var(--c-dur) var(--c-ease),
-        opacity var(--c-dur) var(--c-ease);
+        border-color var(--c-dur) var(--c-ease),
+        background-color var(--c-dur) var(--c-ease);
 }
 
 body.page-article .watch-video-link:hover {
-    background: transparent;
     color: var(--t-link);
+    border-color: color-mix(in oklab, var(--t-link) 30%, var(--article-rule));
+    background: color-mix(in oklab, var(--c-bg) 55%, var(--bg-card));
 }
 
 body.page-article .watch-video-link:focus-visible {
     outline: 3px solid var(--article-focus);
     outline-offset: 3px;
-    border-radius: 4px;
 }
 
 body.page-article .watch-video-link .video-icon {
@@ -152,6 +168,12 @@ body.page-article .watch-video-link span {
 body.page-article .post-detail {
     max-width: 900px;
     margin: 0 auto;
+}
+
+/* 大标题换衬线：与无衬线正文形成"软硬"对比（刊物字面层次） */
+body.page-article .post-title {
+    font-family: var(--t-font-serif);
+    letter-spacing: 0.01em;
 }
 
 /* Originals 详情页：轻量的频道 eyebrow（不影响摘录文章页） */
@@ -457,34 +479,40 @@ body.page-article .meta-stars {
 }
 
 body.page-article .meta-stars .star--filled {
-    color: #c08a2e;
+    color: var(--article-gold);
 }
 
 /* 分类标签：独占一行的 #标签 纯文字 */
+/* 分类标签：胶囊软卡（保留 # 前缀） */
 body.page-article .meta-categories {
     flex-basis: 100%;
     display: flex;
-    gap: 4px 16px;
+    gap: 8px;
     flex-wrap: wrap;
-    margin-top: 10px;
+    margin-top: 12px;
 }
 
 body.page-article .category-tag {
+    padding: 4px 13px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--article-text) 5%, transparent);
     color: var(--article-muted);
     font-weight: 400;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-decoration: none;
-    transition: color var(--c-dur) var(--c-ease);
+    transition: color var(--c-dur) var(--c-ease),
+        background-color var(--c-dur) var(--c-ease);
 }
 
 body.page-article .category-tag::before {
     content: "#";
-    margin-right: 2px;
-    opacity: 0.7;
+    margin-right: 3px;
+    opacity: 0.55;
 }
 
 body.page-article .category-tag:hover {
     color: var(--t-link);
+    background: color-mix(in oklab, var(--t-link) 8%, transparent);
 }
 
 /* 窄屏：作者 / 星级独占一行，避免换行后行首出现孤儿中点 */
@@ -553,11 +581,11 @@ body.page-article .content p {
    引用 (Blockquote) - 对应 >
    ========================================= */
 body.page-article .content blockquote {
-    margin: 0 0 16px;
-    padding: 10px 12px;
-    border-left: 3px solid var(--article-rule);
-    border-radius: 12px;
-    background-color: color-mix(in oklab, var(--c-bg) 86%, var(--bg-card));
+    margin: 0 0 18px;
+    padding: 16px 20px;
+    border-left: 0;
+    border-radius: var(--article-radius-lg);
+    background-color: color-mix(in oklab, var(--article-gold) 7%, transparent);
     color: color-mix(in oklab, var(--article-text) 70%, var(--article-muted));
     font-style: normal;
 }
@@ -607,18 +635,19 @@ body.page-article .content code {
   margin: 0;
   font-size: 85%;
     background-color: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
-  border-radius: 6px;
+  border-radius: var(--article-radius-sm);
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 /* 代码块 ``` ``` (会被解析为 pre > code) */
 body.page-article .content pre {
-  padding: 16px;
+  padding: 16px 18px;
   overflow: auto; /* 代码太长时显示滚动条 */
   font-size: 85%;
   line-height: 1.45;
     background-color: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
-  border-radius: 6px;
+  border-radius: var(--article-radius-md);
+  box-shadow: var(--article-shadow-soft);
   margin-bottom: 16px;
 }
 
@@ -635,8 +664,8 @@ body.page-article .content img {
   height: auto;
   display: block;
   margin: 24px auto; /* 图片居中，上下留白 */
-  border-radius: 8px; /* 图片圆角 */
-    box-shadow: var(--article-shadow);
+  border-radius: var(--article-radius-img); /* 图片圆角 */
+    box-shadow: var(--article-shadow-soft);
 }
 
 
@@ -759,7 +788,7 @@ body.page-article .highlight {
 body.page-article .post-nav {
     display: flex;
     justify-content: space-between;
-    gap: 20px;
+    gap: 40px;
     margin-top: 48px;
     padding-top: 32px;
     border-top: 0;
@@ -779,16 +808,14 @@ body.page-article .post-nav::before {
 }
 
 body.page-article .post-nav-link {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: block;
     padding: 0;
     background: transparent;
     border: 0;
     border-radius: 0;
     text-decoration: none;
     transition: none;
-    max-width: 45%;
+    max-width: 46%;
     min-width: 0;
 }
 
@@ -799,42 +826,100 @@ body.page-article .post-nav-link:hover {
 }
 
 body.page-article .post-nav-prev {
-    align-items: flex-start;
+    text-align: left;
 }
 
 body.page-article .post-nav-next {
-    align-items: flex-end;
     margin-left: auto;
+    text-align: right;
 }
 
+/* 眉标：小号、拉开字距，悬停时染上强调色 */
 body.page-article .post-nav-label {
-    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     color: var(--article-muted);
-    font-weight: 600;
+    transition: color var(--c-dur) var(--c-ease);
 }
 
+/* 箭头：微移 4px，用它自己的 ease-out（260ms），
+   让它读成一个主动的"指一下"，而不是和下划线挤在同一瞬间的抖动。 */
+body.page-article .post-nav-arrow {
+    display: inline-block;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.page-article .post-nav-prev:hover .post-nav-arrow,
+body.page-article .post-nav-prev:focus-visible .post-nav-arrow {
+    transform: translateX(-4px);
+}
+
+body.page-article .post-nav-next:hover .post-nav-arrow,
+body.page-article .post-nav-next:focus-visible .post-nav-arrow {
+    transform: translateX(4px);
+}
+
+/* 标题：衬线体放大，下划线悬停时从左往右生长（同顶部导航） */
 body.page-article .post-nav-title {
-    font-size: 0.95rem;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 7px;
+    font-family: var(--t-font-serif);
+    font-size: 1.14rem;
+    font-weight: 600;
+    line-height: 1.5;
     color: var(--article-text);
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    overflow-wrap: anywhere;
+    transition: color var(--c-dur) var(--c-ease);
 }
 
-body.page-article .post-nav-link:hover .post-nav-title {
+body.page-article .post-nav-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--t-link);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--c-dur) var(--c-ease);
+}
+
+body.page-article .post-nav-link:hover .post-nav-title::after,
+body.page-article .post-nav-link:focus-visible .post-nav-title::after {
+    transform: scaleX(1);
+}
+
+body.page-article .post-nav-link:hover .post-nav-title,
+body.page-article .post-nav-link:focus-visible .post-nav-title,
+body.page-article .post-nav-link:hover .post-nav-label,
+body.page-article .post-nav-link:focus-visible .post-nav-label {
     color: var(--t-link);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
-    text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
+}
+
+body.page-article .post-nav-link:focus-visible {
+    outline: 3px solid var(--article-focus);
+    outline-offset: 4px;
+    border-radius: 4px;
 }
 
 body.page-article .post-nav-placeholder {
     flex: 1;
-    max-width: 45%;
+    max-width: 46%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.page-article .post-nav-arrow,
+    body.page-article .post-nav-title,
+    body.page-article .post-nav-title::after,
+    body.page-article .post-nav-label {
+        transition: none;
+    }
 }
 
 /* =========================================
@@ -909,13 +994,14 @@ body.page-article .back-to-top:focus-visible {
     }
     body.page-article .post-nav { 
         flex-direction: column; 
-        gap: 14px; 
+        gap: 24px; 
     }
     body.page-article .post-nav-link { 
         max-width: 100%; 
     }
     body.page-article .post-nav-next {
-        align-items: flex-start;
+        margin-left: 0;
+        text-align: left;
     }
     body.page-article .post-nav-placeholder {
         display: none;

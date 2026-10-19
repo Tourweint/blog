@@ -6,6 +6,8 @@ import { excerpts } from "../utils/excerptsPaths";
 import interFontCss from "@fontsource-variable/inter/index.css?url";
 import sansFontCss from "@fontsource-variable/noto-sans-sc/index.css?url";
 import serifFontCss from "@fontsource-variable/noto-serif-sc/index.css?url";
+// Logo 专用：圆润无衬线（Latin 子集，体积很小）
+import logoFontCss from "@fontsource-variable/fredoka/index.css?url";
 
 interface Props {
   title?: string;
@@ -172,13 +174,16 @@ const bodyClass = bodyClasses.join(" ");
     <link rel="preload" as="style" href={interFontCss} />
     <link rel="preload" as="style" href={sansFontCss} />
     <link rel="preload" as="style" href={serifFontCss} />
+    <link rel="preload" as="style" href={logoFontCss} />
     <link rel="stylesheet" href={interFontCss} media="print" />
     <link rel="stylesheet" href={sansFontCss} media="print" />
     <link rel="stylesheet" href={serifFontCss} media="print" />
+    <link rel="stylesheet" href={logoFontCss} media="print" />
     <noscript>
       <link rel="stylesheet" href={interFontCss} />
       <link rel="stylesheet" href={sansFontCss} />
       <link rel="stylesheet" href={serifFontCss} />
+      <link rel="stylesheet" href={logoFontCss} />
     </noscript>
     <script is:inline>
       document
@@ -242,6 +247,14 @@ const bodyClass = bodyClasses.join(" ");
     <header class="navbar" id="site-navbar">
       <nav class="nav-container">
         <a href="/" class="logo">
+          <img
+            class="logo-avatar"
+            src="/favicon/favicon-96x96.png"
+            alt=""
+            width="28"
+            height="28"
+            decoding="async"
+          />
           <span class="logo-text">Tourweint</span>
         </a>
 

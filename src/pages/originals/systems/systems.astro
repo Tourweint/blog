@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import MainLayout from "../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../components/ChannelHero.astro";
 import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
 import SystemsCard from "../../../components/originals/SystemsCard.astro";
 import Pagination from "../../../components/Pagination.astro";
@@ -56,18 +57,9 @@ const tagCounts = Array.from(tagCountsMap.entries())
   wide={true}
 >
   <div class="systems-page">
-    <header class="systems-header">
-      <p class="eyebrow">原触发</p>
-      <h1 class="systems-title">
-        成体系的思考
-      </h1>
-      <p class="systems-intro">
-        深度思考与完整论述的集合地。<br />
-        社会观察、技术理解、自我认知——在这里沉淀。
-      </p>
-
-      <OriginalsFilter active="systems" counts={counts} />
-    </header>
+    <ChannelHero eyebrow="原触发" title="成体系的思考">
+      <OriginalsFilter slot="meta" active="systems" counts={counts} />
+    </ChannelHero>
 
     <div class="originals-layout">
       {

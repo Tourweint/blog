@@ -1,0 +1,145 @@
+---
+/*
+   频道刊头共享组件：全站内部页统一的 hero
+   结构：眉标 → 大标题 → meta 行（统计 + 导航链接）
+   样式契约：
+   - meta 行内 .meta-item（统计）加粗深色
+   - .meta-link（导航链接）常规字重、muted、无强调色
+   高度由本组件唯一决定，页面不得另设 padding/间距。
+*/
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  /** h1 的 id（搜索页 aria-labelledby 需要） */
+  id?: string;
+}
+
+const { eyebrow, title, id } = Astro.props;
+---
+
+<section class="channel-hero">
+  <div class="channel-hero__content">
+    <p class="channel-hero__eyebrow">{eyebrow}</p>
+    <h1 class="channel-hero__title" id={id}>{title}</h1>
+    <div class="channel-hero__meta">
+      <slot name="meta" />
+    </div>
+  </div>
+  {
+    Astro.slots.has("actions") && (
+      <div class="channel-hero__actions">
+        <slot name="actions" />
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .channel-hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    width: 100%;
+    max-width: 1052px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 18px;
+    padding: 28px 24px;
+    border-radius: var(--c-radius);
+    border: 1px solid var(--c-rule);
+    background-color: var(--c-surface);
+    background-image: radial-gradient(
+      circle at 20% 20%,
+      color-mix(in oklab, var(--c-bg) 60%, white 40%) 0%,
+      color-mix(in oklab, var(--c-bg) 25%, var(--c-surface) 75%) 60%,
+      var(--c-surface) 100%
+    );
+    box-shadow: var(--c-shadow);
+    margin-bottom: 18px;
+  }
+
+  .channel-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .channel-hero__eyebrow {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .channel-hero__title {
+    margin: 0;
+    font-size: 34px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    font-family: var(--t-font-serif);
+    color: var(--c-text);
+  }
+
+  .channel-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: baseline;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: var(--c-muted);
+  }
+
+  /* 统计数字/条数：加粗、正文色 */
+  .channel-hero__meta :global(.meta-item) {
+    font-weight: 700;
+    color: var(--c-text);
+  }
+
+  .channel-hero__meta :global(.meta-sep) {
+    opacity: 0.6;
+  }
+
+  /* 导航链接：常规字重、muted，不加粗、不用强调色 */
+  .channel-hero__meta :global(.meta-link) {
+    font-weight: 400;
+    color: var(--c-muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition:
+      color var(--c-dur) var(--c-ease),
+      border-color var(--c-dur) var(--c-ease);
+  }
+
+  .channel-hero__meta :global(.meta-link:hover) {
+    color: var(--c-text);
+    border-bottom-color: color-mix(in oklab, var(--c-text) 35%, transparent);
+  }
+
+  .channel-hero__meta :global(.meta-link:focus-visible) {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  .channel-hero__actions {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .channel-hero {
+      padding: 20px 16px;
+      gap: 16px;
+    }
+
+    .channel-hero__title {
+      font-size: 28px;
+    }
+  }
+</style>

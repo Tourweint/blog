@@ -8,9 +8,9 @@ body.page-excerpts-notes {
 
   scrollbar-gutter: stable;
 
-  /* 强调色统一到全站靛青 token */
-  --notes-accent: var(--t-link);
-  --notes-accent-light: color-mix(in oklab, var(--c-bg) 90%, var(--t-link));
+  /* 强调色统一到墨色 token：摘录内部去蓝，激活/强调用深浅灰阶 */
+  --notes-accent: var(--c-text);
+  --notes-accent-light: color-mix(in oklab, var(--c-bg) 88%, var(--c-text));
 
   --notes-border: var(--c-rule);
   --notes-border-hover: color-mix(in oklab, var(--c-rule) 60%, var(--c-text));
@@ -24,12 +24,6 @@ body.page-excerpts-notes {
 
   font-family: var(--t-font-sans);
   color: var(--notes-text);
-}
-
-body.page-excerpts-notes .page-content {
-  max-width: var(--content-max);
-  margin: 0 auto;
-  padding: 24px 1.5rem 56px;
 }
 
 /* Month archive page helpers */
@@ -69,104 +63,7 @@ body.page-excerpts-notes .back-icon {
   height: 1.1rem;
 }
 
-/* Hero Section */
-body.page-excerpts-notes .notes-hero {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 32px;
-  padding: 28px 24px;
-  border-radius: 20px;
-  border: 1px solid var(--notes-border);
-  background-color: var(--notes-card);
-  background-image: radial-gradient(
-    circle at 15% 20%,
-    color-mix(in oklab, var(--c-bg) 65%, white 35%) 0%,
-    color-mix(in oklab, var(--c-bg) 25%, var(--notes-card) 75%) 55%,
-    var(--notes-card) 100%
-  );
-  box-shadow: var(--notes-shadow);
-  margin-bottom: 18px;
-}
-
-body.page-excerpts-notes .notes-hero__content {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-body.page-excerpts-notes .notes-hero__eyebrow {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--notes-muted);
-}
-
-body.page-excerpts-notes .notes-hero__title {
-  margin: 0;
-  font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--notes-text);
-  font-family: var(--t-font-serif);
-}
-
-body.page-excerpts-notes .notes-hero__sub {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--notes-muted);
-  max-width: 560px;
-  line-height: 1.7;
-}
-
-body.page-excerpts-notes .notes-hero__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  font-size: 0.875rem;
-  color: var(--notes-muted);
-}
-
-body.page-excerpts-notes .notes-hero__meta .meta-item {
-  font-weight: 600;
-  color: var(--notes-text);
-}
-
-body.page-excerpts-notes .notes-hero__meta .meta-sep {
-  color: inherit;
-  opacity: 0.6;
-}
-
-body.page-excerpts-notes .notes-hero__meta .meta-link {
-  color: var(--notes-accent);
-  text-decoration: none;
-  font-weight: 600;
-  border-bottom: 1px solid transparent;
-  transition:
-    border-color var(--c-dur) var(--c-ease),
-    color var(--c-dur) var(--c-ease),
-    opacity var(--c-dur) var(--c-ease);
-}
-
-body.page-excerpts-notes .notes-hero__meta .meta-link:hover {
-  border-bottom-color: color-mix(in oklab, var(--notes-accent) 65%, var(--notes-border));
-}
-
-body.page-excerpts-notes .notes-hero__meta .meta-link:focus-visible {
-  outline: 3px solid var(--c-focus);
-  outline-offset: 2px;
-  border-radius: 6px;
-}
-
-body.page-excerpts-notes .notes-hero__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 140px;
-}
+/* Hero Section：结构由共享组件 ChannelHero.astro 提供，此处仅保留页面专属元素 */
 
 body.page-excerpts-notes .random-btn {
   display: flex;
@@ -584,68 +481,7 @@ body.page-excerpts-notes .load-more-btn:disabled {
   cursor: not-allowed;
 }
 
-/* Months Index */
-body.page-excerpts-notes .notes-months-hero {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 26px 22px;
-  border-radius: 18px;
-  border: 1px solid var(--notes-border);
-  background: var(--notes-card);
-  box-shadow: var(--notes-shadow);
-  margin-bottom: 18px;
-}
-
-body.page-excerpts-notes .notes-months-hero__eyebrow {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--notes-muted);
-}
-
-body.page-excerpts-notes .notes-months-hero__title {
-  margin: 0;
-  font-size: 2rem;
-  font-family: var(--t-font-serif);
-  color: var(--notes-text);
-}
-
-body.page-excerpts-notes .notes-months-hero__sub {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--notes-muted);
-}
-
-body.page-excerpts-notes .notes-months-hero__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  font-size: 0.875rem;
-  color: var(--notes-muted);
-}
-
-body.page-excerpts-notes .notes-months-hero__meta .meta-item {
-  font-weight: 600;
-  color: var(--notes-text);
-}
-
-body.page-excerpts-notes .notes-months-hero__meta .meta-sep {
-  color: var(--notes-border-hover);
-}
-
-body.page-excerpts-notes .notes-months-hero__meta .meta-link {
-  color: var(--notes-accent);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-body.page-excerpts-notes .notes-months-hero__meta .meta-link:hover {
-  text-decoration: underline;
-}
+/* Months Index：刊头由共享组件 ChannelHero 提供 */
 
 body.page-excerpts-notes .notes-months-grid {
   display: grid;
@@ -737,19 +573,6 @@ body.page-excerpts-notes .note-card.flash {
     padding: 20px 1rem 44px;
   }
 
-  body.page-excerpts-notes .notes-hero {
-    padding: 20px 16px;
-    border-radius: 16px;
-  }
-
-  body.page-excerpts-notes .notes-hero__title {
-    font-size: 1.75rem;
-  }
-
-  body.page-excerpts-notes .notes-hero__sub {
-    font-size: 0.9375rem;
-  }
-
   body.page-excerpts-notes .note-card {
     padding: 16px 18px;
     border-radius: 12px;
@@ -766,11 +589,6 @@ body.page-excerpts-notes .note-card.flash {
 
   body.page-excerpts-notes .notes-filters {
     padding: 12px 14px;
-  }
-
-  body.page-excerpts-notes .notes-months-hero {
-    padding: 20px 16px;
-    border-radius: 14px;
   }
 
   body.page-excerpts-notes .notes-months-grid {

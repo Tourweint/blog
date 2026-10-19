@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import MainLayout from "../../../../../layouts/mainlayout.astro";
+import ChannelHero from "../../../../../components/ChannelHero.astro";
 import OriginalsFilter from "../../../../../components/originals/OriginalsFilter.astro";
 import ProjectCard from "../../../../../components/originals/ProjectCard.astro";
 import Pagination from "../../../../../components/Pagination.astro";
@@ -80,18 +81,9 @@ const tagCounts = Array.from(tagCountsMap.entries())
   wide={true}
 >
   <div class="projects-page">
-    <header class="projects-header">
-      <p class="eyebrow">原触发</p>
-      <h1 class="projects-title">
-        项目 / 实验
-      </h1>
-      <p class="projects-intro">
-        用实践验证想法，用结果反思路径。<br />
-        从动机、过程到复盘、教训，完整记录每个尝试。
-      </p>
-
-      <OriginalsFilter active="projects" counts={counts} />
-    </header>
+    <ChannelHero eyebrow="原触发" title="项目 / 实验">
+      <OriginalsFilter slot="meta" active="projects" counts={counts} />
+    </ChannelHero>
 
     <div class="originals-layout">
       {

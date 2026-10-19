@@ -237,12 +237,13 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
   .toc-link {
     display: block;
-    padding: 8px 18px;
+    padding: 8px 14px;
     font-size: 0.9rem;
     color: var(--c-muted);
     text-decoration: none;
-    border-left: 3px solid transparent;
-    transition: all var(--c-dur) var(--c-ease);
+    border-radius: 12px;
+    transition: background-color var(--c-dur) var(--c-ease),
+        color var(--c-dur) var(--c-ease);
     line-height: 1.4;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -251,20 +252,18 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
   .toc-link:hover {
     color: var(--c-text);
-    background: rgba(0, 0, 0, 0.03);
-    border-left-color: rgba(0, 0, 0, 0.18);
+    background: rgba(0, 0, 0, 0.035);
   }
 
   .toc-link:focus-visible {
     outline: 3px solid var(--c-focus);
     outline-offset: 2px;
-    border-left-color: rgba(0, 0, 0, 0.18);
   }
 
+  /* 选中项：左竖条退场，换成一张软卡 */
   .toc-link.active {
     color: var(--t-link);
-    background: color-mix(in oklab, var(--t-link) 6%, transparent);
-    border-left-color: color-mix(in oklab, var(--t-link) 60%, transparent);
+    background: color-mix(in oklab, var(--t-link) 7%, transparent);
     font-weight: 600;
   }
 

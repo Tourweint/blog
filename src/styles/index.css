@@ -1,6 +1,6 @@
 /* =========================================================
-   摘录 · 文章 / 主题列表：中文编辑部刊物式索引
-   - 去白卡片：刊头与侧栏无框，列表为细线分隔的索引行
+   摘录 · 文章 / 主题列表
+   - 与其他频道统一：圆角卡片刊头、圆角卡片列表
    - 类名与四个调用页保持契约，不改动任何 DOM
    ========================================================= */
 
@@ -20,80 +20,18 @@ body.page-excerpts-posts .excerpts-posts {
     width: 100%;
     max-width: var(--posts-max);
     margin: 0 auto;
-    padding: 36px 1.5rem 72px;
+    padding: 28px 1.5rem 72px;
     box-sizing: border-box;
 }
 
-/* ===== 刊头：无框，底部一条细线 ===== */
-
-body.page-excerpts-posts .excerpts-posts__header {
-    padding: 4px 2px 26px;
-    border-bottom: 1px solid var(--c-rule);
-}
-
-body.page-excerpts-posts .excerpts-posts__eyebrow {
-    margin: 0 0 10px;
-    font-size: 12px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--c-muted);
-}
-
-body.page-excerpts-posts .excerpts-posts__title {
-    margin: 0;
-    font-size: 34px;
-    line-height: 1.2;
-    font-weight: 700;
-    font-family: var(--t-font-serif);
-    letter-spacing: 0.01em;
-}
-
-body.page-excerpts-posts .excerpts-posts__sub {
-    margin: 12px 0 0;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--c-muted);
-}
-
-body.page-excerpts-posts .excerpts-posts__meta {
-    margin-top: 14px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: baseline;
-    color: var(--c-muted);
-    font-size: 0.85rem;
-}
-
-body.page-excerpts-posts .excerpts-posts__meta .meta-item {
-    font-weight: 500;
-    color: var(--c-text);
-}
-
-body.page-excerpts-posts .meta-sep {
-    opacity: 0.6;
-}
-
-body.page-excerpts-posts .meta-link {
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: color var(--c-dur) var(--c-ease),
-        border-color var(--c-dur) var(--c-ease);
-}
-
-body.page-excerpts-posts .meta-link:hover {
-    color: var(--t-link);
-    border-bottom-color: color-mix(in oklab, var(--t-link) 40%, transparent);
-}
+/* 刊头由共享组件 ChannelHero 提供，这里只保留布局与其余元素 */
 
 /* ===== 布局：主题索引侧栏 ===== */
 
 body.page-excerpts-posts .excerpts-posts__layout {
     display: grid;
     grid-template-columns: 220px 1fr;
-    gap: 44px;
-    margin-top: 34px;
+    gap: 24px;
     align-items: start;
     width: 100%;
     box-sizing: border-box;
@@ -107,33 +45,32 @@ body.page-excerpts-posts .excerpts-posts__aside {
 }
 
 body.page-excerpts-posts .aside-card {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 0;
+    background: var(--c-surface);
+    border: 1px solid var(--c-rule);
+    border-radius: var(--c-radius);
+    box-shadow: var(--c-shadow);
+    padding: 14px;
     width: 100%;
     box-sizing: border-box;
 }
 
 body.page-excerpts-posts .aside-title {
     font-size: 12px;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-muted);
     font-weight: 700;
-    margin: 0 0 2px;
-    padding: 0 2px 12px;
-    border-bottom: 1px solid var(--c-rule);
+    margin: 0 0 8px;
+    padding: 0 6px;
 }
 
 body.page-excerpts-posts .aside-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 2px;
     max-height: min(62vh, 560px);
     overflow: auto;
-    padding-right: 6px;
+    padding-right: 2px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -143,23 +80,23 @@ body.page-excerpts-posts .aside-link {
     align-items: baseline;
     justify-content: space-between;
     gap: 10px;
-    padding: 9px 2px;
-    border-radius: 0;
+    padding: 8px 10px;
+    border-radius: 8px;
     text-decoration: none;
     color: var(--c-text);
     border: 0;
-    border-bottom: 1px solid color-mix(in oklab, var(--c-rule) 55%, transparent);
-    transition: color var(--c-dur) var(--c-ease);
+    transition: color var(--c-dur) var(--c-ease),
+        background-color var(--c-dur) var(--c-ease);
 }
 
 body.page-excerpts-posts .aside-link:hover {
-    background: none;
-    border-color: color-mix(in oklab, var(--c-rule) 55%, transparent);
-    color: var(--t-link);
+    background: color-mix(in oklab, var(--c-text) 5%, transparent);
+    color: var(--c-text);
 }
 
 body.page-excerpts-posts .aside-link.is-active {
-    color: var(--t-link);
+    background: color-mix(in oklab, var(--c-text) 7%, transparent);
+    color: var(--c-text);
 }
 
 body.page-excerpts-posts .aside-link__label {
@@ -182,10 +119,10 @@ body.page-excerpts-posts .aside-link__count {
 }
 
 body.page-excerpts-posts .aside-link.is-active .aside-link__count {
-    color: var(--t-link);
+    color: var(--c-text);
 }
 
-/* ===== 文章索引：细线分隔的行 ===== */
+/* ===== 文章索引：圆角卡片 ===== */
 
 body.page-excerpts-posts .excerpts-posts__section-title {
     margin: 6px 0 0;
@@ -200,8 +137,8 @@ body.page-excerpts-posts .excerpts-posts__section-title {
 body.page-excerpts-posts .post-grid {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    margin: 6px 0 40px;
+    gap: 12px;
+    margin: 14px 0 40px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -211,21 +148,24 @@ body.page-excerpts-posts .post-card-link {
     color: inherit;
     display: block;
     box-sizing: border-box;
-    border-top: 1px solid var(--c-rule);
-    padding: 24px 6px;
-    transition: background-color var(--c-dur) var(--c-ease);
-}
-
-body.page-excerpts-posts .post-grid .post-card-link:last-child {
-    border-bottom: 1px solid var(--c-rule);
+    background: var(--c-surface);
+    border: 1px solid var(--c-rule);
+    border-radius: var(--c-radius);
+    padding: 20px 22px;
+    box-shadow: var(--c-shadow);
+    transition:
+        transform var(--c-dur) var(--c-ease),
+        box-shadow var(--c-dur) var(--c-ease),
+        border-color var(--c-dur) var(--c-ease);
 }
 
 body.page-excerpts-posts .post-card-link:hover {
-    background: color-mix(in oklab, var(--t-link) 4%, transparent);
+    transform: translateY(-1px);
+    box-shadow: var(--c-shadow-hover);
+    border-color: color-mix(in oklab, var(--c-text) 22%, var(--c-rule));
 }
 
 body.page-excerpts-posts .post-card-link.highlight-card {
-    border-radius: 8px;
     animation: posts-highlight-pulse 1.8s var(--c-ease) 1;
 }
 
@@ -284,11 +224,6 @@ body.page-excerpts-posts .post-title {
     line-height: 1.4;
     letter-spacing: 0.01em;
     color: var(--c-text);
-    transition: color var(--c-dur) var(--c-ease);
-}
-
-body.page-excerpts-posts .post-card-link:hover .post-title {
-    color: var(--t-link);
 }
 
 body.page-excerpts-posts .post-desc {
@@ -318,7 +253,7 @@ body.page-excerpts-posts .read-more {
 
 body.page-excerpts-posts .post-card-link:hover .read-more {
     opacity: 1;
-    color: var(--t-link);
+    color: var(--c-text);
     text-decoration: none;
 }
 
@@ -326,49 +261,47 @@ body.page-excerpts-posts .no-results {
     text-align: center;
     color: var(--c-muted);
     padding: 48px 0;
-    background: transparent;
-    border-radius: 0;
-    border: 0;
-    box-shadow: none;
+    background: var(--c-surface);
+    border-radius: var(--c-radius);
+    border: 1px solid var(--c-rule);
+    box-shadow: var(--c-shadow);
 }
 
-/* ===== 主题目录页：索引行 ===== */
+/* ===== 主题目录页：圆角卡片 ===== */
 
 body.page-excerpts-posts .category-index__main {
-    margin-top: 34px;
+    margin-top: 0;
 }
 
 body.page-excerpts-posts .category-index__grid {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    margin-top: 8px;
+    gap: 10px;
+    margin-top: 0;
 }
 
 body.page-excerpts-posts .category-index__card {
-    background: transparent;
-    border: 0;
-    border-top: 1px solid var(--c-rule);
-    border-radius: 0;
-    box-shadow: none;
-    padding: 18px 6px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-rule);
+    border-radius: var(--c-radius);
+    box-shadow: var(--c-shadow);
+    padding: 16px 20px;
     text-decoration: none;
     color: var(--c-text);
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
-    transition: background-color var(--c-dur) var(--c-ease),
-        color var(--c-dur) var(--c-ease);
-}
-
-body.page-excerpts-posts .category-index__grid .category-index__card:last-child {
-    border-bottom: 1px solid var(--c-rule);
+    transition:
+        transform var(--c-dur) var(--c-ease),
+        box-shadow var(--c-dur) var(--c-ease),
+        border-color var(--c-dur) var(--c-ease);
 }
 
 body.page-excerpts-posts .category-index__card:hover {
-    background: color-mix(in oklab, var(--t-link) 4%, transparent);
-    color: var(--t-link);
+    transform: translateY(-1px);
+    box-shadow: var(--c-shadow-hover);
+    border-color: color-mix(in oklab, var(--c-text) 22%, var(--c-rule));
 }
 
 body.page-excerpts-posts .category-index__name {
@@ -389,19 +322,15 @@ body.page-excerpts-posts .category-index__count {
     font-variant-numeric: tabular-nums;
 }
 
-body.page-excerpts-posts .category-index__card:hover .category-index__count {
-    color: var(--t-link);
-}
-
 @keyframes posts-highlight-pulse {
     0% {
-        background: color-mix(in oklab, var(--t-link) 12%, transparent);
+        background: color-mix(in oklab, var(--c-text) 8%, var(--c-surface));
     }
     70% {
-        background: color-mix(in oklab, var(--t-link) 5%, transparent);
+        background: color-mix(in oklab, var(--c-text) 4%, var(--c-surface));
     }
     100% {
-        background: transparent;
+        background: var(--c-surface);
     }
 }
 
@@ -411,7 +340,7 @@ body.page-excerpts-posts .category-index__card:hover .category-index__count {
     body.page-excerpts-posts .excerpts-posts__layout {
         /* minmax(0,1fr)：防止横滑分类条的 nowrap 内容经 min-content 撑爆单列轨道 */
         grid-template-columns: minmax(0, 1fr);
-        gap: 28px;
+        gap: 20px;
     }
 
     body.page-excerpts-posts .excerpts-posts__aside {
@@ -424,7 +353,7 @@ body.page-excerpts-posts .category-index__card:hover .category-index__count {
         width: 100%;
     }
 
-    /* 主题在窄屏变为横向滑动索引条（纯文字） */
+    /* 主题在窄屏变为横向滑动的圆角胶囊条 */
     body.page-excerpts-posts .aside-list {
         max-height: none;
         overflow-x: auto;
@@ -432,28 +361,33 @@ body.page-excerpts-posts .category-index__card:hover .category-index__count {
         -webkit-overflow-scrolling: touch;
         flex-direction: row;
         padding-right: 0;
-        gap: 0;
+        gap: 8px;
         width: 100%;
         max-width: 100%;
         scroll-snap-type: x proximity;
-        border-bottom: 1px solid var(--c-rule);
     }
 
     body.page-excerpts-posts .aside-link {
         white-space: nowrap;
         scroll-snap-align: start;
         flex-shrink: 0;
-        border-bottom: 2px solid transparent;
-        margin-right: 22px;
-        padding: 10px 0;
+        border-radius: 999px;
+        border: 1px solid var(--c-rule);
+        padding: 6px 14px;
+        margin-right: 0;
+    }
+
+    body.page-excerpts-posts .aside-link:hover {
+        background: color-mix(in oklab, var(--c-text) 5%, transparent);
+    }
+
+    body.page-excerpts-posts .aside-link.is-active {
+        background: color-mix(in oklab, var(--c-text) 7%, transparent);
+        border-color: color-mix(in oklab, var(--c-text) 30%, var(--c-rule));
     }
 
     body.page-excerpts-posts .aside-link__count {
         margin-left: 4px;
-    }
-
-    body.page-excerpts-posts .aside-link.is-active {
-        border-bottom-color: var(--t-link);
     }
 }
 
@@ -462,12 +396,8 @@ body.page-excerpts-posts .category-index__card:hover .category-index__count {
         padding: 28px 1.25rem 60px;
     }
 
-    body.page-excerpts-posts .excerpts-posts__title {
-        font-size: 29px;
-    }
-
     body.page-excerpts-posts .post-card-link {
-        padding: 20px 4px;
+        padding: 16px 16px;
     }
 
     body.page-excerpts-posts .post-title {
@@ -482,22 +412,6 @@ body.page-excerpts-posts .category-index__card:hover .category-index__count {
 @media (max-width: 640px) {
     body.page-excerpts-posts .excerpts-posts {
         padding: 24px 1rem 52px;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__header {
-        padding: 2px 0 22px;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__title {
-        font-size: 27px;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__sub {
-        font-size: 14px;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__meta {
-        font-size: 12.5px;
     }
 
     body.page-excerpts-posts .card-meta {
@@ -526,14 +440,6 @@ body.page-excerpts-posts .category-index__card:hover .category-index__count {
         padding: 20px 1rem 48px;
     }
 
-    body.page-excerpts-posts .excerpts-posts__title {
-        font-size: 25px;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__eyebrow {
-        font-size: 11px;
-    }
-
     body.page-excerpts-posts .post-title {
         font-size: 16.5px;
     }
@@ -548,9 +454,5 @@ body.page-excerpts-posts .category-index__card:hover .category-index__count {
     body.page-excerpts-posts .excerpts-posts {
         padding-left: 0.9rem;
         padding-right: 0.9rem;
-    }
-
-    body.page-excerpts-posts .excerpts-posts__title {
-        font-size: 23px;
     }
 }

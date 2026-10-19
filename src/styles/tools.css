@@ -18,7 +18,7 @@ body.page-tools .tools-container {
 body.page-tools .tools-header {
   text-align: left;
   margin-bottom: 1.5rem;
-  padding: 1.25rem 1.5rem;
+  padding: 28px 24px;
   background: var(--bg-card);
   background-image: radial-gradient(
     circle at 20% 20%,
@@ -34,16 +34,17 @@ body.page-tools .tools-header {
 body.page-tools .tools-header .eyebrow {
   margin: 0 0 0.25rem;
   font-size: 12px;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(75, 85, 99, 0.75);
+  color: var(--c-muted);
 }
 
 body.page-tools .tools-title {
   margin: 0;
   font-family: var(--t-font-serif);
-  font-size: 2.2rem;
-  font-weight: 900;
+  font-size: 34px;
+  font-weight: 700;
   letter-spacing: 0.01em;
   color: var(--c-text);
 }
@@ -51,7 +52,7 @@ body.page-tools .tools-title {
 body.page-tools .tools-subtitle {
   margin: 0.55rem 0 0;
   color: var(--c-muted);
-  font-size: 1rem;
+  font-size: 15px;
 }
 
 body.page-tools .tools-meta {
@@ -277,11 +278,11 @@ body.page-tools .tool-arrow {
   }
 
   body.page-tools .tools-header {
-    padding: 1.1rem 1.1rem;
+    padding: 20px 16px;
   }
 
   body.page-tools .tools-header h1 {
-    font-size: 1.85rem;
+    font-size: 28px;
   }
 
   body.page-tools .tool-list {
