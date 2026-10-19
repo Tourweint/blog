@@ -196,19 +196,6 @@ body.page-originals-index .card-projects:hover .card-status {
   color: var(--c-text);
 }
 
-/* 底部说明 */
-body.page-originals-index .originals-footer {
-  text-align: center;
-  padding: 2rem 0;
-}
-
-body.page-originals-index .footer-note {
-  font-size: 0.9rem;
-  color: var(--c-muted);
-  margin: 0;
-  font-style: italic;
-}
-
 /* 响应式设计 */
 @media (max-width: 768px) {
   body.page-originals-index .originals-page {

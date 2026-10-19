@@ -10,7 +10,7 @@ import "../styles/search.css";
 >
   <section class="search-page" aria-labelledby="search-title">
     <ChannelHero
-      eyebrow="站内检索"
+      eyebrow="Search"
       title="搜索文章与摘录"
       id="search-title"
     >
@@ -25,24 +25,33 @@ import "../styles/search.css";
       role="search"
       aria-label="站内搜索"
     >
-      <div class="search-form__meta">
-        <label class="search-form__label" for="search-query">搜索关键词</label>
-        <p class="search-status search-status--inline" data-search-status>
-          输入关键词开始搜索。
-        </p>
-      </div>
       <div class="search-form__row">
         <input
           id="search-query"
           name="q"
           type="search"
           class="search-form__input"
-          placeholder="例如：独立思考、道德经、AGI"
+          placeholder="搜索标题或正文"
+          aria-label="搜索关键词"
           autocomplete="off"
           data-search-input
         />
-        <button type="submit" class="search-form__button">搜索</button>
+        <button type="submit" class="search-form__button" aria-label="搜索">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M16.5 16.5 21 21"></path>
+          </svg>
+        </button>
       </div>
+      <p class="search-status" data-search-status hidden></p>
     </form>
     <ul class="search-results" data-search-results aria-live="polite"></ul>
   </section>
@@ -76,7 +85,14 @@ import "../styles/search.css";
     } | null = null;
 
     const setStatus = (text: string) => {
-      if (status) status.textContent = text;
+      if (!status) return;
+      if (text) {
+        status.textContent = text;
+        status.hidden = false;
+      } else {
+        status.textContent = "";
+        status.hidden = true;
+      }
     };
 
     const escapeHtml = (text: string) =>
@@ -114,16 +130,14 @@ import "../styles/search.css";
 
     const ensurePagefind = async () => {
       if (pagefindModule) return pagefindModule;
-      setStatus("正在加载检索索引...");
+      setStatus("搜索中…");
 
       try {
         const modulePath = "/pagefind/pagefind.js";
         pagefindModule = await import(/* @vite-ignore */ modulePath);
         return pagefindModule;
       } catch {
-        setStatus(
-          "索引尚未生成。请先运行 npm run build，再用 npm run preview 体验检索。",
-        );
+        setStatus("搜索暂不可用，请稍后再试。");
         return null;
       }
     };
@@ -133,14 +147,14 @@ import "../styles/search.css";
 
       if (!normalizedKeyword) {
         clearResults();
-        setStatus("输入关键词开始搜索。");
+        setStatus("");
         return;
       }
 
       const pagefind = await ensurePagefind();
       if (!pagefind || !results) return;
 
-      setStatus(`正在搜索“${normalizedKeyword}”...`);
+      setStatus("搜索中…");
 
       const search = await pagefind.search(normalizedKeyword);
 
@@ -222,9 +236,7 @@ import "../styles/search.css";
         results.appendChild(createResultItem(title, item.url, excerpt));
       });
 
-      setStatus(
-        `找到 ${search.results.length} 条结果，当前展示正文页 ${filteredMatches.length} 条。`,
-      );
+      setStatus(`找到 ${filteredMatches.length} 条结果`);
     };
 
     const setQueryInUrl = (keyword: string) => {

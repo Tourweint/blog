@@ -7,20 +7,8 @@ body.page-search .search-page {
 
 body.page-search .search-form {
   display: grid;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-body.page-search .search-form__meta {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
   gap: 12px;
-}
-
-body.page-search .search-form__label {
-  font-size: 14px;
-  color: var(--c-text);
+  margin-bottom: 14px;
 }
 
 body.page-search .search-form__row {
@@ -50,8 +38,13 @@ body.page-search .search-form__input:focus-visible {
 }
 
 body.page-search .search-form__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
   height: 44px;
-  padding: 0 18px;
+  padding: 0;
   border-radius: 10px;
   border: 1px solid color-mix(in oklab, var(--c-accent) 20%, transparent);
   background: var(--c-surface);
@@ -64,6 +57,11 @@ body.page-search .search-form__button {
     border-color var(--c-dur) var(--c-ease);
 }
 
+body.page-search .search-form__button svg {
+  width: 20px;
+  height: 20px;
+}
+
 body.page-search .search-form__button:hover {
   transform: translateY(-1px);
   box-shadow: var(--c-shadow);
@@ -71,14 +69,13 @@ body.page-search .search-form__button:hover {
 }
 
 body.page-search .search-status {
-  margin: 0 0 14px;
+  margin: 0;
   font-size: 14px;
   color: var(--c-muted);
 }
 
-body.page-search .search-status--inline {
-  margin: 0;
-  text-align: right;
+body.page-search .search-status[hidden] {
+  display: none;
 }
 
 body.page-search .search-results {
@@ -134,23 +131,6 @@ body.page-search .search-result-item__excerpt mark {
 @media (max-width: 768px) {
   body.page-search .search-page {
     padding: 20px 1rem 44px;
-  }
-
-  body.page-search .search-form__row {
-    flex-direction: column;
-  }
-
-  body.page-search .search-form__meta {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  body.page-search .search-status--inline {
-    text-align: left;
-  }
-
-  body.page-search .search-form__button {
-    width: 100%;
   }
 
   body.page-search .search-result-item__title {
