@@ -162,15 +162,25 @@ body.page-home .page-content {
   vertical-align: 0.18em;
 }
 
-/* ========== Section header ========== */
+/* ========== Section header ==========
+   不用通栏底线：章节头下方只留一根与刊头同款的短横线，
+   避免整页堆叠横线把主次压平。 */
 .section-header {
   grid-column: 1 / -1;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1.5rem;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1.4rem;
+}
+
+.section-header h2::after {
+  content: "";
+  display: block;
+  width: 26px;
+  height: 1px;
+  margin-top: 0.7rem;
+  background: var(--t-link);
 }
 
 .section-header--compact {
@@ -237,11 +247,12 @@ body.page-home .page-content {
 
 .standard-card {
   justify-content: center;
-  padding: 1.5rem 0 1.5rem 2.6rem;
+  padding: 1.9rem 0 1.9rem 2.6rem;
 }
 
+/* 两条次卡之间不再画横线：靠留白区分，避免与主卡竖线抢戏 */
 .standard-card + .standard-card {
-  border-top: 1px solid var(--rule);
+  border-top: 0;
 }
 
 .featured-card:hover .card-title,
@@ -312,10 +323,10 @@ body.page-home .page-content {
 .excerpt-waterfall {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 3rem;
-  row-gap: 2.4rem;
+  column-gap: 1.6rem;
+  row-gap: 1.6rem;
   max-width: var(--content-max);
-  margin: 2.4rem auto 0;
+  margin: 2rem auto 0;
   padding: 0 1.5rem;
 }
 
@@ -327,14 +338,14 @@ body.page-home .page-content {
   }
 }
 
+/* 摘录用“面”而非“线”来分块：淡底 + 极细描边 */
 .excerpt-item {
   break-inside: avoid;
   margin-bottom: 0;
-  background: transparent;
-  border: 0;
-  border-top: 1px solid var(--rule);
-  border-radius: 0;
-  padding: 1.6rem 0 0.4rem;
+  background: color-mix(in oklab, var(--t-surface) 60%, var(--t-bg));
+  border: 1px solid color-mix(in oklab, var(--rule) 55%, transparent);
+  border-radius: var(--t-radius);
+  padding: 1.6rem 1.7rem;
   display: flex;
   flex-direction: column;
 }
@@ -401,7 +412,7 @@ body.page-home .page-content {
 
   .excerpt-waterfall {
     grid-template-columns: 1fr;
-    row-gap: 2rem;
+    row-gap: 1.2rem;
   }
 }
 
@@ -411,8 +422,8 @@ body.page-home .page-content {
     gap: 1.5rem;
   }
 
-  .excerpt-waterfall {
-    column-gap: 0;
+  .excerpt-item {
+    padding: 1.3rem 1.3rem;
   }
 }
 
