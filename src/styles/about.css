@@ -179,7 +179,7 @@ body.page-about .contact-item {
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 0.9rem;
-  border-radius: 12px;
+  border-radius: 18px;
   background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
   border: 1px solid var(--c-rule);
 }

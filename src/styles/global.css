@@ -49,7 +49,13 @@
   --t-font-logo: "Fredoka Variable", "Baloo 2", "Comic Sans MS", var(--t-font-sans);
 
   --t-leading: 1.75;
-  --t-radius: 12px;
+  /* 18 = 原 12 × 1.5：换用超椭圆曲线后同半径切角变浅（实测需 ×1.56 才完全追平），
+     ×1.5 补偿回原有的视觉圆度。调曲线强度时同步复核此值。 */
+  --t-radius: 18px;
+  /* 圆角曲线形状：超椭圆（squircle）。曲率在直边处为 0、向圆角中点连续增大，
+     比普通 1/4 圆少一道「曲率折点」；1 等同 1/4 圆，2 为标准 squircle（iOS 图标同款），
+     1.8 是定稿的略柔和档位。 */
+  --t-corner-shape: superellipse(1.8);
   --t-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.06);
   --t-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --t-dur: 180ms;
@@ -82,6 +88,31 @@
 
 * {
   box-sizing: border-box;
+}
+
+/*
+  全站圆角曲线：1/4 圆 → 超椭圆（squircle）。
+  corner-shape 不继承，用通配选择器覆盖所有元素与伪元素，
+  站内既有 border-radius（含 50% 正圆头像与 999px 胶囊）无需逐处修改。
+  边框、阴影、outline、overflow 裁切都会自动跟随新曲线。
+  渐进增强：仅支持的浏览器生效（Chrome/Edge 139+、Firefox 161+，
+  约七成用户；Safari 暂自动回退为普通 1/4 圆，其正式支持后无需改动）。
+*/
+@supports (corner-shape: superellipse(2)) {
+  *,
+  ::before,
+  ::after {
+    corner-shape: var(--t-corner-shape);
+  }
+
+  /*
+    例外：导航栏头像（28px <img>）刻意保持正圆。
+    实测 28px 下 superellipse(1.8) 与正圆肉眼无差，且小尺寸圆形头像
+    是身份标识的正确形态；显式钉住，避免日后调大全站曲率时跟着漂移。
+  */
+  .logo-avatar {
+    corner-shape: round;
+  }
 }
 
 html {

@@ -1,0 +1,549 @@
+<!doctype html>
+<!--
+  圆角曲线对比演示（一次性设计稿，不参与 Astro 构建，确认后可删除）
+  左列 = 现在的 1/4 圆（固定 round）
+  右列 = 超椭圆 superellipse(2)，即 squircle（可用滑块调强度）
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>圆角曲线对比 · 1/4 圆 → 超椭圆（squircle）</title>
+<style>
+  :root {
+    /* 右列使用的角形状，由 JS 随滑块更新 */
+    --shape: superellipse(2);
+
+    /* 与站点一致的设计 token（global.css） */
+    --bg: #fbfbf9;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6d6d72;
+    --rule: rgba(0, 0, 0, 0.1);
+    --link: #3a4a6b;
+    --brand: #0f172a;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    --sans: "Noto Sans SC Variable", "Noto Sans SC", "Inter Variable", "Inter",
+      "Source Han Sans CN", system-ui, -apple-system, "Segoe UI",
+      "Microsoft YaHei", sans-serif;
+    --serif: "Noto Serif SC Variable", "Noto Serif SC", "Source Han Serif CN",
+      "Songti SC", "SimSun", serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding-bottom: 96px;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- 页头 ---------- */
+  .page-head { padding: 48px 0 20px; }
+  .kicker {
+    font-size: 0.8rem; letter-spacing: 0.18em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  h1 {
+    font-family: var(--serif); font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+    font-weight: 700; line-height: 1.4;
+  }
+  h1 .old-word { border-bottom: 3px solid var(--text); }
+  h1 .new-word { border-bottom: 3px solid var(--link); }
+  .sub { color: var(--muted); margin-top: 10px; max-width: 40em; }
+
+  /* ---------- 控制条 ---------- */
+  .controls {
+  position: sticky; top: 0; z-index: 50;
+    background: color-mix(in oklab, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+    margin: 20px -20px 0; padding: 12px 20px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px;
+  }
+  .controls label { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+  .controls input[type="range"] { width: 200px; accent-color: var(--link); }
+  .controls code {
+    font-size: 0.82rem; background: #efefeb; border: 1px solid var(--rule);
+    padding: 2px 8px; border-radius: 6px; white-space: nowrap;
+  }
+  .hint { font-size: 0.8rem; color: var(--muted); }
+  .badge {
+    font-size: 0.8rem; padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--rule); background: var(--surface);
+  }
+  .badge.ok { color: #1a7f37; border-color: color-mix(in oklab, #1a7f37 40%, transparent); }
+  .badge.bad { color: #b42318; border-color: color-mix(in oklab, #b42318 40%, transparent); }
+
+  /* ---------- 分区 ---------- */
+  section { margin-top: 56px; }
+  h2 {
+    font-family: var(--serif); font-size: 1.25rem; font-weight: 700;
+    padding-bottom: 10px; border-bottom: 1px solid var(--rule); margin-bottom: 22px;
+  }
+  .section-note { color: var(--muted); font-size: 0.9rem; margin: -12px 0 20px; max-width: 46em; }
+
+  /* ---------- ① 几何原理 ---------- */
+  .geo-grid { display: grid; grid-template-columns: minmax(260px, 380px) 1fr; gap: 28px; align-items: center; }
+  .geo-grid svg { width: 100%; height: auto; display: block; }
+  .geo-notes { list-style: none; padding: 0; display: grid; gap: 14px; font-size: 0.92rem; }
+  .geo-notes li { padding-left: 16px; position: relative; }
+  .geo-notes li::before {
+    content: ""; position: absolute; left: 0; top: 0.85em;
+    width: 6px; height: 6px; border-radius: 999px; background: var(--link);
+  }
+  .swatch { display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--text); vertical-align: middle; margin-right: 6px; }
+  .swatch.new { border-top-color: var(--link); }
+
+  /* ---------- 组件对照 ---------- */
+  .pairs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .pair {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+    padding: 16px;
+  }
+  .pair > h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .tag {
+    font-size: 0.68rem; font-weight: 500; padding: 1px 8px; border-radius: 999px;
+    letter-spacing: 0.05em;
+  }
+  .tag.hot { background: #fdf0e5; color: #9a4b12; }
+  .tag.cold { background: #eef1f4; color: var(--muted); }
+  .ab { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cell { display: grid; gap: 8px; justify-items: start; }
+  .cell figcaption {
+    font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em;
+    display: flex; gap: 6px; align-items: center;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 999px; }
+  .dot.old { background: var(--text); }
+  .dot.new { background: var(--link); }
+
+  /* 角形状：左列固定 1/4 圆；右列跟随滑块；「整页预览」时左列也跟随 */
+  .old { corner-shape: round; }
+  .new { corner-shape: var(--shape); }
+  body.all-mode .old { corner-shape: var(--shape); }
+
+  /* 演示组件本身（样式对齐站点组件） */
+  .demo-card {
+    width: 100%; background: var(--surface); border: 1px solid var(--rule);
+    box-shadow: var(--shadow); padding: 14px 16px; border-radius: 12px;
+  }
+  .demo-card h4 { font-family: var(--serif); font-size: 0.98rem; font-weight: 700; }
+  .demo-card p { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+  .demo-panel { border-radius: 20px; }
+
+  .btn {
+    display: inline-block; font-size: 0.85rem; font-weight: 600;
+    padding: 8px 18px; border-radius: 10px; cursor: default;
+  }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-ghost { border: 1px solid var(--rule); background: var(--surface); color: var(--text); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .input {
+    width: 100%; font-size: 0.85rem; padding: 8px 12px; border-radius: 8px;
+    border: 1px solid var(--rule); background: var(--surface); color: var(--muted);
+  }
+
+  .codeblock {
+    width: 100%; font-family: ui-monospace, Consolas, "Cascadia Mono", monospace;
+    font-size: 0.78rem; line-height: 1.6; padding: 12px 14px; border-radius: 10px;
+    background: #16181d; color: #d6dae2; overflow: hidden;
+  }
+  .codeblock .cm { color: #7d8590; }
+  .codeblock .kw { color: #8ab4f8; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    font-size: 0.78rem; padding: 4px 14px; border-radius: 999px;
+    background: #f0f0ec; border: 1px solid var(--rule); color: var(--text);
+  }
+
+  .avatars { display: flex; align-items: center; gap: 10px; }
+  .avatar {
+    display: grid; place-items: center; color: #fff; font-weight: 700;
+    border-radius: 50%; background: linear-gradient(135deg, #64748b, #3a4a6b);
+    font-family: var(--serif);
+  }
+  .avatar.lg { width: 48px; height: 48px; font-size: 1.2rem; }
+  .avatar.sm { width: 28px; height: 28px; font-size: 0.75rem; }
+
+  .thumb {
+    width: 100%; height: 84px; border-radius: 14px;
+    background:
+      linear-gradient(135deg, #d8dbe2 0%, #b8c0cc 55%, #8e99ab 100%);
+    display: grid; place-items: center; color: #475369; font-size: 0.75rem;
+    letter-spacing: 0.1em;
+  }
+
+  .underline-demo { padding-top: 6px; }
+  .underline-demo .bar { width: 88px; height: 2px; border-radius: 999px; background: var(--brand); }
+
+  /* ---------- ③ 半径梯度 ---------- */
+  .ramp { display: grid; gap: 10px; }
+  .ramp-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+  .ramp-item { display: grid; gap: 6px; justify-items: center; }
+  .ramp-tile {
+    width: 100%; height: 64px; background: var(--surface);
+    border: 1px solid var(--rule); box-shadow: var(--shadow);
+  }
+  .ramp-item small { font-size: 0.7rem; color: var(--muted); }
+
+  /* ---------- ④ 大圆角特写 ---------- */
+  .closeup { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .closeup figure { display: grid; gap: 8px; }
+  .closeup .box {
+    height: 230px; background: var(--surface); border: 1px solid var(--rule);
+    box-shadow: var(--shadow); border-radius: 90px;
+    display: grid; place-items: center; color: var(--muted); font-size: 0.8rem;
+  }
+  .closeup figcaption { font-size: 0.75rem; color: var(--muted); text-align: center; letter-spacing: 0.06em; }
+
+  /* ---------- 尾注 ---------- */
+  .landing {
+    margin-top: 56px; background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 14px; padding: 20px 22px;
+  }
+  .landing h2 { border: 0; margin-bottom: 12px; padding: 0; }
+  .landing pre {
+    background: #16181d; color: #d6dae2; padding: 14px 16px; border-radius: 10px;
+    font-size: 0.8rem; line-height: 1.7; overflow-x: auto; margin: 10px 0;
+  }
+  .landing p { font-size: 0.9rem; color: var(--muted); margin-top: 8px; }
+
+  footer { margin-top: 40px; text-align: center; color: var(--muted); font-size: 0.8rem; }
+
+  @media (max-width: 720px) {
+    .pairs { grid-template-columns: 1fr; }
+    .geo-grid { grid-template-columns: 1fr; }
+    .ramp-row { grid-template-columns: repeat(4, 1fr); }
+    .ramp-row .ramp-item:nth-child(n+5) { display: none; }
+    .closeup { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-head">
+    <p class="kicker">Design Decision Preview</p>
+    <h1>圆角曲线：<span class="old-word">1/4 圆</span> → <span class="new-word">贝塞尔（squircle）</span></h1>
+    <p class="sub">
+      下面每一组都是「左 = 现在的 1/4 圆，右 = 换成连续曲率曲线后的样子」。
+      拖动顶部滑块可以调曲线强度；勾选「整页预览」可以模拟全站换完后的整体观感。
+    </p>
+  </header>
+
+  <div class="controls">
+    <label>
+      曲线强度
+      <input type="range" id="shapeRange" min="1" max="3.5" step="0.1" value="2" />
+      <code id="shapeLabel">superellipse(2)</code>
+    </label>
+    <span class="hint">1 = 1/4 圆（和左边相同） · 2 = 标准 squircle（iOS 图标同款） · 越大越「方」</span>
+    <label class="switch">
+      <input type="checkbox" id="allMode" />
+      整页预览（左列也换）
+    </label>
+    <span id="supportBadge" class="badge">检测中…</span>
+  </div>
+
+  <!-- ============ ① 曲线本体 ============ -->
+  <section>
+    <h2>① 曲线本体：为什么它更顺</h2>
+    <p class="section-note">
+      同一个圆角半径下两条曲线的对比。阴影区域是两条线之间的差——差得不多，但每一处衔接的手感不同。
+    </p>
+    <div class="geo-grid">
+      <svg viewBox="-14 -14 248 248" role="img" aria-label="1/4 圆与超椭圆曲线对比图">
+        <!-- 原本直角位置的参考线 -->
+        <path d="M -14 0 H 234 M 0 -14 V 234" stroke="rgba(0,0,0,0.18)" stroke-width="1" stroke-dasharray="4 4" fill="none" />
+        <!-- 曲线两端的直边 -->
+        <path d="M 190 0 H 234 M 0 190 V 234" stroke="rgba(0,0,0,0.45)" stroke-width="2" fill="none" />
+        <!-- 两曲线之间的差（填充） -->
+        <path id="gapFill" fill="rgba(58,74,107,0.14)" stroke="none" d="" />
+        <!-- 1/4 圆 -->
+        <path d="M 190 0 A 190 190 0 0 0 0 190" stroke="#1a1a1a" stroke-width="2.5" fill="none" />
+        <!-- 超椭圆（JS 生成） -->
+        <path id="sePath" stroke="#3a4a6b" stroke-width="2.5" fill="none" d="" />
+        <circle cx="190" cy="0" r="4" fill="#1a1a1a" />
+        <circle cx="0" cy="190" r="4" fill="#1a1a1a" />
+        <text x="34" y="34" font-size="12" fill="#1a1a1a" font-family="sans-serif">1/4 圆</text>
+        <text id="seLabel" x="112" y="112" font-size="12" fill="#3a4a6b" font-family="sans-serif">squircle</text>
+      </svg>
+      <ul class="geo-notes">
+        <li>
+          <span class="swatch"></span><b>1/4 圆（墨色）</b>：曲率处处相同，与直边相接的一瞬间曲率从 0 直接跳到最大——交界处有一道肉眼可感的「折点」，圆角越大事越明显。
+        </li>
+        <li>
+          <span class="swatch new"></span><b>超椭圆（靛青）</b>：与直边相接处曲率恰好为 <b>0</b>，然后随弧长缓慢长到最大——就是你说的「从 0 开始慢慢长」，整条线没有突变点，看起来更顺。
+        </li>
+        <li>CSS 规范里这条曲线的正式名字是 <code>superellipse(2)</code>，关键字 <code>squircle</code> 就是它；日常俗称「iOS 连续曲率圆角」。</li>
+        <li>拖动顶部滑块：拖到 1 时两条线重合（就是现状），往右拖超椭圆越来越「方」。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ ② 组件对照 ============ -->
+  <section>
+    <h2>② 站点组件对照</h2>
+    <p class="section-note">组件样式与站点 token 一致（圆角大小、边框、阴影都取自 global.css 的实际值）。</p>
+
+    <div class="pairs">
+
+      <div class="pair">
+        <h3>文章卡片 · 12px <span class="tag cold">变化细微</span></h3>
+        <div class="ab">
+          <figure class="cell">
+            <div class="demo-card old"><h4>夜航船</h4><p>读《陶庵梦忆》札记，兼谈记忆的水面……</p></div>
+            <figcaption><span class="dot old"></span>现在</figcaption>
+          </figure>
+          <figure class="cell">
+            <div class="demo-card new"><h4>夜航船</h4><p>读《陶庵梦忆》札记，兼谈记忆的水面……</p></div>
+            <figcaption><span class="dot new"></span>换新</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="pair">
+        <h3>面板 / 大卡 · 20px <span class="tag hot">变化明显</span></h3>
+        <div class="ab">
+          <figure class="cell">
+            <div class="demo-card demo-panel old"><h4>原创项目</h4><p>大圆角处曲率突变最容易被察觉。</p></div>
+            <figcaption><span class="dot old"></span>现在</figcaption>
+          </figure>
+          <figure class="cell">
+            <div class="demo-card demo-panel new"><h4>原创项目</h4><p>大圆角处曲率突变最容易被察觉。</p></div>
+            <figcaption><span class="dot new"></span>换新</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="pair">
+        <h3>按钮 · 10px <span class="tag cold">变化细微</span></h3>
+        <div class="ab">
+          <figure class="cell">
+            <div class="btn-row"><span class="btn btn-primary old">订阅</span><span class="btn btn-ghost old">存档</span></div>
+            <figcaption><span class="dot old"></span>现在</figcaption>
+          </figure>
+          <figure class="cell">
+            <div class="btn-row"><span class="btn btn-primary new">订阅</span><span class="btn btn-ghost new">存档</span></div>
+            <figcaption><span class="dot new"></span>换新</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="pair">
+        <h3>输入框 · 8px <span class="tag cold">变化细微</span></h3>
+        <div class="ab">
+          <figure class="cell"><input class="input old" value="搜索文章…" readonly /><figcaption><span class="dot old"></span>现在</figcaption></figure>
+          <figure class="cell"><input class="input new" value="搜索文章…" readonly /><figcaption><span class="dot new"></span>换新</figcaption></figure>
+        </div>
+      </div>
+
+      <div class="pair">
+        <h3>代码块 · 10px <span class="tag cold">变化细微</span></h3>
+        <div class="ab">
+          <figure class="cell">
+            <pre class="codeblock old"><span class="cm">/* 圆角 */</span>
+<span class="kw">border-radius</span>: 10px;</pre>
+            <figcaption><span class="dot old"></span>现在</figcaption>
+          </figure>
+          <figure class="cell">
+            <pre class="codeblock new"><span class="cm">/* 圆角 */</span>
+<span class="kw">border-radius</span>: 10px;</pre>
+            <figcaption><span class="dot new"></span>换新</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="pair">
+        <h3>标签胶囊 · 999px <span class="tag hot">变化明显</span></h3>
+        <div class="ab">
+          <figure class="cell">
+            <div class="chips"><span class="chip old">随笔</span><span class="chip old">前端</span><span class="chip old">读书</span></div>
+            <figcaption><span class="dot old"></span>现在 · 半圆端头</figcaption>
+          </figure>
+          <figure class="cell">
+            <div class="chips"><span class="chip new">随笔</span><span class="chip new">前端</span><span class="chip new">读书</span></div>
+            <figcaption><span class="dot new"></span>换新 · 端头变「直」一点</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="pair">
+        <h3>头像 · 正圆 50% <span class="tag hot">需要拍板</span></h3>
+        <div class="ab">
+          <figure class="cell">
+            <div class="avatars"><span class="avatar lg old">T</span><span class="avatar sm old">T</span></div>
+            <figcaption><span class="dot old"></span>现在 · 正圆</figcaption>
+          </figure>
+          <figure class="cell">
+            <div class="avatars"><span class="avatar lg new">T</span><span class="avatar sm new">T</span></div>
+            <figcaption><span class="dot new"></span>换新 · iOS 图标式方圆</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="pair">
+        <h3>图片缩略图 · 14px <span class="tag cold">变化细微</span></h3>
+        <div class="ab">
+          <figure class="cell"><div class="thumb old">IMAGE</div><figcaption><span class="dot old"></span>现在</figcaption></figure>
+          <figure class="cell"><div class="thumb new">IMAGE</div><figcaption><span class="dot new"></span>换新</figcaption></figure>
+        </div>
+      </div>
+
+      <div class="pair">
+        <h3>导航下划线 · 2px 细条 <span class="tag cold">几乎无感</span></h3>
+        <div class="ab">
+          <figure class="cell">
+            <div class="underline-demo"><div class="bar old"></div></div>
+            <figcaption><span class="dot old"></span>现在</figcaption>
+          </figure>
+          <figure class="cell">
+            <div class="underline-demo"><div class="bar new"></div></div>
+            <figcaption><span class="dot new"></span>换新</figcaption>
+          </figure>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ ③ 半径梯度 ============ -->
+  <section>
+    <h2>③ 半径梯度：从 4px 到 40px</h2>
+    <p class="section-note">
+      同一块面板在不同圆角大小下的新旧对比。规律：圆角越小差异越难察觉，越大越明显——站内最大用到 24px，整体是「细节更顺」而不是「风格骤变」。
+    </p>
+    <div class="ramp">
+      <div class="ramp-row" id="rampOld"></div>
+      <div class="ramp-row" id="rampNew"></div>
+    </div>
+  </section>
+
+  <!-- ============ ④ 大圆角特写 ============ -->
+  <section>
+    <h2>④ 大圆角特写 · 90px</h2>
+    <p class="section-note">放大到站内不会用到的 90px，纯粹为了把两条曲线的差异看清楚。</p>
+    <div class="closeup">
+      <figure>
+        <div class="box old">1/4 圆 · 与直边交接处有曲率折点</div>
+        <figcaption>现在</figcaption>
+      </figure>
+      <figure>
+        <div class="box new">超椭圆 · 曲率从 0 连续过渡</div>
+        <figcaption>换新</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 落地方式 ============ -->
+  <aside class="landing">
+    <h2>如果确认，实际落地长这样</h2>
+    <pre>/* global.css */
+@supports (corner-shape: superellipse(2)) {
+  *, ::before, ::after {
+    corner-shape: superellipse(2);   /* 一处声明，全站生效 */
+  }
+}</pre>
+    <p>
+      corner-shape 不继承，但通配选择器可以一次覆盖所有元素；站内 130 多处 border-radius <b>一个都不用改</b>。
+      Chrome / Edge 139+、Firefox 161+ 生效（约七成用户）；Safari 还在技术预览版，会自动回退成现在的 1/4 圆，等它正式支持后无需改动自动生效。
+      边框、阴影、overflow 裁切都会自动跟随新曲线。
+    </p>
+  </aside>
+
+  <footer>一次性设计稿 · 不参与站点构建 · 确认方案后可删除</footer>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const range = document.getElementById("shapeRange");
+  const label = document.getElementById("shapeLabel");
+  const allMode = document.getElementById("allMode");
+  const badge = document.getElementById("supportBadge");
+  const sePath = document.getElementById("sePath");
+  const gapFill = document.getElementById("gapFill");
+  const seLabel = document.getElementById("seLabel");
+
+  const R = 190; // 与 SVG 中的圆角半径一致
+
+  // superellipse(k)：规范定义 exponent m = 2^k，k=1 即 1/4 圆，k=2 即 squircle
+  function sePoints(k, from, to, steps) {
+    const m = Math.pow(2, k);
+    const pts = [];
+    for (let i = 0; i <= steps; i++) {
+      const t = from + (i / steps) * (to - from);
+      pts.push([
+        R * Math.pow(Math.cos(t), 2 / m),
+        R * Math.pow(Math.sin(t), 2 / m),
+      ]);
+    }
+    return pts;
+  }
+
+  function updateGeo(k) {
+    // 曲线本体：(190,0) → (0,190)
+    const fwd = sePoints(k, 0, Math.PI / 2, 96);
+    sePath.setAttribute(
+      "d",
+      fwd.map((p, i) => (i ? "L" : "M") + p[0].toFixed(2) + " " + p[1].toFixed(2)).join(" ")
+    );
+    // 与 1/4 圆之间的差：圆弧去、超椭圆回
+    const back = sePoints(k, Math.PI / 2, 0, 96);
+    gapFill.setAttribute(
+      "d",
+      `M ${R} 0 A ${R} ${R} 0 0 0 0 ${R} ` +
+        back.map((p) => "L" + p[0].toFixed(2) + " " + p[1].toFixed(2)).join(" ") +
+        " Z"
+    );
+    // 标签放在超椭圆 45° 点附近
+    const mid = R * Math.pow(Math.SQRT1_2, 2 / Math.pow(2, k));
+    seLabel.setAttribute("x", (mid * 0.62).toFixed(1));
+    seLabel.setAttribute("y", (mid * 1.06).toFixed(1));
+  }
+
+  function apply() {
+    const k = parseFloat(range.value);
+    root.style.setProperty("--shape", `superellipse(${k})`);
+    label.textContent = `superellipse(${k})`;
+    document.body.classList.toggle("all-mode", allMode.checked);
+    updateGeo(k);
+  }
+
+  // 支持检测：不支持时两侧看起来一样，提前说明避免误判
+  const supported = window.CSS && CSS.supports("corner-shape", "superellipse(2)");
+  badge.textContent = supported
+    ? "✓ 当前浏览器支持，对比为真实渲染"
+    : "✗ 当前浏览器不支持（需 Chrome/Edge 139+ 或 Firefox 161+），两侧会看起来一样";
+  badge.classList.add(supported ? "ok" : "bad");
+
+  // 半径梯度
+  const radii = [4, 6, 8, 12, 16, 24, 40];
+  for (const r of radii) {
+    const make = (cls) => {
+      const item = document.createElement("div");
+      item.className = "ramp-item";
+      const tile = document.createElement("div");
+      tile.className = "ramp-tile " + cls;
+      tile.style.borderRadius = r + "px";
+      const cap = document.createElement("small");
+      cap.textContent = r + "px";
+      item.append(tile, cap);
+      return item;
+    };
+    document.getElementById("rampOld").append(make("old"));
+    document.getElementById("rampNew").append(make("new"));
+  }
+
+  range.addEventListener("input", apply);
+  allMode.addEventListener("change", apply);
+  apply();
+</script>
+</body>
+</html>

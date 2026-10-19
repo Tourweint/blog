@@ -11,11 +11,12 @@ body.page-article {
     --article-muted: var(--c-muted);
     --article-rule: rgba(0, 0, 0, 0.07);
 
-    /* "有软有硬"的圆角刻度：行内代码 / 代码块 / 引用软卡 / 图片 */
+    /* "有软有硬"的圆角刻度：行内代码 / 代码块 / 引用软卡 / 图片
+       （12/20/14 × 1.5：超椭圆补偿，见 global.css --t-radius 注释） */
     --article-radius-sm: 8px;
-    --article-radius-md: 12px;
-    --article-radius-lg: 20px;
-    --article-radius-img: 14px;
+    --article-radius-md: 18px;
+    --article-radius-lg: 30px;
+    --article-radius-img: 20px;
 
     /* 星级金：既是推荐星级的颜色，也是引用软卡暖调的来源（全站唯一暖点缀） */
     --article-gold: #c08a2e;

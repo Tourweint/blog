@@ -181,7 +181,7 @@ body.page-tools .tool-card {
   gap: 0.95rem;
   padding: 0.95rem 1.05rem;
   background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
-  border-radius: 12px;
+  border-radius: 18px;
   text-decoration: none;
   color: inherit;
   transition: transform var(--c-dur) var(--c-ease),
