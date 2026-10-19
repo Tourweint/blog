@@ -1,6 +1,9 @@
 /* About page (scoped) */
 
 body.page-about {
+  /* 关于页内容列较窄（900），且容器自身不带内边距；
+     页脚带 1.5rem 内边距，因此加上两侧留白后边缘才能对齐。 */
+  --content-max: calc(900px + 3rem);
   --bg-body: var(--t-bg);
   --bg-card: var(--c-surface);
   color: var(--c-text);

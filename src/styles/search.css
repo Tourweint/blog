@@ -1,6 +1,6 @@
 body.page-search .search-page {
   width: 100%;
-  max-width: 980px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 28px 1.5rem 56px;
 }

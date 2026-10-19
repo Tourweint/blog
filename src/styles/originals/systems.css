@@ -9,7 +9,7 @@ body.page-originals-systems {
 }
 
 body.page-originals-systems .systems-page {
-  max-width: 1100px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 28px 1.5rem 64px;
 }

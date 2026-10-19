@@ -4,6 +4,9 @@
    ========================================================= */
 
 body.page-home {
+  /* 首页刊头更宽：覆盖全局内容列宽，页脚会自动跟随 */
+  --content-max: 1200px;
+
   --bg-color: var(--t-bg);
   --text-main: var(--t-text);
   --text-muted: var(--t-muted);
@@ -37,7 +40,7 @@ body.page-home .page-content {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 2rem;
-  max-width: 1200px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 1.5rem;
 }
@@ -311,7 +314,7 @@ body.page-home .page-content {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: 3rem;
   row-gap: 2.4rem;
-  max-width: 1200px;
+  max-width: var(--content-max);
   margin: 2.4rem auto 0;
   padding: 0 1.5rem;
 }

@@ -8,6 +8,9 @@
 /* 全局基础设置 */
 :root {
   --nav-height: 64px;
+  /* 内容列宽：页脚与各频道页共享，保证左右边缘对齐。
+     默认 1100（原创 / 摘录 / 搜索等频道页），首页在 home.css 覆盖为 1200。 */
+  --content-max: 1100px;
   --bg-body: var(--t-bg);
   --bg-card: var(--t-surface);
 
@@ -364,7 +367,7 @@ body.drawer-open .mobile-drawer {
   Keep layout stable even if page-scoped CSS loads slightly later (e.g. dev/HMR).
 */
 body.page-excerpts-notes .page-content {
-  max-width: 1100px;
+  max-width: var(--content-max);
   margin: 0 auto;
   width: 100%;
 }
@@ -476,7 +479,8 @@ body.page-excerpts-notes .page-content {
   z-index: 2;
   /* 底纹不接收事件，但页脚文字和链接恢复可点 */
   pointer-events: auto;
-  max-width: 1200px;
+  /* 跟随当前页面的内容列宽，保证左右边缘与正文对齐 */
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 1.5rem;
   color: var(--c-muted);
