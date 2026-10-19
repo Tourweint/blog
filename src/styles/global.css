@@ -360,6 +360,13 @@ body.drawer-open .mobile-drawer {
 .page-content {
   padding: 1rem 1.5rem;
   flex: 1;
+  /*
+    短页面至少占满一屏：把页脚顶到首屏之下。
+    这样「关于本站」「友情链接」等文字必须向下滚动才会出现，
+    而页脚顶部渐变区（版画上沿）仍可在首屏底部露出一条。
+  */
+  min-height: calc(100vh - var(--nav-height));
+  min-height: calc(100svh - var(--nav-height));
 }
 
 /*
