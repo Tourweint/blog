@@ -221,7 +221,9 @@ body.page-home .page-content {
 .originals-grid {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 1.55fr 1fr;
+  /* 分栏线落在容器正中：读者会把这条竖线当作中轴，
+     偏右 60% 会让整块看起来"没对齐" */
+  grid-template-columns: 1fr 1fr;
   gap: 0;
   margin-top: 0;
 }
