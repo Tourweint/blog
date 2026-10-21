@@ -763,6 +763,20 @@ body.drawer-open .mobile-drawer {
   animation-delay: calc(var(--t-dur-page) * 0.25);
 }
 
+/*
+  首页刊头独立层：内容层立即就位（避免空层做位移），
+  文字本身由 .hero-char 的逐字动画负责，过渡结束后才开始播。
+*/
+::view-transition-new(hero-home) {
+  animation: none;
+  opacity: 1;
+}
+
+::view-transition-old(hero-home) {
+  animation: none;
+  opacity: 0;
+}
+
 @keyframes page-leave {
   to {
     opacity: 0;
@@ -781,9 +795,10 @@ body.drawer-open .mobile-drawer {
   站内跳转时入场由过渡接管，页面自带的首次入场动画必须让位：
   新页快照是在文档刚渲染时拍摄的，若此时动画还停在起始帧，
   快照会拍到半透明 / 位移中的内容，过渡结束后再补一次上浮。
+
+  首页刊头（hero-eyebrow / hero-char）不在此列：
+  它有独立的过渡层与冻结/恢复机制，站内跳回首页时仍要逐字浮现。
 */
-.is-internal-nav .hero-eyebrow,
-.is-internal-nav .hero-line,
 .is-internal-nav .conversation-item {
   animation: none;
   opacity: 1;

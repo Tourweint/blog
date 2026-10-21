@@ -34,6 +34,13 @@ const formatDate = (date: Date) => {
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}.${m}.${d}`;
 };
+
+/*
+  刊头标题逐字拆分：每个字一个 .hero-char，
+  由 --l（行号）与 --i（字序）算出错峰延迟，实现逐字浮现。
+  拆在服务端渲染，不需要 JS，也不会出现首帧闪烁。
+*/
+const heroLines = ["思考、摘录、写作", "在这里交织成网"];
 ---
 
 <MainLayout
@@ -46,8 +53,11 @@ const formatDate = (date: Date) => {
       <div class="hero-content">
         <span class="hero-eyebrow">Tourweint / 多鸣</span>
         <h1 class="hero-title">
-          <span class="hero-line">思考、摘录、写作</span>
-          <span class="hero-line indent-text">在这里交织成网</span>
+          {heroLines.map((line, li) => (
+            <span class:list={["hero-line", li === 1 && "indent-text"]}>{[...line].map((char, i) => (
+              <span class="hero-char" style={`--l:${li}; --i:${i}`}>{char}</span>
+            ))}</span>
+          ))}
         </h1>
       </div>
     </section>

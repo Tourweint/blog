@@ -61,6 +61,13 @@ body.page-home .page-content {
   align-items: center;
   padding-top: 0;
   padding-bottom: 3rem;
+
+  /*
+    刊头独立成过渡层：跨文档 View Transition 拍新页快照时，
+    root 快照若包含刊头就会拍到"动画起始帧"（空白或半透明）。
+    拆成独立层后，root 快照不含刊头，刊头等过渡结束再逐字浮现。
+  */
+  view-transition-name: hero-home;
 }
 
 .hero-content {
@@ -99,21 +106,19 @@ body.page-home .page-content {
 
 .hero-line {
   display: block;
+}
+
+/* 逐字浮现：--l 是行号，--i 是字序，两者算出错峰延迟 */
+.hero-char {
+  display: inline-block;
   opacity: 0;
   transform: translateY(28px);
   animation: hero-rise 0.9s var(--t-ease) forwards;
+  animation-delay: calc(0.15s + var(--l, 0) * 0.45s + var(--i, 0) * 0.055s);
 }
 
 .hero-line + .hero-line {
   margin-top: 0.2em;
-}
-
-.hero-line:nth-of-type(1) {
-  animation-delay: 0.15s;
-}
-
-.hero-line:nth-of-type(2) {
-  animation-delay: 0.35s;
 }
 
 .indent-text {
@@ -135,9 +140,27 @@ body.page-home .page-content {
   }
 }
 
+/*
+  站内跳回首页时，刊头动画要等整页过渡结束再开始：
+  刊头是独立的过渡层（view-transition-name: hero-home），
+  root 快照里不含刊头，过渡期间该区域本来就是空的；
+  若此时动画自顾自地播，用户等过渡结束就看不到逐字浮现了。
+  用 animation-delay 精确错开过渡时长，不依赖 pagereveal 事件
+  （该事件并非所有浏览器都会派发）。
+*/
+html.is-internal-nav body.page-home .hero-char {
+  animation-delay: calc(
+    var(--t-dur-page) + 0.15s + var(--l, 0) * 0.45s + var(--i, 0) * 0.055s
+  );
+}
+
+html.is-internal-nav body.page-home .hero-eyebrow {
+  animation-delay: var(--t-dur-page);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-eyebrow,
-  .hero-line {
+  .hero-char {
     animation: none;
     opacity: 1;
     transform: none;
