@@ -151,46 +151,6 @@ body.page-originals-systems .placeholder-text {
   line-height: 1.6;
 }
 
-/* 说明卡片 */
-body.page-originals-systems .systems-info {
-  background: color-mix(in oklab, var(--c-bg) 65%, var(--bg-card));
-  border: 1px solid var(--c-rule);
-  border-left: 4px solid var(--o-accent);
-  border-radius: var(--c-radius);
-  padding: 1.25rem 1.5rem;
-  margin-top: 18px;
-  box-shadow: var(--c-shadow);
-}
-
-body.page-originals-systems .info-title {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(75, 85, 99, 0.75);
-  margin: 0 0 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-body.page-originals-systems .info-list {
-  margin: 0;
-  padding-left: 1.5rem;
-  color: var(--c-text);
-  opacity: 0.92;
-  font-size: 0.95rem;
-  line-height: 1.8;
-}
-
-body.page-originals-systems .info-list li {
-  margin-bottom: 0.5rem;
-}
-
-body.page-originals-systems .info-list li:last-child {
-  margin-bottom: 0;
-}
-
 /* 文章列表 */
 body.page-originals-systems .systems-list {
   margin-top: 0;
@@ -238,9 +198,5 @@ body.page-originals-systems .systems-list {
 
   body.page-originals-systems .systems-header {
     padding: 20px 16px;
-  }
-
-  body.page-originals-systems .systems-info {
-    padding: 1.1rem 1.1rem;
   }
 }

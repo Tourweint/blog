@@ -2,8 +2,9 @@
 import { getCollection } from "astro:content";
 import MainLayout from "../../../../../layouts/mainlayout.astro";
 import ChannelHero from "../../../../../components/ChannelHero.astro";
-import OriginalsFilter from "../../../../../components/originals/OriginalsFilter.astro";
+import OriginalsTabs from "../../../../../components/originals/OriginalsTabs.astro";
 import ProjectCard from "../../../../../components/originals/ProjectCard.astro";
+import OriginalsTagFilter from "../../../../../components/originals/OriginalsTagFilter.astro";
 import Pagination from "../../../../../components/Pagination.astro";
 import "../../../../../styles/originals/originals.css";
 import "../../../../../styles/originals/projects.css";
@@ -81,9 +82,14 @@ const tagCounts = Array.from(tagCountsMap.entries())
   wide={true}
 >
   <div class="projects-page">
-    <ChannelHero eyebrow="Projects" title="项目 / 实验">
-      <OriginalsFilter slot="meta" active="projects" counts={counts} />
+    <ChannelHero title="项目 / 实验">
+      <span slot="meta">
+        <span class="meta-item">共 {counts.projects} 篇</span>
+      </span>
     </ChannelHero>
+
+    <OriginalsTabs active="projects" counts={counts} />
+    <OriginalsTagFilter />
 
     <div class="originals-layout">
       {
@@ -135,16 +141,6 @@ const tagCounts = Array.from(tagCountsMap.entries())
           totalPages={totalPages}
           getPageUrl={getPageUrl}
         />
-
-        <aside class="projects-info">
-          <h3 class="info-title">项目会包含什么？</h3>
-          <ul class="info-list">
-            <li>为什么做这个项目（动机与背景）</li>
-            <li>如何实现的（技术选型与过程）</li>
-            <li>遇到了什么问题（挑战与解决）</li>
-            <li>最终的结果与反思（收获与教训）</li>
-          </ul>
-        </aside>
       </main>
     </div>
   </div>

@@ -1,70 +1,10 @@
 ---
-import BackLink from "../BackLink.astro";
-
-export type OriginalsActiveTab = "systems" | "fragments" | "projects";
-
-type Props = {
-  active: OriginalsActiveTab;
-  counts: {
-    systems: number;
-    fragments: number;
-    projects: number;
-  };
-};
-
-const { active, counts } = Astro.props;
-
-const tabs: Array<{
-  key: OriginalsActiveTab;
-  label: string;
-  href: string;
-  count: number;
-}> = [
-  {
-    key: "systems",
-    label: "原论",
-    href: "/originals/systems/systems",
-    count: counts.systems,
-  },
-  {
-    key: "fragments",
-    label: "原点",
-    href: "/originals/fragments/fragments",
-    count: counts.fragments,
-  },
-  {
-    key: "projects",
-    label: "原型",
-    href: "/originals/projects/projects",
-    count: counts.projects,
-  },
-];
+/*
+  原创列表页的标签筛选行为：URL 同步、标签 pill 高亮、分页链接带上 tag、空状态提示。
+  频道切换已拆到 OriginalsTabs.astro，这里只保留脚本，不带任何标记与样式。
+*/
 ---
 
-<nav class="originals-filter" aria-label="原创内容过滤器">
-  <BackLink
-    href="/originals"
-    label="回到原触发"
-    className="originals-back-link"
-  />
-  <div class="controls">
-    <div class="pills" role="tablist" aria-label="分类">
-      {
-        tabs.map((tab) => (
-          <a
-            class={`pill ${tab.key === active ? "is-active" : ""}`}
-            href={tab.href}
-            role="tab"
-            aria-selected={tab.key === active ? "true" : "false"}
-          >
-            <span class="pill-label">{tab.label}</span>
-            <span class="pill-count">{tab.count}</span>
-          </a>
-        ))
-      }
-    </div>
-  </div>
-</nav>
 
 <script is:inline>
   const isDebug = () =>
@@ -292,9 +232,16 @@ const tabs: Array<{
 
     event.preventDefault();
     const tag = link.getAttribute("data-originals-tag") || "";
-    setUrlTag(tag);
-    currentTag = tag;
-    applyTagFilter(tag);
+
+    const apply = () => {
+      setUrlTag(tag);
+      currentTag = tag;
+      applyTagFilter(tag);
+    };
+
+    // 过渡由 mainlayout 挂载（本脚本是 is:inline，无法 import 模块）
+    if (window.runFilterTransition) window.runFilterTransition(apply);
+    else apply();
   });
 
   document.addEventListener("click", (event) => {
@@ -329,112 +276,3 @@ const tabs: Array<{
     runFilter();
   });
 </script>
-
-<style>
-  .originals-filter {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 0;
-    width: 100%;
-  }
-
-  .controls {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.65rem;
-    flex: 1;
-  }
-
-  :global(.originals-back-link) {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--c-muted);
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    white-space: nowrap;
-    transition:
-      color var(--c-dur) var(--c-ease),
-      transform var(--c-dur) var(--c-ease);
-  }
-
-  :global(.originals-back-link:hover) {
-    color: var(--c-accent);
-    transform: translateX(-4px);
-  }
-
-  :global(.originals-back-link:focus-visible) {
-    outline: 3px solid var(--c-focus);
-    outline-offset: 2px;
-    border-radius: 10px;
-  }
-
-  :global(.originals-back-link .back-icon) {
-    width: 1.2rem;
-    height: 1.2rem;
-  }
-
-  .pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-  }
-
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.9rem;
-    border-radius: 999px;
-    border: 1px solid var(--c-rule);
-    background: var(--c-surface);
-    color: var(--c-muted);
-    text-decoration: none;
-    font-size: 0.9rem;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
-    transition: all var(--c-dur) var(--c-ease);
-  }
-
-  .pill:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
-    color: var(--c-text);
-    border-color: rgba(0, 0, 0, 0.18);
-  }
-
-  .pill.is-active {
-    color: var(--c-text);
-    border-color: rgba(0, 0, 0, 0.22);
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  .pill-count {
-    color: var(--c-muted);
-    font-size: 0.85rem;
-    font-variant-numeric: tabular-nums;
-  }
-
-  @media (max-width: 768px) {
-    .originals-filter {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .controls {
-      align-items: stretch;
-    }
-
-    :global(.originals-back-link) {
-      text-align: center;
-    }
-
-    .pills {
-      justify-content: center;
-    }
-  }
-</style>

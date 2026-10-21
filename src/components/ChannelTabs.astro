@@ -1,0 +1,143 @@
+---
+/*
+  频道横条（全站通用）：一条胶囊横带装下「返回 + 若干栏目」。
+  - 返回在最左，用 1px 竖线与栏目隔开：左边是"出去"，右边是"切换"
+  - 当前项淡底 + 深色 + aria-current="page"
+  - 宽度对齐 ChannelHero（1052px），放在 hero 正下方
+
+  用法：
+    <ChannelTabs items={[{ label: "原点", href: "/x", count: 6, active: true }]} />
+*/
+export type ChannelTabItem = {
+  label: string;
+  href: string;
+  count?: number;
+  active?: boolean;
+};
+
+type Props = {
+  items: ChannelTabItem[];
+  /** 传了才渲染「返回」 */
+  backHref?: string;
+  backLabel?: string;
+  ariaLabel?: string;
+};
+
+const {
+  items,
+  backHref,
+  backLabel = "返回",
+  ariaLabel = "频道切换",
+} = Astro.props;
+---
+
+<nav class="channel-tabs" aria-label={ariaLabel}>
+  {
+    backHref && (
+      <>
+        <a class="channel-tab channel-tab--back" href={backHref}>
+          <span>{backLabel}</span>
+        </a>
+        <span class="channel-tabs__sep" aria-hidden="true" />
+      </>
+    )
+  }
+  {
+    items.map((item) => (
+      <a
+        class={`channel-tab${item.active ? " is-active" : ""}`}
+        href={item.href}
+        aria-current={item.active ? "page" : undefined}
+      >
+        <span>{item.label}</span>
+        {typeof item.count === "number" && (
+          <span class="channel-tab__count">{item.count}</span>
+        )}
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .channel-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 1052px;
+    margin: 0 auto 18px;
+  }
+
+  .channel-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--c-rule) 85%, transparent);
+    background: transparent;
+    color: var(--c-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition:
+      color var(--c-dur) var(--c-ease),
+      background-color var(--c-dur) var(--c-ease),
+      border-color var(--c-dur) var(--c-ease);
+  }
+
+  .channel-tab:hover {
+    color: var(--c-text);
+    border-color: color-mix(in oklab, var(--c-rule) 180%, transparent);
+    background: color-mix(in oklab, var(--c-text) 3%, transparent);
+  }
+
+  .channel-tab.is-active {
+    color: var(--c-text);
+    font-weight: 600;
+    border-color: color-mix(in oklab, var(--c-rule) 220%, transparent);
+    background: color-mix(in oklab, var(--c-text) 5%, transparent);
+  }
+
+  .channel-tab__count {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--c-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 「返回」不是栏目：无描边，靠 1px 竖线与后面隔开 */
+  .channel-tab--back {
+    border-color: transparent;
+    padding-left: 0.55rem;
+    padding-right: 0.75rem;
+  }
+
+  .channel-tab--back:hover {
+    border-color: transparent;
+  }
+
+  .channel-tabs__sep {
+    flex: 0 0 1px;
+    width: 1px;
+    height: 16px;
+    margin: 0 2px;
+    background: var(--c-rule);
+  }
+
+  @media (max-width: 768px) {
+    .channel-tabs {
+      gap: 6px;
+    }
+
+    .channel-tab {
+      padding: 0.38rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .channel-tab--back {
+      padding-left: 0.3rem;
+      padding-right: 0.5rem;
+    }
+  }
+</style>

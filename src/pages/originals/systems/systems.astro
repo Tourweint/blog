@@ -2,8 +2,9 @@
 import { getCollection } from "astro:content";
 import MainLayout from "../../../layouts/mainlayout.astro";
 import ChannelHero from "../../../components/ChannelHero.astro";
-import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
+import OriginalsTabs from "../../../components/originals/OriginalsTabs.astro";
 import SystemsCard from "../../../components/originals/SystemsCard.astro";
+import OriginalsTagFilter from "../../../components/originals/OriginalsTagFilter.astro";
 import Pagination from "../../../components/Pagination.astro";
 import "../../../styles/originals/originals.css";
 import "../../../styles/originals/systems.css";
@@ -57,9 +58,14 @@ const tagCounts = Array.from(tagCountsMap.entries())
   wide={true}
 >
   <div class="systems-page">
-    <ChannelHero eyebrow="Systems" title="成体系的思考">
-      <OriginalsFilter slot="meta" active="systems" counts={counts} />
+    <ChannelHero title="成体系的思考">
+      <span slot="meta">
+        <span class="meta-item">共 {counts.systems} 篇</span>
+      </span>
     </ChannelHero>
+
+    <OriginalsTabs active="systems" counts={counts} />
+    <OriginalsTagFilter />
 
     <div class="originals-layout">
       {
@@ -121,16 +127,6 @@ const tagCounts = Array.from(tagCountsMap.entries())
           totalPages={totalPages}
           getPageUrl={getPageUrl}
         />
-
-        <aside class="systems-info">
-          <h3 class="info-title">什么会出现在这里？</h3>
-          <ul class="info-list">
-            <li>对社会现象的深度分析与思考</li>
-            <li>技术哲学与工程实践的反思</li>
-            <li>个人成长与认知升级的总结</li>
-            <li>其他需要完整论述的主题探讨</li>
-          </ul>
-        </aside>
       </main>
     </div>
   </div>

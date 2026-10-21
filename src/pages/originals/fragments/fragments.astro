@@ -2,8 +2,9 @@
 import { getCollection } from "astro:content";
 import MainLayout from "../../../layouts/mainlayout.astro";
 import ChannelHero from "../../../components/ChannelHero.astro";
-import OriginalsFilter from "../../../components/originals/OriginalsFilter.astro";
+import OriginalsTabs from "../../../components/originals/OriginalsTabs.astro";
 import FragmentCard from "../../../components/originals/FragmentCard.astro";
+import OriginalsTagFilter from "../../../components/originals/OriginalsTagFilter.astro";
 import Pagination from "../../../components/Pagination.astro";
 import "../../../styles/originals/originals.css";
 import "../../../styles/originals/fragments.css";
@@ -57,9 +58,14 @@ const tagCounts = Array.from(tagCountsMap.entries())
   wide={true}
 >
   <div class="fragments-page">
-    <ChannelHero eyebrow="Fragments" title="片段">
-      <OriginalsFilter slot="meta" active="fragments" counts={counts} />
+    <ChannelHero title="片段">
+      <span slot="meta">
+        <span class="meta-item">共 {counts.fragments} 篇</span>
+      </span>
     </ChannelHero>
+
+    <OriginalsTabs active="fragments" counts={counts} />
+    <OriginalsTagFilter />
 
     <div class="originals-layout">
       {
@@ -121,16 +127,6 @@ const tagCounts = Array.from(tagCountsMap.entries())
           totalPages={totalPages}
           getPageUrl={getPageUrl}
         />
-
-        <aside class="fragments-info">
-          <h3 class="info-title">什么会出现在这里？</h3>
-          <ul class="info-list">
-            <li>突然闪现的灵感与洞察</li>
-            <li>未完成但值得记录的想法</li>
-            <li>日常观察与随性判断</li>
-            <li>可能演化为长文的思考种子</li>
-          </ul>
-        </aside>
       </main>
     </div>
   </div>

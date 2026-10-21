@@ -1,0 +1,52 @@
+---
+/*
+  原创频道条：返回 ｜ 原论 · 原点 · 原型（带篇数）。
+  样式与交互全部来自通用组件 ChannelTabs，这里只负责数据。
+*/
+import ChannelTabs from "../ChannelTabs.astro";
+
+export type OriginalsTabKey = "systems" | "fragments" | "projects";
+
+type Props = {
+  active: OriginalsTabKey;
+  counts: Record<OriginalsTabKey, number>;
+  /** 返回目标，默认回原触发首页 */
+  backHref?: string;
+  backLabel?: string;
+};
+
+const {
+  active,
+  counts,
+  backHref = "/originals",
+  backLabel = "返回",
+} = Astro.props;
+
+const items = [
+  {
+    label: "原论",
+    href: "/originals/systems/systems",
+    count: counts.systems,
+    active: active === "systems",
+  },
+  {
+    label: "原点",
+    href: "/originals/fragments/fragments",
+    count: counts.fragments,
+    active: active === "fragments",
+  },
+  {
+    label: "原型",
+    href: "/originals/projects/projects",
+    count: counts.projects,
+    active: active === "projects",
+  },
+];
+---
+
+<ChannelTabs
+  items={items}
+  backHref={backHref}
+  backLabel={backLabel}
+  ariaLabel="原创栏目"
+/>
