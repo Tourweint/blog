@@ -32,59 +32,7 @@ body.page-excerpts-persons {
     opacity var(--c-dur) var(--c-ease);
 }
 
-/* 过滤器：刊头由共享组件 ChannelHero 提供 */
-body.page-excerpts-persons .persons-filters {
-  max-width: 1052px;
-  margin: 0 auto 2rem;
-  padding: 1rem 1.25rem;
-  border-radius: var(--c-radius);
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-secondary);
-}
-
-body.page-excerpts-persons .filter-header {
-  margin-bottom: 0.75rem;
-}
-
-body.page-excerpts-persons .filter-label {
-  font-size: 0.8125rem;
-  color: var(--color-text-secondary);
-  font-weight: 500;
-}
-
-body.page-excerpts-persons .filter-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-body.page-excerpts-persons .filter-pills .pill {
-  padding: 0.4rem 1rem;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-body.page-excerpts-persons .filter-pills .pill:hover {
-  border-color: color-mix(in oklab, var(--c-accent) 28%, var(--color-border));
-  color: var(--color-text);
-}
-
-body.page-excerpts-persons .filter-pills .pill.active {
-  background: color-mix(in oklab, var(--c-accent) 10%, var(--color-bg));
-  border-color: color-mix(in oklab, var(--c-accent) 34%, var(--color-border));
-  color: var(--color-text);
-  font-weight: 600;
-}
-
-body.page-excerpts-persons .filter-pills .pill:focus-visible {
-  outline: 3px solid var(--c-focus);
-  outline-offset: 2px;
-}
+/* 领域筛选已移到左栏（ExcerptsAside），样式见 excerpts-aside.css */
 
 /* 人物卡片网格 */
 body.page-excerpts-persons .persons-grid {
@@ -299,15 +247,7 @@ body.page-excerpts-persons .person-content .markdown-body h3 {
   margin-bottom: 0.75rem;
 }
 
-body.page-excerpts-persons .person-content .markdown-body blockquote {
-  margin: 1.5rem 0;
-  padding: 1rem 1.5rem;
-  background: color-mix(in oklab, var(--c-accent) 6%, var(--color-bg));
-  border-left: 3px solid color-mix(in oklab, var(--c-accent) 34%, var(--color-border));
-  border-radius: 8px;
-  font-style: italic;
-  color: var(--color-text-secondary);
-}
+/* 引用块：视觉统一由 markdown-content.css 提供（金色软卡 + 衬线大字） */
 
 /* 相关对话 */
 body.page-excerpts-persons .related-conversations {

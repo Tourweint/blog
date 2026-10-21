@@ -71,7 +71,8 @@ body.page-excerpts-notes .random-btn {
   gap: 6px;
   padding: 8px 14px;
   border: 1px solid var(--notes-border);
-  border-radius: 8px;
+  /* 与标签胶囊同形，曲率表现随之一致 */
+  border-radius: 999px;
   background: transparent;
   color: var(--notes-muted);
   font-size: 0.875rem;
@@ -85,93 +86,7 @@ body.page-excerpts-notes .random-btn:hover {
   color: var(--notes-text);
 }
 
-/* Filter Bar */
-body.page-excerpts-notes .notes-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-  border-radius: 24px;
-  border: 1px solid var(--notes-border);
-  background: var(--notes-card);
-  box-shadow: var(--notes-shadow);
-}
-
-body.page-excerpts-notes .filter-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-body.page-excerpts-notes .filter-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--notes-text);
-}
-
-body.page-excerpts-notes .filter-toggle {
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--notes-accent);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 4px 10px;
-  border-radius: 999px;
-  transition:
-    background-color var(--c-dur) var(--c-ease),
-    border-color var(--c-dur) var(--c-ease),
-    color var(--c-dur) var(--c-ease);
-}
-
-body.page-excerpts-notes .filter-toggle:hover {
-  border-color: var(--notes-accent);
-  background: var(--notes-accent-light);
-}
-
-body.page-excerpts-notes .filter-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-body.page-excerpts-notes .chip {
-  padding: 6px 12px;
-  border: 1px solid var(--notes-border);
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--c-bg) 88%, var(--notes-card));
-  color: var(--notes-muted);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    background-color var(--c-dur) var(--c-ease),
-    border-color var(--c-dur) var(--c-ease),
-    color var(--c-dur) var(--c-ease),
-    opacity var(--c-dur) var(--c-ease);
-  text-decoration: none;
-}
-
-body.page-excerpts-notes .chip:hover {
-  border-color: var(--notes-border-hover);
-  background: color-mix(in oklab, var(--c-bg) 82%, var(--notes-card));
-  color: var(--notes-text);
-}
-
-body.page-excerpts-notes .chip.active {
-  background: var(--notes-accent-light);
-  color: var(--notes-accent);
-  border-color: color-mix(in oklab, var(--notes-accent) 45%, var(--notes-border));
-}
-
-body.page-excerpts-notes .chip:focus-visible {
-  outline: 3px solid var(--c-focus);
-  outline-offset: 2px;
-}
+/* 标签筛选已移到左栏（ExcerptsAside），样式见 excerpts-aside.css */
 
 /* Timeline Headers */
 body.page-excerpts-notes .timeline-year {
@@ -289,6 +204,7 @@ body.page-excerpts-notes .note-hook {
   color: var(--notes-text);
 }
 
+/* 展开后的正文：只用一条细线分隔，不再额外套一层带底色的容器 */
 body.page-excerpts-notes .note-body {
   margin-top: 16px;
   padding-top: 16px;
@@ -329,31 +245,7 @@ body.page-excerpts-notes .note-body code {
     "Liberation Mono", monospace;
 }
 
-body.page-excerpts-notes .note-body blockquote {
-  margin: 0 0 12px;
-  padding: 10px 12px;
-  border-left: 3px solid var(--notes-border-hover);
-  border-radius: 10px;
-  color: color-mix(in oklab, var(--notes-text) 70%, var(--notes-muted));
-  background-color: color-mix(in oklab, var(--c-bg) 86%, var(--notes-card));
-  box-shadow: none;
-}
-
-body.page-excerpts-notes .note-body blockquote > :first-child {
-  margin-top: 0;
-}
-
-body.page-excerpts-notes .note-body blockquote > :last-child {
-  margin-bottom: 0;
-}
-
-body.page-excerpts-notes .note-body blockquote p {
-  margin: 0 0 8px;
-}
-
-body.page-excerpts-notes .note-body blockquote p:last-child {
-  margin-bottom: 0;
-}
+/* 引用块：视觉统一由 markdown-content.css 提供（金色软卡 + 衬线大字） */
 
 body.page-excerpts-notes .note-body hr {
   border: 0;
@@ -438,7 +330,8 @@ body.page-excerpts-notes .tag-pill {
 body.page-excerpts-notes .toggle-body {
   padding: 6px 12px;
   border: none;
-  border-radius: 6px;
+  /* 与标签胶囊同形：悬停时的淡底也变成胶囊 */
+  border-radius: 999px;
   background: transparent;
   color: var(--notes-accent);
   font-size: 0.8125rem;
@@ -461,7 +354,8 @@ body.page-excerpts-notes .load-more-container {
 body.page-excerpts-notes .load-more-btn {
   padding: 10px 20px;
   border: 1px solid var(--notes-border);
-  border-radius: 8px;
+  /* 与标签胶囊同形 */
+  border-radius: 999px;
   background: transparent;
   color: var(--notes-muted);
   font-size: 0.875rem;
@@ -587,16 +481,7 @@ body.page-excerpts-notes .note-card.flash {
     padding: 6px 10px;
   }
 
-  body.page-excerpts-notes .notes-filters {
-    padding: 12px 14px;
-  }
-
   body.page-excerpts-notes .notes-months-grid {
     grid-template-columns: 1fr;
-  }
-
-  body.page-excerpts-notes .chip {
-    padding: 4px 10px;
-    font-size: 0.75rem;
   }
 }

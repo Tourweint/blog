@@ -46,68 +46,7 @@ body.page-excerpts-conversations {
    刊头由共享组件 ChannelHero 提供
    ============================================ */
 
-/* 过滤器 */
-.conversations-filters {
-  background: var(--color-bg-secondary);
-  padding: 1rem 1.25rem;
-  margin-bottom: 2rem;
-  border-radius: var(--c-radius);
-  border: 1px solid var(--color-border);
-  max-width: 1052px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.filter-header {
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 1rem;
-  font-size: 0.95rem;
-}
-
-.filter-label {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.8125rem;
-  color: var(--color-text-secondary);
-}
-
-.filter-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.pill {
-  padding: 0.4rem 1rem;
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-secondary);
-  border-radius: 24px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  transition: var(--transition);
-  white-space: nowrap;
-}
-
-.pill:hover {
-  border-color: color-mix(in oklab, var(--c-accent) 28%, var(--color-border));
-  background: color-mix(in oklab, var(--c-accent) 6%, var(--color-bg-secondary));
-  color: var(--color-text);
-}
-
-.pill.active {
-  background: color-mix(in oklab, var(--c-accent) 10%, var(--color-bg-secondary));
-  color: var(--color-text);
-  border-color: color-mix(in oklab, var(--c-accent) 34%, var(--color-border));
-  font-weight: 600;
-}
-
-.pill:focus-visible {
-  outline: 3px solid var(--c-focus);
-  outline-offset: 2px;
-}
+/* 话题筛选已移到左栏（ExcerptsAside），样式见 excerpts-aside.css */
 
 /* 对话卡片网格 */
 .conversations-grid {
@@ -522,8 +461,9 @@ body.page-excerpts-conversations {
   color: color-mix(in oklab, var(--t-link) 78%, black);
 }
 
-/* Q&A 样式 */
-.markdown-body strong:first-child {
+/* Q&A 样式：只作用于顶层的「提问行」。
+   限定直接子级，避免命中引用块里的加粗引语（否则引用会被拆成小号灰字）。 */
+.markdown-body > p > strong:first-child {
   display: block;
   margin-bottom: 0.4rem;
   padding: 0;
@@ -534,13 +474,13 @@ body.page-excerpts-conversations {
   color: var(--color-text-tertiary);
 }
 
-.markdown-body p:has(> strong:first-child) {
+.markdown-body > p:has(> strong:first-child) {
   margin-top: 2rem;
   padding: 0;
   font-weight: 600;
 }
 
-.markdown-body p:has(> strong:first-child) + p {
+.markdown-body > p:has(> strong:first-child) + p {
   margin-top: 0.75rem;
   font-weight: normal;
   color: var(--color-text);
@@ -548,19 +488,15 @@ body.page-excerpts-conversations {
   line-height: 1.8;
 }
 
-/* 引用块：淡灰左线刊式引文，无底色无圆角 */
-.markdown-body blockquote {
-  margin: 1.6rem 0;
-  padding: 0.2rem 0 0.2rem 1.25rem;
-  background: none;
-  border-left: 2px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0;
-  color: var(--color-text-secondary);
-  font-style: italic;
-}
-
-.markdown-body blockquote p {
-  margin: 0;
+/* 引用块：视觉统一由 markdown-content.css 提供（金色软卡 + 衬线大字）。
+   引用内部的加粗引语保持行内加粗，不吃上面的 Q&A 标签样式。 */
+.markdown-body blockquote strong {
+  display: inline;
+  margin-bottom: 0;
+  letter-spacing: normal;
+  font-size: inherit;
+  font-weight: 600;
+  color: inherit;
 }
 
 /* Markdown 内的 ---：居中短横线（与文章页正文同一语言），不用浏览器默认满版线 */

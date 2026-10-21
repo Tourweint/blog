@@ -1,0 +1,65 @@
+---
+/*
+  摘录页左栏筛选（四频道共用）：
+  标题 + 可选搜索框 + 列表 + 可选「全部 N」展开按钮。
+  每项由调用页用 .aside-item 渲染，样式见 src/styles/excerpts-aside.css。
+
+  为什么放左栏：顶部要留给「刊头 + 频道条」两层，
+  标签/主题/领域/话题这些筛选维度放左边，几百个条目也不会挤爆页面。
+*/
+type Props = {
+  /** 筛选维度名：标签 / 主题 / 领域 / 话题 */
+  title: string;
+  /** 右侧小字，例如「296 个」 */
+  unit?: string;
+  /** 条目多时显示搜索框 */
+  searchable?: boolean;
+  /** 「全部 N」按钮文案；不传则不渲染 */
+  moreLabel?: string;
+  ariaLabel?: string;
+};
+
+const {
+  title,
+  unit,
+  searchable = false,
+  moreLabel,
+  ariaLabel,
+} = Astro.props;
+
+const label = ariaLabel ?? title;
+---
+
+<aside class="excerpts-aside" aria-label={label}>
+  <div class="aside-card">
+    <div class="aside-head">
+      <span class="aside-title">{title}</span>
+      {unit && <span class="aside-unit">{unit}</span>}
+    </div>
+
+    {
+      searchable && (
+        <input
+          class="aside-search"
+          type="search"
+          placeholder={`筛选${title}…`}
+          aria-label={`筛选${title}`}
+          data-aside-search
+        />
+      )
+    }
+
+    <div class="aside-list" data-aside-list>
+      <slot />
+    </div>
+
+    {
+      moreLabel && (
+        <button class="aside-more" type="button" data-aside-more>
+          <span data-aside-more-label>{moreLabel}</span>
+          <span class="aside-more__icon" aria-hidden="true">⌄</span>
+        </button>
+      )
+    }
+  </div>
+</aside>

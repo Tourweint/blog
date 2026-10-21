@@ -1,0 +1,241 @@
+/* =========================================================
+   摘录四频道共用：刊头 → 频道条 → 【筛选左栏 ｜ 列表】
+   —— 与文章页原有的主题栏同构，四个频道一次性统一。
+   ========================================================= */
+
+.excerpts-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.excerpts-aside {
+  position: sticky;
+  top: calc(var(--nav-height) + 24px);
+  width: 220px;
+  min-width: 0;
+}
+
+.excerpts-main {
+  min-width: 0;
+}
+
+.aside-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-rule);
+  border-radius: var(--c-radius);
+  box-shadow: var(--c-shadow);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.aside-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 6px;
+}
+
+.aside-title {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  font-weight: 700;
+}
+
+.aside-unit {
+  font-size: 11px;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 搜索框：仅条目多时出现（短句 296 个标签） */
+.aside-search {
+  width: 100%;
+  font: inherit;
+  font-size: 12.5px;
+  padding: 5px 9px;
+  border: 1px solid var(--c-rule);
+  border-radius: 8px;
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+
+.aside-search::placeholder {
+  color: color-mix(in oklab, var(--c-muted) 70%, transparent);
+}
+
+.aside-search:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 1px;
+}
+
+.aside-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* 15 个以内的列表不需要滚动条；短句 296 个标签靠这里滚动 */
+  max-height: min(72vh, 680px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.aside-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-text);
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    color var(--c-dur) var(--c-ease),
+    background-color var(--c-dur) var(--c-ease);
+}
+
+/* 脚本用 hidden 控制「只露前 9 个」，必须显式盖掉 flex */
+.aside-item[hidden] {
+  display: none;
+}
+
+.aside-item:hover {
+  background: color-mix(in oklab, var(--c-text) 5%, transparent);
+}
+
+.aside-item.is-active {
+  background: color-mix(in oklab, var(--c-text) 7%, transparent);
+  font-weight: 700;
+}
+
+.aside-item__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aside-item__count {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.aside-item.is-active .aside-item__count {
+  color: var(--c-text);
+}
+
+/* 「全部 N 个」展开按钮 */
+.aside-more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-top: 2px;
+  padding: 9px 8px 2px;
+  border: 0;
+  border-top: 1px solid var(--c-rule);
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: color var(--c-dur) var(--c-ease);
+}
+
+.aside-more:hover {
+  color: var(--c-text);
+}
+
+.aside-more__icon {
+  transition: transform var(--c-dur) var(--c-ease);
+}
+
+.aside-more[aria-expanded="true"] .aside-more__icon {
+  transform: rotate(180deg);
+}
+
+/* 无 JS 时也能用：列表内容过多时靠滚动条 */
+.aside-list[data-scrollable="true"] {
+  scrollbar-width: thin;
+}
+
+/* ---------- 窄屏：整块折叠成横向胶囊条 ---------- */
+@media (max-width: 920px) {
+  .excerpts-layout {
+    /* minmax(0,1fr)：避免 nowrap 的横滑条把单列轨道撑爆 */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .excerpts-aside {
+    position: static;
+    width: 100%;
+  }
+
+  .aside-card {
+    gap: 8px;
+  }
+
+  .aside-search {
+    display: none;
+  }
+
+  .aside-list {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-right: 0;
+    padding-bottom: 2px;
+  }
+
+  .aside-item {
+    flex: 0 0 auto;
+    width: auto;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    scroll-snap-align: start;
+    padding: 5px 12px;
+    border: 1px solid var(--c-rule);
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  .aside-item.is-active {
+    border-color: color-mix(in oklab, var(--c-text) 28%, var(--c-rule));
+  }
+
+  .aside-item__label {
+    overflow: visible;
+  }
+
+  .aside-item__count {
+    font-size: 11.5px;
+  }
+
+  .aside-more {
+    display: none;
+  }
+}

@@ -1,0 +1,60 @@
+---
+/*
+  摘录频道条：返回 ｜ 文章 · 短句 · 人物 · 对话（带条目数）。
+  条目数在这里统一取，避免四个页面各写一遍 getCollection。
+*/
+import { getCollection } from "astro:content";
+import ChannelTabs from "../ChannelTabs.astro";
+import { excerpts } from "../../utils/excerptsPaths";
+
+export type ExcerptsTabKey = "posts" | "notes" | "persons" | "conversations";
+
+type Props = {
+  active: ExcerptsTabKey;
+  backHref?: string;
+  backLabel?: string;
+};
+
+const { active, backHref = excerpts.rootHref, backLabel = "返回" } = Astro.props;
+
+const [posts, notes, persons, conversations] = await Promise.all([
+  getCollection("posts"),
+  getCollection("notes"),
+  getCollection("persons"),
+  getCollection("conversations"),
+]);
+
+const items = [
+  {
+    label: "文章",
+    href: excerpts.postsIndex,
+    count: posts.length,
+    active: active === "posts",
+  },
+  {
+    label: "短句",
+    href: excerpts.notesIndex,
+    count: notes.length,
+    active: active === "notes",
+  },
+  {
+    label: "人物",
+    href: excerpts.personsIndex,
+    count: persons.length,
+    active: active === "persons",
+  },
+  {
+    label: "对话",
+    href: excerpts.conversationsIndex,
+    count: conversations.length,
+    active: active === "conversations",
+  },
+];
+---
+
+<ChannelTabs
+  items={items}
+  backHref={backHref}
+  backLabel={backLabel}
+  ariaLabel="摘录频道"
+/>

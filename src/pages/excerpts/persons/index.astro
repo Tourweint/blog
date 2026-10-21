@@ -1,10 +1,12 @@
 ---
 import MainLayout from "../../../layouts/mainlayout.astro";
 import ChannelHero from "../../../components/ChannelHero.astro";
+import ExcerptsTabs from "../../../components/excerpts/ExcerptsTabs.astro";
+import ExcerptsAside from "../../../components/excerpts/ExcerptsAside.astro";
 import "../../../styles/persons.css";
+import "../../../styles/excerpts-aside.css";
 import { getCollection } from "astro:content";
 import PersonCard from "../../../components/PersonCard.astro";
-import { excerpts } from "../../../utils/excerptsPaths";
 
 const persons = (await getCollection("persons")).sort((a, b) => {
   if (a.data.featured !== b.data.featured) {
@@ -13,11 +15,16 @@ const persons = (await getCollection("persons")).sort((a, b) => {
   return a.data.name.localeCompare(b.data.name, "zh-CN");
 });
 
+const tagCounts = new Map<string, number>();
+for (const person of persons) {
+  for (const tag of person.data.tags ?? []) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+
 const allTags = [
   "全部",
-  ...Array.from(new Set(persons.flatMap((p) => p.data.tags ?? []))).sort(
-    (a, b) => a.localeCompare(b, "zh-CN"),
-  ),
+  ...[...tagCounts.keys()].sort((a, b) => a.localeCompare(b, "zh-CN")),
 ];
 
 const ITEMS_PER_PAGE = 12;
@@ -28,59 +35,70 @@ const ITEMS_PER_PAGE = 12;
   description="广泛收录各领域的人物，包括科技领袖、思想家、企业家、博主等"
 >
 <main class="channel-page">
-  <ChannelHero eyebrow="Persons" title="摘录 · 人物">
+  <ChannelHero title="人物">
     <span slot="meta">
       <span class="meta-item">共 {persons.length} 位</span>
-      <span class="meta-sep">·</span>
-      <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
     </span>
   </ChannelHero>
 
-  <div class="persons-filters">
-    <div class="filter-header">
-      <span class="filter-label">按领域浏览</span>
-    </div>
-    <div class="filter-pills">
+  <ExcerptsTabs active="persons" />
+
+  <div class="excerpts-layout">
+    <ExcerptsAside title="领域" unit={`${allTags.length - 1} 个`}>
       {
         allTags.map((tag) => (
           <button
-            class={`pill ${tag === "全部" ? "active" : ""}`}
+            class={`aside-item${tag === "全部" ? " is-active" : ""}`}
+            type="button"
             data-tag={tag}
+            aria-pressed={tag === "全部" ? "true" : "false"}
           >
-            {tag}
+            <span class="aside-item__label">{tag}</span>
+            <span class="aside-item__count">
+              {tag === "全部"
+                ? persons.length
+                : persons.filter((p) => (p.data.tags ?? []).includes(tag)).length}
+            </span>
           </button>
         ))
       }
+    </ExcerptsAside>
+
+    <div class="excerpts-main">
+      <div class="persons-grid" id="persons-grid">
+        {
+          persons.map((person) => (
+            <div
+              class="person-item"
+              data-tags={(person.data.tags ?? []).join(",")}
+            >
+              <PersonCard person={person} />
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <p>暂无人物，敬请期待。</p>
+      </div>
+
+      <div
+        class="load-more-container"
+        id="load-more-container"
+        style="display: none;"
+      >
+        <button class="load-more-btn" id="load-more">加载更多</button>
+      </div>
     </div>
-  </div>
-
-  <div class="persons-grid" id="persons-grid">
-    {
-      persons.map((person) => (
-        <div class="person-item" data-tags={(person.data.tags ?? []).join(",")}>
-          <PersonCard person={person} />
-        </div>
-      ))
-    }
-  </div>
-
-  <div class="empty-state" id="empty-state" style="display: none;">
-    <p>暂无人物，敬请期待。</p>
-  </div>
-
-  <div
-    class="load-more-container"
-    id="load-more-container"
-    style="display: none;"
-  >
-    <button class="load-more-btn" id="load-more">加载更多</button>
   </div>
 </main>
 </MainLayout>
 
 <script is:inline define:vars={{ ITEMS_PER_PAGE, totalPersons: persons.length }}
 >
-  const pills = Array.from(document.querySelectorAll(".pill"));
+  const pills = Array.from(
+    document.querySelectorAll(".aside-item[data-tag]"),
+  );
   const items = Array.from(document.querySelectorAll(".person-item"));
   const loadMoreBtn = document.getElementById("load-more");
   const loadMoreContainer = document.getElementById("load-more-container");
@@ -89,6 +107,10 @@ const ITEMS_PER_PAGE = 12;
 
   let activeTag = "全部";
   let displayedCount = ITEMS_PER_PAGE;
+
+  // 筛选切换过渡：模块脚本可能晚于本脚本加载，调用时才取
+  const withFilterTransition = (fn) =>
+    window.runFilterTransition ? window.runFilterTransition(fn) : fn();
 
   const applyFilter = () => {
     items.forEach((item) => {
@@ -124,10 +146,16 @@ const ITEMS_PER_PAGE = 12;
 
   pills.forEach((pill) => {
     pill.addEventListener("click", () => {
-      pills.forEach((p) => p.classList.remove("active"));
-      pill.classList.add("active");
-      activeTag = pill.dataset.tag || "全部";
-      applyFilter();
+      withFilterTransition(() => {
+        pills.forEach((p) => {
+          p.classList.remove("is-active");
+          p.setAttribute("aria-pressed", "false");
+        });
+        pill.classList.add("is-active");
+        pill.setAttribute("aria-pressed", "true");
+        activeTag = pill.dataset.tag || "全部";
+        applyFilter();
+      });
     });
   });
 

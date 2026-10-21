@@ -1,9 +1,12 @@
 ---
 import "../../../styles/index.css";
+import "../../../styles/excerpts-aside.css";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import MainLayout from "../../../layouts/mainlayout.astro";
 import ChannelHero from "../../../components/ChannelHero.astro";
+import ExcerptsTabs from "../../../components/excerpts/ExcerptsTabs.astro";
+import ExcerptsAside from "../../../components/excerpts/ExcerptsAside.astro";
 import Pagination from "../../../components/Pagination.astro";
 import { excerpts } from "../../../utils/excerptsPaths";
 
@@ -22,6 +25,16 @@ const categories = [
   ).sort((a, b) => a.localeCompare(b, "zh-CN")),
 ];
 
+const categoryItems = categories.map((cat) => ({
+  label: cat,
+  href: cat === "全部" ? excerpts.postsIndex : excerpts.category(cat),
+  count:
+    cat === "全部"
+      ? posts.length
+      : posts.filter((p) => p.data.tags?.includes(cat)).length,
+  active: cat === "全部",
+}));
+
 const pageSize = 8;
 const totalPages = Math.ceil(posts.length / pageSize);
 const currentPage = 1;
@@ -36,47 +49,31 @@ const getPageUrl = (page: number) => excerpts.postsPage(page);
   wide={true}
 >
   <div class="excerpts-posts">
-    <ChannelHero eyebrow="Posts" title="摘录 · 文章">
+    <ChannelHero title="文章">
       <span slot="meta">
         <span class="meta-item">共 {posts.length} 篇</span>
-        <span class="meta-sep">·</span>
-        <a class="meta-link" href={excerpts.categoryIndex}>按主题浏览</a>
-        <span class="meta-sep">·</span>
-        <a class="meta-link" href={excerpts.rootHref}>回到摘录首页</a>
       </span>
     </ChannelHero>
 
-    <div class="excerpts-posts__layout">
-      <aside class="excerpts-posts__aside" aria-label="主题目录">
-        <div class="aside-card">
-          <div class="aside-title">主题</div>
-          <nav class="aside-list">
-            {
-              categories.map((cat) => {
-                const count =
-                  cat === "全部"
-                    ? posts.length
-                    : posts.filter((p) => p.data.tags?.includes(cat)).length;
-                return (
-                  <a
-                    href={
-                      cat === "全部"
-                        ? excerpts.postsIndex
-                        : excerpts.category(cat)
-                    }
-                    class={`aside-link${cat === "全部" ? " is-active" : ""}`}
-                  >
-                    <span class="aside-link__label">{cat}</span>
-                    <span class="aside-link__count">{count}</span>
-                  </a>
-                );
-              })
-            }
-          </nav>
-        </div>
-      </aside>
+    <ExcerptsTabs active="posts" />
 
-      <main class="excerpts-posts__main">
+    <div class="excerpts-layout">
+      <ExcerptsAside title="主题" unit={`${categories.length - 1} 个`}>
+        {
+          categoryItems.map((item) => (
+            <a
+              class={`aside-item${item.active ? " is-active" : ""}`}
+              href={item.href}
+              aria-current={item.active ? "page" : undefined}
+            >
+              <span class="aside-item__label">{item.label}</span>
+              <span class="aside-item__count">{item.count}</span>
+            </a>
+          ))
+        }
+      </ExcerptsAside>
+
+      <div class="excerpts-main">
         <h2 class="excerpts-posts__section-title" id="list-title">最新摘录</h2>
         {
           paginatedPosts.length > 0 ? (
@@ -124,7 +121,7 @@ const getPageUrl = (page: number) => excerpts.postsPage(page);
           totalPages={totalPages}
           getPageUrl={getPageUrl}
         />
-      </main>
+      </div>
     </div>
   </div>
 </MainLayout>
