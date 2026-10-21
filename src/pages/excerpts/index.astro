@@ -1,30 +1,71 @@
 ---
+import { getCollection } from "astro:content";
 import MainLayout from "../../layouts/mainlayout.astro";
 import ChannelHero from "../../components/ChannelHero.astro";
+import ExcerptsEntry from "../../components/excerpts/ExcerptsEntry.astro";
+import { excerpts } from "../../utils/excerptsPaths";
 import "../../styles/excerpts.css";
 
-import EntryExcerptsConversations from "../../components/entries/EntryExcerptsConversations.astro";
-import EntryExcerptsNotes from "../../components/entries/EntryExcerptsNotes.astro";
-import EntryExcerptsPersons from "../../components/entries/EntryExcerptsPersons.astro";
-import EntryExcerptsPosts from "../../components/entries/EntryExcerptsPosts.astro";
+/*
+  摘录主页：四个频道的入口。
+  不再放「返回」（这里是顶层），也不放频道条（频道条属于频道页）。
+*/
+const [posts, notes, persons, conversations] = await Promise.all([
+  getCollection("posts"),
+  getCollection("notes"),
+  getCollection("persons"),
+  getCollection("conversations"),
+]);
+
+const entries = [
+  {
+    href: excerpts.postsIndex,
+    name: "文章",
+    count: posts.length,
+    unit: "篇",
+    description: "长文与整理：按主题归类的系统性阅读",
+  },
+  {
+    href: excerpts.notesIndex,
+    name: "短句",
+    count: notes.length,
+    unit: "条",
+    description: "随记与短摘：按时间归档的零散想法",
+  },
+  {
+    href: excerpts.personsIndex,
+    name: "人物",
+    count: persons.length,
+    unit: "位",
+    description: "人物志：各领域人物的经历与思想",
+  },
+  {
+    href: excerpts.conversationsIndex,
+    name: "对话",
+    count: conversations.length,
+    unit: "篇",
+    description: "访谈与虚构对话：灵感与思想实验",
+  },
+];
+
+const total = entries.reduce((sum, entry) => sum + entry.count, 0);
 ---
 
 <MainLayout
   title="摘录 - Tourweint/多鸣"
   description="进入摘录内容：文章、短句、人物、对话"
 >
-  <section class="excerpts-home">
-    <ChannelHero eyebrow="Excerpts" title="摘录主页">
+  <div class="excerpts-home">
+    <ChannelHero title="摘录">
       <span slot="meta">
         <span class="meta-item">4 个栏目</span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">共 {total} 条</span>
       </span>
     </ChannelHero>
 
-    <div class="excerpts-home__grid" role="list">
-      <div role="listitem"><EntryExcerptsPosts /></div>
-      <div role="listitem"><EntryExcerptsNotes /></div>
-      <div role="listitem"><EntryExcerptsPersons /></div>
-      <div role="listitem"><EntryExcerptsConversations /></div>
+    <div class="excerpts-home__grid">
+      {entries.map((entry) => <ExcerptsEntry {...entry} />)}
     </div>
-  </section>
+  </div>
 </MainLayout>
