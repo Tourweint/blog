@@ -20,6 +20,7 @@ const [posts, notes, persons, conversations] = await Promise.all([
 const entries = [
   {
     href: excerpts.postsIndex,
+    label: "Posts",
     name: "文章",
     count: posts.length,
     unit: "篇",
@@ -27,6 +28,7 @@ const entries = [
   },
   {
     href: excerpts.notesIndex,
+    label: "Notes",
     name: "短句",
     count: notes.length,
     unit: "条",
@@ -34,6 +36,7 @@ const entries = [
   },
   {
     href: excerpts.personsIndex,
+    label: "Persons",
     name: "人物",
     count: persons.length,
     unit: "位",
@@ -41,6 +44,7 @@ const entries = [
   },
   {
     href: excerpts.conversationsIndex,
+    label: "Conversations",
     name: "对话",
     count: conversations.length,
     unit: "篇",

@@ -1,11 +1,13 @@
 ---
 /*
-  摘录主页的栏目入口卡：栏目名 + 条目数 + 一句描述 + 浏览箭头。
+  摘录主页的栏目入口卡：英文眉标 + 栏目名 + 条目数 + 一句描述。
   与四个频道页的「频道条」共用同一套尺寸与圆角语言，
   但保持"入口"的权重：比频道条里的胶囊大，比文章卡轻。
 */
 type Props = {
   href: string;
+  /** 英文眉标（自动大写）：Posts / Notes / Persons / Conversations */
+  label: string;
   name: string;
   count: number;
   /** 计数单位：篇 / 条 / 位 */
@@ -13,19 +15,16 @@ type Props = {
   description: string;
 };
 
-const { href, name, count, unit, description } = Astro.props;
+const { href, label, name, count, unit, description } = Astro.props;
 ---
 
 <a class="entry" href={href} aria-label={`前往：${name}（${count} ${unit}）`}>
+  <span class="entry__label">{label}</span>
   <span class="entry__head">
     <span class="entry__name">{name}</span>
     <span class="entry__count">{count} {unit}</span>
   </span>
   <span class="entry__desc">{description}</span>
-  <span class="entry__go">
-    浏览
-    <span class="entry__arrow" aria-hidden="true">→</span>
-  </span>
 </a>
 
 <style>
@@ -64,6 +63,20 @@ const { href, name, count, unit, description } = Astro.props;
     gap: 12px;
   }
 
+  /* 英文眉标：与 ChannelHero 的 eyebrow 同一套语言（12px / 大写 / 疏字距） */
+  .entry__label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    transition: color var(--c-dur) var(--c-ease);
+  }
+
+  .entry:hover .entry__label {
+    color: var(--c-text);
+  }
+
   .entry__name {
     font-family: var(--t-font-serif);
     font-size: 22px;
@@ -83,29 +96,5 @@ const { href, name, count, unit, description } = Astro.props;
     font-size: 13.5px;
     line-height: 1.6;
     color: var(--c-muted);
-  }
-
-  .entry__go {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: auto;
-    padding-top: 4px;
-    font-size: 12.5px;
-    color: var(--c-muted);
-    transition: color var(--c-dur) var(--c-ease);
-  }
-
-  .entry__arrow {
-    display: inline-block;
-    transition: transform var(--c-dur) var(--c-ease);
-  }
-
-  .entry:hover .entry__go {
-    color: var(--c-text);
-  }
-
-  .entry:hover .entry__arrow {
-    transform: translateX(3px);
   }
 </style>
