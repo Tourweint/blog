@@ -150,6 +150,25 @@ const bodyClass = bodyClasses.join(" ");
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <!--
+      站内跳转标记：跨文档 View Transition 已负责入场，
+      页面自带的首次入场动画（首页刊头、对话列表）要让位，
+      否则新页快照会拍到动画起始帧，过渡结束后再补一次上浮。
+      必须内联且尽早执行，否则首帧已经播放了动画。
+    -->
+    <script is:inline>
+      (() => {
+        try {
+          const ref = document.referrer;
+          if (ref && new URL(ref).origin === location.origin) {
+            document.documentElement.classList.add("is-internal-nav");
+          }
+        } catch (error) {
+          /* referrer 不可解析时按首次访问处理 */
+        }
+      })();
+    </script>
+
     <!-- 基础 SEO -->
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -373,6 +392,16 @@ const bodyClass = bodyClasses.join(" ");
         </div>
       </div>
     </footer>
+
+    <!--
+      筛选过渡：页面里用 `is:inline` 写的筛选脚本无法 import 模块，
+      所以这里挂到 window 上供其调用（见 src/scripts/filterTransition.ts）。
+    -->
+    <script>
+      import { runFilterTransition } from "../scripts/filterTransition";
+
+      window.runFilterTransition = runFilterTransition;
+    </script>
 
     <script>
       {
