@@ -10,7 +10,7 @@ export type OriginalsTabKey = "systems" | "fragments" | "projects";
 type Props = {
   active: OriginalsTabKey;
   counts: Record<OriginalsTabKey, number>;
-  /** 返回目标，默认回原触发首页 */
+  /** 返回目标，默认回原创首页 */
   backHref?: string;
   backLabel?: string;
 };

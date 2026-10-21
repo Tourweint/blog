@@ -63,7 +63,7 @@ tokens 定义位置：
 
 - 全局：`site-body`
 - 首页：`page-home`
-- 原触发：`page-originals`（列表）/ `page-originals-detail`（详情）
+- 原创：`page-originals`（列表）/ `page-originals-detail`（详情）
 - 摘录：`page-excerpts`（总体系）
   - 根页：`page-excerpts-index`
   - 列表/分类：`page-excerpts-posts`
@@ -79,7 +79,7 @@ tokens 定义位置：
 
 频道页建议统一为：
 
-- `eyebrow`：频道名（如“摘录”“原触发”）
+- `eyebrow`：频道名（如“摘录”“原创”）
 - `h1`：页面主题（如“按主题阅读”“人物”“对话”）
 - `sub`：一句解释
 - `meta`：可选的面包屑/跳转
