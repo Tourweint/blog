@@ -155,14 +155,26 @@ const bodyClass = bodyClasses.join(" ");
       页面自带的首次入场动画（首页刊头、对话列表）要让位，
       否则新页快照会拍到动画起始帧，过渡结束后再补一次上浮。
       必须内联且尽早执行，否则首帧已经播放了动画。
+
+      两种情况不能标记，否则页面会毫无动画地直接出现：
+      1. 刷新（reload）：referrer 仍是同源的上一页，会被误判成站内跳转，
+         但刷新不触发跨文档过渡，等于动画被禁又没有过渡接管。
+      2. 浏览器不支持跨文档 View Transition：没有过渡可接管，
+         此时必须保留页面自带的入场动画。
     -->
     <script is:inline>
       (() => {
         try {
           const ref = document.referrer;
-          if (ref && new URL(ref).origin === location.origin) {
-            document.documentElement.classList.add("is-internal-nav");
-          }
+          if (!ref || new URL(ref).origin !== location.origin) return;
+
+          const navType =
+            performance.getEntriesByType("navigation")[0]?.type ?? "navigate";
+          if (navType === "reload") return;
+
+          if (typeof document.startViewTransition !== "function") return;
+
+          document.documentElement.classList.add("is-internal-nav");
         } catch (error) {
           /* referrer 不可解析时按首次访问处理 */
         }
