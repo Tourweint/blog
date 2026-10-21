@@ -580,42 +580,15 @@ body.page-article .content p {
 
 /* =========================================
    引用 (Blockquote) - 对应 >
+   视觉统一由 src/styles/markdown-content.css 提供（金色软卡 + 衬线大字），
+   这里只保留文章页特有的层级收口
    ========================================= */
-body.page-article .content blockquote {
-    margin: 0 0 18px;
-    padding: 16px 20px;
-    border-left: 0;
-    border-radius: var(--article-radius-lg);
-    background-color: color-mix(in oklab, var(--article-gold) 7%, transparent);
-    color: color-mix(in oklab, var(--article-text) 70%, var(--article-muted));
-    font-style: normal;
-}
-
-body.page-article .content blockquote em {
-    font-style: italic;
-}
-
 body.page-article .content blockquote > :first-child {
     margin-top: 0;
 }
 
 body.page-article .content blockquote > :last-child {
     margin-bottom: 0;
-}
-
-body.page-article .content blockquote p {
-    margin: 0 0 8px;
-}
-
-body.page-article .content blockquote p:last-child {
-    margin-bottom: 0;
-}
-
-body.page-article .content blockquote cite {
-    display: block;
-    margin-top: 8px;
-    font-style: normal;
-    color: var(--article-muted);
 }
 
 /* =========================================
@@ -685,6 +658,7 @@ body.page-article .content hr {
 
 /* =========================================
    强调 (Strong/Em) - 对应 **, *
+   em / del 的视觉统一由 src/styles/markdown-content.css 提供
    ========================================= */
 body.page-article .content strong {
   font-weight: 600;

@@ -5,6 +5,11 @@
  * 以 `?url` 引入并异步加载（media="print" + onload 切换）。
  */
 
+/* Markdown 正文元素（引用 / 斜体 / 删除线）的唯一视觉来源，
+   文章、笔记、对话、人物四类页面的包裹层都靠它统一，
+   必须排在各页面样式之前，便于页面需要时局部覆盖。 */
+@import "./markdown-content.css";
+
 /* 全局基础设置 */
 :root {
   --nav-height: 64px;
@@ -59,6 +64,9 @@
   --t-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.06);
   --t-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --t-dur: 180ms;
+  /* 页面过渡总时长（跨文档 View Transitions）。
+     240ms 是实测「看得出在动」与「不拖沓」的平衡点，<180ms 会被读成闪一下。 */
+  --t-dur-page: 240ms;
 
   /* Component Tokens（组件母语法，供组件/频道复用） */
   --c-bg: var(--t-bg);
@@ -185,6 +193,8 @@ body {
   align-items: center;
   transition: transform 0.2s ease;
   will-change: transform;
+  /* 页面过渡时单独成层：导航栏原地不动，只有内容区淡出淡入 */
+  view-transition-name: navbar;
 }
 
 .navbar.navbar--hidden {
@@ -721,5 +731,141 @@ body.drawer-open .mobile-drawer {
       padding-left: max(1rem, var(--safe-area-left));
       padding-right: max(1rem, var(--safe-area-right));
     }
+  }
+}
+
+/* =========================================================
+   页面过渡：跨文档 View Transitions（纯 CSS，不引入 ClientRouter）
+   - 导航栏靠 view-transition-name 单独成层，全程静止
+   - 内容区：旧页上移淡出 → 纸色空档 → 新页自下淡入上浮
+   - 不支持的浏览器（如 Firefox）自动回退为原来的硬跳转
+   ========================================================= */
+@view-transition {
+  navigation: auto;
+}
+
+/* 旧页已淡出、新页尚未完全浮现的空档期露出纸色，避免闪白 */
+::view-transition {
+  background: var(--t-bg);
+}
+
+/* 两页高度不同时不要让 root 快照插值尺寸，否则整体会被拉伸变形 */
+::view-transition-group(root) {
+  animation: none;
+}
+
+::view-transition-old(root) {
+  animation: page-leave calc(var(--t-dur-page) * 0.4) var(--t-ease) both;
+}
+
+::view-transition-new(root) {
+  animation: page-enter calc(var(--t-dur-page) * 0.75) var(--t-ease) both;
+  animation-delay: calc(var(--t-dur-page) * 0.25);
+}
+
+@keyframes page-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/*
+  站内跳转时入场由过渡接管，页面自带的首次入场动画必须让位：
+  新页快照是在文档刚渲染时拍摄的，若此时动画还停在起始帧，
+  快照会拍到半透明 / 位移中的内容，过渡结束后再补一次上浮。
+*/
+.is-internal-nav .hero-eyebrow,
+.is-internal-nav .hero-line,
+.is-internal-nav .conversation-item {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/*
+  导航栏与筛选控件：内容直接切换，不做交叉淡化。
+  它们的新旧快照内容不同（导航高亮、选中的标签），若两者都保留会叠加出重影，
+  所以直接隐藏旧层；位置变化交给 group 的默认动画处理。
+*/
+::view-transition-old(navbar),
+::view-transition-old(filter-controls) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(navbar),
+::view-transition-new(filter-controls) {
+  animation: none;
+}
+
+/* 控件尺寸随选中项变化，不做尺寸插值，避免内部文字被拉伸 */
+::view-transition-group(filter-controls) {
+  animation: none;
+}
+
+/* =========================================================
+   筛选切换：同文档 View Transition（由 filterTransition.ts 触发）
+   —— 只有结果列表参与，刊头 / 标签栏 / 页脚全程静止
+   - 比页面跳转更短促：约 180ms
+   - `is-filtering` 只在筛选期间存在，页面跳转仍走上面的 240ms
+   ========================================================= */
+
+/* 页面其余部分：旧快照直接隐藏、新快照立即显示，视觉上等于没动 */
+html.is-filtering::view-transition-old(root) {
+  animation: none;
+  opacity: 0;
+}
+
+html.is-filtering::view-transition-new(root) {
+  animation: none;
+}
+
+/* 结果列表：旧的一组让开，新的一组落位。
+   两者刻意保留一段重叠，避免列表区出现"空一下"的闪白。 */
+html.is-filtering::view-transition-old(filter-results) {
+  animation: filter-leave calc(var(--t-dur-page) * 0.3) var(--t-ease) both;
+}
+
+html.is-filtering::view-transition-new(filter-results) {
+  animation: filter-enter calc(var(--t-dur-page) * 0.62) var(--t-ease) both;
+  animation-delay: calc(var(--t-dur-page) * 0.08);
+}
+
+/* 结果变多/变少时让容器高度平滑收放，别让下方内容瞬间跳一段 */
+html.is-filtering::view-transition-group(filter-results) {
+  animation-duration: calc(var(--t-dur-page) * 0.7);
+}
+
+@keyframes filter-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes filter-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* 过渡已负责入场，别再叠加列表项自带的 slideIn，否则会浮两次 */
+html.is-filtering .conversation-item {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
 }

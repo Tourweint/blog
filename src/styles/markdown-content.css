@@ -1,0 +1,75 @@
+/* =========================================================
+   Markdown 正文元素：文章 / 笔记 / 对话 / 人物 共用
+   —— 引用 · 斜体 · 删除线的唯一视觉来源
+   =========================================================
+   各页面的包裹层不同（.content / .note-body / .markdown-body），
+   这里用 :is() 统一挂载，避免各页再各写一份、改一处漏三处。
+
+   设计意图：
+   - 引用 = 金色软卡（暖底 + 衬线大字），用"块"来表达"这一段是引文"
+   - 斜体 = 衬线正体、无底色，用"字形"表达强调，不与引用抢同一视觉信号
+   - 删除线 = 细线 + 极淡暖底，像稿纸上划掉的一笔
+   - 三者共用单色金（--md-quote-gold），避免在四套页面主题里各取一色
+   ========================================================= */
+
+:root {
+  --md-quote-gold: #c08a2e;
+  --md-radius-quote: 28px;
+  --md-radius-sm: 2px;
+}
+
+/* ---------- 引用 blockquote ---------- */
+:is(.content, .note-body, .markdown-body) blockquote {
+  margin: 0 0 22px;
+  padding: 18px 22px 18px 24px;
+  border: 0;
+  border-radius: var(--md-radius-quote);
+  background: color-mix(in oklab, var(--md-quote-gold) 9%, transparent);
+  color: color-mix(in oklab, var(--article-text, var(--notes-text, var(--color-text))) 88%, var(--md-quote-gold));
+  font-family: var(--t-font-serif);
+  font-size: 1.06em;
+  line-height: 1.85;
+  letter-spacing: 0.01em;
+  font-style: normal;
+}
+
+:is(.content, .note-body, .markdown-body) blockquote > :first-child {
+  margin-top: 0;
+}
+
+:is(.content, .note-body, .markdown-body) blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+:is(.content, .note-body, .markdown-body) blockquote p {
+  margin: 0 0 0.7em;
+}
+
+:is(.content, .note-body, .markdown-body) blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+:is(.content, .note-body, .markdown-body) blockquote cite {
+  display: block;
+  margin-top: 8px;
+  font-style: normal;
+  color: color-mix(in oklab, var(--article-text, var(--color-text)) 55%, transparent);
+}
+
+/* ---------- 斜体 em ---------- */
+:is(.content, .note-body, .markdown-body) em {
+  font-style: normal;
+  font-family: var(--t-font-serif);
+  letter-spacing: 0.01em;
+}
+
+/* ---------- 删除线 del ---------- */
+:is(.content, .note-body, .markdown-body) del {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: color-mix(in oklab, var(--article-text, var(--color-text)) 50%, transparent);
+  color: color-mix(in oklab, var(--article-text, var(--color-text)) 50%, transparent);
+  background: color-mix(in oklab, var(--md-quote-gold) 9%, transparent);
+  border-radius: var(--md-radius-sm);
+  padding: 0 2px;
+}
