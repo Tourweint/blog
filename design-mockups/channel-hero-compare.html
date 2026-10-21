@@ -1,0 +1,1515 @@
+<!doctype html>
+<!--
+  频道刊头（H1 区）方案对比 —— 一次性设计稿，不参与 Astro 构建，定稿后可删除。
+  争议点：原创页 hero 里「返回链接 + 三个分类胶囊」挤在同一行；摘录页是一行纯文字。
+  六种做法并列，用键盘 1-6 切换，右侧是取舍说明。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>频道刊头（H1 区）方案对比 · 原创 / 摘录</title>
+<style>
+  /* ========== 与站点一致的 token（global.css） ========== */
+  :root {
+    --bg: #fbfbf9;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6d6d72;
+    --rule: rgba(0, 0, 0, 0.1);
+    --link: #3a4a6b;
+    --mark: #c08a2e;
+
+    --radius: 18px;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+    --sans: "Inter", "Inter Variable", system-ui, -apple-system, "Segoe UI",
+      "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    --serif: Georgia, "Noto Serif SC", "Source Han Serif CN", "Songti SC",
+      SimSun, serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding-bottom: 80px;
+  }
+
+  /* 全站同一个曲率：超椭圆（仅新浏览器生效，其余回退 1/4 圆） */
+  @supports (corner-shape: superellipse(2)) {
+    *, ::before, ::after { corner-shape: superellipse(1.8); }
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+
+  /* ========== 页头 ========== */
+  .page-head { padding: 52px 0 8px; }
+  .kicker {
+    font-size: 0.78rem; letter-spacing: 0.18em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .page-head h1 {
+    font-family: var(--serif); font-weight: 700; line-height: 1.35;
+    font-size: clamp(1.5rem, 3.2vw, 2.15rem); margin: 0 0 14px;
+  }
+  .lede { color: var(--muted); max-width: 46em; margin: 0 0 26px; }
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  .principles {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 12px; list-style: none; padding: 0; margin: 0 0 8px;
+  }
+  .principles li {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 14px; padding: 12px 14px; font-size: 0.88rem;
+    color: var(--muted); box-shadow: var(--shadow);
+  }
+  .principles b {
+    display: block; color: var(--text); font-size: 0.9rem; margin-bottom: 2px;
+  }
+
+  /* ========== 吸顶切换条 ========== */
+  .toolbar {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in oklab, var(--bg) 90%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+    margin-top: 26px; padding: 10px 0;
+  }
+  .toolbar-inner {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .tabbtn {
+    font: inherit; font-size: 0.86rem; cursor: pointer;
+    padding: 6px 13px; border-radius: 999px;
+    border: 1px solid var(--rule); background: var(--surface);
+    color: var(--muted); transition: all 160ms ease;
+  }
+  .tabbtn:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.2); }
+  .tabbtn[aria-selected="true"] {
+    color: #fff; background: #23262b; border-color: #23262b;
+  }
+  .tabbtn .num {
+    font-size: 0.72rem; opacity: 0.55; margin-right: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .toolbar .spacer { flex: 1; }
+  .groups {
+    display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .groupbtn {
+    font: inherit; font-size: 0.84rem; cursor: pointer;
+    padding: 5px 13px; border-radius: 999px; border: 0;
+    background: transparent; color: var(--muted); transition: all 160ms ease;
+  }
+  .groupbtn[aria-selected="true"] {
+    background: var(--surface); color: var(--text); font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+  }
+  .toolbar-sub { padding-top: 0; }
+  body[data-group="orig"] .tabbtn[data-group="excerpt"],
+  body[data-group="excerpt"] .tabbtn[data-group="orig"] { display: none; }
+
+  /* 2×2 小样网格（摘录四频道对照用） */
+  .mini-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 880px) { .mini-grid { grid-template-columns: 1fr; } }
+  .mini-cap {
+    font-size: 0.76rem; letter-spacing: 0.06em; color: var(--muted);
+    margin: 0 0 8px;
+  }
+  .mini-note {
+    font-size: 0.78rem; color: var(--muted); margin: 8px 0 0;
+    padding-left: 2px;
+  }
+  /* 小样里频道条要能一行放下五个元素，字号和间距收一档 */
+  .mini-grid .m-channeltabs { gap: 4px; }
+  .mini-grid .m-chan-tab { padding: 0.28rem 0.55rem; font-size: 0.76rem; gap: 0.3rem; }
+  .mini-grid .m-chan-tab .count { font-size: 0.7rem; }
+  .mini-grid .m-chan-tab--back { padding-left: 0.3rem; padding-right: 0.5rem; }
+  .mini-grid .m-chan-sep { margin: 0 1px; }
+  .mini-grid .m-hero { padding: 20px 18px; }
+  .mini-grid .m-title { font-size: 28px; }
+
+  /* 筛选行（方案 E 里承接"按月份浏览"这类二级入口） */
+  .m-filterrow {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .m-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .m-chip {
+    padding: 4px 11px; border-radius: 999px; font-size: 0.8rem;
+    border: 1px solid var(--rule); background: var(--surface); color: var(--muted);
+  }
+  .m-chip.on { background: rgba(0, 0, 0, 0.05); color: var(--text); border-color: rgba(0, 0, 0, 0.18); }
+  .switch {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 0.82rem; color: var(--muted); cursor: pointer;
+    user-select: none; white-space: nowrap;
+  }
+  .kbd-hint { font-size: 0.76rem; color: var(--muted); opacity: 0.85; }
+  .kbd-hint kbd {
+    font-family: var(--mono); font-size: 0.72rem;
+    border: 1px solid var(--rule); border-radius: 4px;
+    padding: 1px 5px; background: var(--surface);
+  }
+
+  /* ========== 视图 ========== */
+  .view { display: none; padding-top: 26px; }
+  .view.is-active { display: block; }
+  .view-head { margin-bottom: 18px; }
+  .view-head h2 {
+    font-family: var(--serif); font-size: 1.3rem; margin: 0 0 6px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .tag {
+    font-family: var(--sans); font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.04em; padding: 2px 9px; border-radius: 999px;
+    border: 1px solid var(--rule); color: var(--muted); background: var(--surface);
+  }
+  .tag.now { color: #8a5a10; border-color: rgba(192, 138, 46, 0.4); background: #fdf3e2; }
+  .tag.ref { color: #35526e; border-color: rgba(58, 74, 107, 0.3); background: #eef2f7; }
+  .tag.rejected { color: #9a3412; border-color: rgba(154, 52, 18, 0.3); background: #fdeee9; }
+  .tag.keep { color: #1a7f37; border-color: rgba(26, 127, 55, 0.3); background: #eaf6ee; }
+  .view-lede { color: var(--muted); margin: 0; max-width: 48em; font-size: 0.92rem; }
+
+  .stage {
+    display: grid; grid-template-columns: minmax(0, 1fr) 292px;
+    gap: 22px; align-items: start; margin-top: 18px;
+  }
+  @media (max-width: 940px) {
+    .stage { grid-template-columns: 1fr; }
+  }
+
+  /* ========== 模拟浏览器窗口 ========== */
+  .frame {
+    border: 1px solid var(--rule); border-radius: 20px; overflow: hidden;
+    background: var(--bg); box-shadow: 0 18px 44px rgba(0, 0, 0, 0.07);
+  }
+  .frame-top {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 14px; border-bottom: 1px solid var(--rule);
+    background: #f4f3ef;
+  }
+  .frame-top .dot {
+    width: 9px; height: 9px; border-radius: 999px; background: rgba(0, 0, 0, 0.13);
+  }
+  .frame-top .url {
+    margin-left: 10px; font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+  }
+  .frame-body { padding: 0 20px 22px; }
+
+  /* 站点导航（简化） */
+  .m-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 4px 14px; border-bottom: 1px solid var(--rule); margin-bottom: 18px;
+  }
+  .m-brand { font-family: var(--serif); font-weight: 700; font-size: 0.98rem; }
+  .m-links { display: flex; gap: 18px; font-size: 0.82rem; color: var(--muted); }
+  .m-links .on { color: var(--text); font-weight: 600; box-shadow: inset 0 -2px 0 0 var(--text); padding-bottom: 2px; }
+
+  .m-main { display: grid; gap: 14px; }
+
+  /* ========== 刊头（真实尺寸） ========== */
+  .m-hero {
+    position: relative;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 32px; padding: 26px 24px;
+    border: 1px solid var(--rule); border-radius: var(--radius);
+    background-color: var(--surface);
+    background-image: radial-gradient(
+      circle at 20% 20%,
+      color-mix(in oklab, var(--bg) 60%, white 40%) 0%,
+      color-mix(in oklab, var(--bg) 25%, var(--surface) 75%) 60%,
+      var(--surface) 100%
+    );
+    box-shadow: var(--shadow);
+  }
+  .m-eyebrow {
+    margin: 0 0 10px; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+  }
+  .m-title {
+    margin: 0; font-family: var(--serif); font-size: 34px;
+    line-height: 1.2; font-weight: 700; letter-spacing: 0.01em;
+  }
+  .m-meta {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;
+    margin-top: 12px; font-size: 0.85rem; color: var(--muted);
+  }
+  .m-meta .item { font-weight: 700; color: var(--text); }
+  .m-meta .sep { opacity: 0.6; }
+  .m-meta .lnk { color: var(--muted); text-decoration: none; }
+  .m-meta .lnk:hover { color: var(--text); }
+
+  /* 返回链接（带图标） */
+  .m-back {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    color: var(--muted); text-decoration: none;
+    font-size: 0.9rem; font-weight: 500; white-space: nowrap;
+    min-height: 32px; /* 点击区 ≥32px */
+  }
+  .m-back:hover { color: var(--text); }
+  .m-back svg { width: 16px; height: 16px; }
+
+  /* 现状里的胶囊：带描边 + 阴影 + 上浮 */
+  .m-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .m-pill {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.42rem 0.9rem; border-radius: 999px;
+    border: 1px solid var(--rule); background: var(--surface);
+    color: var(--muted); text-decoration: none; font-size: 0.88rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    transition: all 160ms ease;
+  }
+  .m-pill:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.18); transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08); }
+  .m-pill .count { font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .m-pill.is-active { color: var(--text); border-color: rgba(0, 0, 0, 0.2); background: rgba(0, 0, 0, 0.045); }
+
+  /* 方案 C 的弱化胶囊：无阴影、描边更淡 */
+  .m-pill--quiet {
+    box-shadow: none; background: transparent; border-color: color-mix(in oklab, var(--rule) 70%, transparent);
+  }
+  .m-pill--quiet:hover { background: rgba(0, 0, 0, 0.03); box-shadow: none; transform: none; }
+
+  /* 方案 C 的组标签 */
+  .m-grouplabel {
+    font-size: 11px; letter-spacing: 0.14em; color: var(--muted);
+    text-transform: uppercase; white-space: nowrap;
+  }
+
+  /* 现状：返回 + 胶囊挤在一行两端 */
+  .m-filter {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; width: 100%;
+  }
+
+  /* 频道条（方案 A / A2） */
+  .m-channeltabs {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    padding: 0 2px;
+  }
+  .m-chan-tab {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.95rem; border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--rule) 85%, transparent);
+    background: transparent; color: var(--muted);
+    text-decoration: none; font-size: 0.88rem;
+    transition: all 160ms ease;
+  }
+  .m-chan-tab:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.18); background: rgba(0, 0, 0, 0.025); }
+  .m-chan-tab.is-active {
+    color: var(--text); font-weight: 600;
+    border-color: rgba(0, 0, 0, 0.22); background: rgba(0, 0, 0, 0.05);
+  }
+  .m-chan-tab .count { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  /* 「返回」不是栏目，用一条细竖线把它和频道隔开 */
+  .m-chan-tab--back { border-color: transparent; padding-left: 0.55rem; padding-right: 0.75rem; }
+  .m-chan-tab--back:hover { background: rgba(0, 0, 0, 0.035); border-color: transparent; }
+  .m-chan-sep {
+    width: 1px; height: 16px; background: var(--rule);
+    margin: 0 2px; flex: 0 0 1px;
+  }
+
+  /* 图标按钮（方案 A2） */
+  .m-iconbtn {
+    position: absolute; right: 14px; top: 14px;
+    width: 34px; height: 34px; display: inline-flex;
+    align-items: center; justify-content: center;
+    border-radius: 999px; border: 1px solid var(--rule);
+    background: var(--surface); color: var(--muted);
+    text-decoration: none; transition: all 160ms ease;
+  }
+  .m-iconbtn:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.2); transform: translateX(-2px); }
+  .m-iconbtn svg { width: 16px; height: 16px; }
+
+  /* 随机按钮（摘录页右上角） */
+  .m-random {
+    flex-shrink: 0; font: inherit; font-size: 0.85rem; cursor: pointer;
+    padding: 7px 14px; border-radius: 999px;
+    border: 1px solid var(--rule); background: transparent; color: var(--muted);
+    min-height: 34px;
+  }
+  .m-random:hover { background: rgba(0, 0, 0, 0.04); color: var(--text); }
+
+  /* ========== 列表卡片 ========== */
+  .m-cards { display: grid; gap: 12px; }
+  .m-card {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow);
+  }
+  .m-card h3 {
+    margin: 0 0 6px; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .m-card .cline {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.78rem; color: var(--muted); margin-bottom: 8px;
+  }
+  .m-card .cline .src { font-weight: 500; }
+  .m-card .body {
+    margin: 0; font-size: 0.92rem; color: var(--text); opacity: 0.86;
+  }
+  .m-card .tags { display: flex; gap: 6px; margin-top: 12px; }
+  .m-card .t {
+    font-size: 0.72rem; padding: 3px 8px; border-radius: 999px;
+    background: color-mix(in oklab, var(--bg) 72%, var(--surface));
+    border: 1px solid color-mix(in oklab, var(--rule) 60%, transparent);
+    color: var(--muted);
+  }
+
+  /* ========== 标注 ========== */
+  .anno { position: relative; }
+  .anno--inline { display: inline-flex; }
+  /* 图标按钮本身就是绝对定位元素，标注类不能把它拉回文档流 */
+  .anno.m-iconbtn { position: absolute; }
+  body.annot .anno {
+    outline: 1px dashed color-mix(in oklab, var(--mark) 75%, transparent);
+    outline-offset: 4px; border-radius: 999px;
+  }
+  body.annot .anno::after {
+    content: attr(data-anno);
+    position: absolute; left: 0; top: -25px; z-index: 5;
+    font-family: var(--sans); font-size: 10.5px; font-weight: 500; line-height: 1;
+    color: #7d5109; background: #fdf3e2;
+    border: 1px solid rgba(192, 138, 46, 0.38);
+    padding: 3px 6px; border-radius: 6px; white-space: nowrap;
+  }
+  /* 位置修饰必须写在基础 ::after 之后，否则只改一半（top 与 bottom 同时生效会被拉高） */
+  body.annot .anno--below::after { top: auto; bottom: -27px; }
+  body.annot .anno--right::after { left: auto; right: 0; }
+
+  /* ========== 右侧取舍说明 ========== */
+  .takes {
+    position: sticky; top: 74px;
+    border: 1px solid var(--rule); border-radius: 16px;
+    padding: 16px 18px; background: var(--surface);
+    box-shadow: var(--shadow); font-size: 0.87rem;
+  }
+  .takes h3 {
+    margin: 0 0 10px; font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); font-weight: 700;
+  }
+  .takes ul { margin: 0 0 12px; padding-left: 1.05em; }
+  .takes li { margin-bottom: 6px; }
+  .takes li:last-child { margin-bottom: 0; }
+  .takes .verdict {
+    border-top: 1px solid var(--rule); padding-top: 10px; color: var(--muted);
+    font-size: 0.83rem;
+  }
+  .takes .verdict b { color: var(--text); }
+  .verdict-bad { color: #9a3412; }
+
+  /* ========== 对比表 ========== */
+  #summary { padding-top: 44px; }
+  #summary h2 {
+    font-family: var(--serif); font-size: 1.3rem; margin: 0 0 16px;
+  }
+  .matrix { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  .matrix th, .matrix td {
+    text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .matrix th { font-size: 0.78rem; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+  .matrix td:first-child { font-weight: 600; white-space: nowrap; }
+  .matrix tr.pick td { background: color-mix(in oklab, var(--mark) 7%, transparent); }
+  .stars { letter-spacing: 1px; color: var(--text); }
+  .stars .off { color: rgba(0, 0, 0, 0.15); }
+
+  .conclusion {
+    margin-top: 26px; border-left: 3px solid var(--mark);
+    padding: 2px 0 2px 16px; max-width: 52em;
+  }
+  .conclusion p { margin: 0 0 10px; }
+  .conclusion p:last-child { margin-bottom: 0; }
+
+  footer {
+    margin-top: 46px; padding-top: 16px; border-top: 1px solid var(--rule);
+    color: var(--muted); font-size: 0.8rem;
+  }
+</style>
+</head>
+<body class="annot">
+
+<header class="wrap page-head">
+  <p class="kicker">Design note · 一次性设计稿</p>
+  <h1>频道刊头（H1 区）排法对照</h1>
+  <p class="lede">
+    争议集中在同一块区域：原创页把<strong>返回</strong>（页级导航）、<strong>三个分类胶囊</strong>（频道切换）、
+    <strong>篇数</strong>（元信息）塞进了 hero 的同一行；摘录页则是<strong>一行纯文字</strong>，安静但指向性弱，四个频道之间还没有横向入口。
+    顶部可切换<strong>原创 / 摘录</strong>两组，每组内部用同一套 token（含全站超椭圆圆角）和同样的页面上下文。
+  </p>
+  <ul class="principles">
+    <li><b>① 一行一种语义</b>导航、切换、统计不要共处一行。</li>
+    <li><b>② 形状只表示「能点」</b>要么都有形状，要么都没有。</li>
+    <li><b>③ 位置固定 = 弱化的指向性</b>返回永远在左上，不用读字也敢点。</li>
+  </ul>
+</header>
+
+<div class="toolbar">
+  <div class="wrap toolbar-inner">
+    <div class="groups" role="group" aria-label="分组">
+      <button class="groupbtn" data-group="orig" aria-selected="true">原创 · H1 区</button>
+      <button class="groupbtn" data-group="excerpt" aria-selected="false">摘录 · 保持现状</button>
+    </div>
+    <span class="spacer"></span>
+    <span class="kbd-hint" id="kbdHint">按 <kbd>1</kbd>–<kbd>7</kbd> 切换</span>
+    <label class="switch"><input type="checkbox" id="annoToggle" checked /> 显示标注</label>
+  </div>
+  <div class="wrap toolbar-inner toolbar-sub">
+    <button class="tabbtn" data-group="orig" data-target="v1" aria-selected="true"><span class="num">1</span>现状 · 原创</button>
+    <button class="tabbtn" data-group="orig" data-target="v2" aria-selected="false"><span class="num">2</span>参照 · 摘录短句</button>
+    <button class="tabbtn" data-group="orig" data-target="v3" aria-selected="false"><span class="num">3</span>方案 A · 三层分离</button>
+    <button class="tabbtn" data-group="orig" data-target="v7" aria-selected="false"><span class="num">4</span>方案 A′ · 极简</button>
+    <button class="tabbtn" data-group="orig" data-target="v4" aria-selected="false"><span class="num">5</span>方案 A2 · 图标返回</button>
+    <button class="tabbtn" data-group="orig" data-target="v5" aria-selected="false"><span class="num">6</span>方案 B · 全文字</button>
+    <button class="tabbtn" data-group="orig" data-target="v6" aria-selected="false"><span class="num">7</span>方案 C · 强化指向性</button>
+
+    <button class="tabbtn" data-group="excerpt" data-target="v8" aria-selected="false"><span class="num">1</span>现状 · 保持不动</button>
+    <button class="tabbtn" data-group="excerpt" data-target="v9" aria-selected="false"><span class="num">2</span>方案 E · 已否决</button>
+    <button class="tabbtn" data-group="excerpt" data-target="v10" aria-selected="false"><span class="num">3</span>样张 · 已否决</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     1 · 现状（原创页）
+     ============================================================ -->
+<section id="v1" class="view is-active">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>现状 · 原创页 <span class="tag now">问题现场</span></h2>
+      <p class="view-lede">
+        返回链接和三个胶囊共处 meta 行，两端对齐；胶囊带描边、阴影和 hover 上浮，视觉权重明显高于左侧的返回文字。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/originals/fragments/fragments</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a class="on">原触发</a><a>摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <p class="m-eyebrow">Fragments</p>
+                <h1 class="m-title">片段</h1>
+                <div class="m-meta">
+                  <div class="m-filter">
+                    <a class="m-back" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>回到原触发</span></a>
+                    <div class="m-pills">
+                      <a class="m-pill" href="#"><span>原论</span><span class="count">3</span></a>
+                      <a class="m-pill is-active" href="#"><span>原点</span><span class="count">6</span></a>
+                      <a class="m-pill" href="#"><span>原型</span><span class="count">2</span></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/21</span><span>·</span><span class="src">原创</span></div>
+                <h3>本博客正文里引用 / 斜体 / 删除线分别长什么样</h3>
+                <p class="body">写文章时照着对照，免得四种包裹层各写一套。</p>
+                <div class="tags"><span class="t">Markdown</span><span class="t">写作</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/02/26</span><span>·</span><span class="src">原创</span></div>
+                <h3>我认为我们经历的一切都是有意义的，但是真的对吗</h3>
+                <p class="body">如果意义是事后建构的，那它还算不算意义。</p>
+                <div class="tags"><span class="t">思考</span><span class="t">创作</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>问题清单</h3>
+        <ul>
+          <li>返回与胶囊同排，一个像文字，一个像按钮，中间只隔 8px。</li>
+          <li>一行混了三种语义：返回、切栏目、篇数。</li>
+          <li>四个名字指同一栏目：原触发 / Fragments / 片段 / 原点。</li>
+          <li>胶囊的阴影 + 上浮，比 H1 下面本该轻的 meta 行更"响"。</li>
+        </ul>
+        <div class="verdict">结论：<b class="verdict-bad">信息层级被压平</b>，读起来像排错版的工具栏。</div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     2 · 现状（摘录页，参照）
+     ============================================================ -->
+<section id="v2" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>现状 · 摘录页 <span class="tag ref">参照</span></h2>
+      <p class="view-lede">
+        同样一个 hero，这里只有一种视觉语言：加粗的统计 + 两个 muted 链接，用「·」分隔。清楚，但可点的东西没有任何形状提示。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <p class="m-eyebrow">Notes</p>
+                <h1 class="m-title">摘录 · 短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">回到摘录首页</a>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span class="src">清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+                <div class="tags"><span class="t">心理</span><span class="t">两性</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/09/18</span><span>·</span><span class="src">原创</span></div>
+                <h3>粗糙游戏与儿童感统训练</h3>
+                <p class="body">有意识的粗糙游戏能高频刺激孩子的前庭觉和本体感觉。</p>
+                <div class="tags"><span class="t">儿童发展</span><span class="t">感统训练</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>可取 / 可改</h3>
+        <ul>
+          <li>可取：一行一种语言，层级单一，扫一眼就完事。</li>
+          <li>可改：两个链接没有任何形状，只能靠读字判断能点，点击区仅约 20px 高。</li>
+          <li>可改：字号 0.85rem，移动端点击区偏小。</li>
+          <li>可改：详情页的返回是「图标 + 文字」，列表页是纯文字，同一动作两种形态。</li>
+        </ul>
+        <div class="verdict">结论：<b>安静但不够实用</b>，需要在不加形状的前提下补指向性。</div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     3 · 方案 A：三层分离
+     ============================================================ -->
+<section id="v3" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 A · 三层分离 <span class="tag">推荐</span></h2>
+      <p class="view-lede">
+        返回退出 hero，单独一行贴在内容左边缘；hero 里只剩标题和一行纯文字统计；分类切换下沉成 hero 下方一条「频道条」。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/originals/fragments/fragments</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a class="on">原触发</a><a>摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="anno" data-anno="① 页级导航：hero 之外，永远左上">
+              <a class="m-back" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>回到原触发</span></a>
+            </div>
+
+            <div class="m-hero">
+              <div>
+                <h1 class="m-title">片段</h1>
+                <div class="m-meta">
+                  <span class="item">共 6 篇</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按标签筛选</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="anno" data-anno="② 频道切换：独立一条，形状统一">
+              <nav class="m-channeltabs" aria-label="原创栏目">
+                <a class="m-chan-tab is-active" href="#" aria-current="page"><span>原点</span><span class="count">6</span></a>
+                <a class="m-chan-tab" href="#"><span>原论</span><span class="count">3</span></a>
+                <a class="m-chan-tab" href="#"><span>原型</span><span class="count">2</span></a>
+              </nav>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/21</span><span>·</span><span class="src">原创</span></div>
+                <h3>本博客正文里引用 / 斜体 / 删除线分别长什么样</h3>
+                <p class="body">写文章时照着对照，免得四种包裹层各写一套。</p>
+                <div class="tags"><span class="t">Markdown</span><span class="t">写作</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/02/26</span><span>·</span><span class="src">原创</span></div>
+                <h3>我认为我们经历的一切都是有意义的，但是真的对吗</h3>
+                <p class="body">如果意义是事后建构的，那它还算不算意义。</p>
+                <div class="tags"><span class="t">思考</span><span class="t">创作</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>hero 内只剩「标题 + 一行统计」，三种语义彻底分开。</li>
+          <li>分类从"看起来像按钮的小胶囊"变成"一条频道条"，位置固定，切换一次就学会。</li>
+          <li>眉标删掉：它与 H1 重复，且英文名和「原点」对不上。</li>
+          <li>返回与详情页的 BackLink 统一成同一个组件、同一个位置。</li>
+        </ul>
+        <div class="verdict">
+          代价：纵向多约 <b>40px</b>；页面更"长"，但每层只做一件事。
+          <br /><br />再省一步：频道条里加一个「全部」，等于把返回也吸收了。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     4 · 方案 A′：极简（频道条含「全部」，取消返回行）
+     ============================================================ -->
+<section id="v7" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 A′ · 极简版 <span class="tag">推荐落地</span></h2>
+      <p class="view-lede">
+        频道条最左放「返回」两个字（不是「全部」——「全部」会被读成"把所有原创合起来看"），用一条细线隔开；后面接三个栏目。返回那一行整个省掉。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/originals/fragments/fragments</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a class="on">原触发</a><a>摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <h1 class="m-title">片段</h1>
+                <div class="m-meta">
+                  <span class="item">共 6 篇</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按标签筛选</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="anno" data-anno="① 「返回」只两个字，不是栏目，用一条细线隔开">
+              <nav class="m-channeltabs" aria-label="原创栏目">
+                <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+                <span class="m-chan-sep" aria-hidden="true"></span>
+                <a class="m-chan-tab is-active" href="#" aria-current="page"><span>原点</span><span class="count">6</span></a>
+                <a class="m-chan-tab" href="#"><span>原论</span><span class="count">3</span></a>
+                <a class="m-chan-tab" href="#"><span>原型</span><span class="count">2</span></a>
+              </nav>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/21</span><span>·</span><span class="src">原创</span></div>
+                <h3>本博客正文里引用 / 斜体 / 删除线分别长什么样</h3>
+                <p class="body">写文章时照着对照，免得四种包裹层各写一套。</p>
+                <div class="tags"><span class="t">Markdown</span><span class="t">写作</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/02/26</span><span>·</span><span class="src">原创</span></div>
+                <h3>我认为我们经历的一切都是有意义的，但是真的对吗</h3>
+                <p class="body">如果意义是事后建构的，那它还算不算意义。</p>
+                <div class="tags"><span class="t">思考</span><span class="t">创作</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>元素最少：一条频道条同时装下「返回」和三个栏目。</li>
+          <li><b>「返回」只两个字</b>，不会被误读成"把所有文章合在一起看"。</li>
+          <li>用一条 1px 细线把它和栏目隔开：左边是"出去"，右边是"切换"。</li>
+          <li>详情页的箭头返回保持不动，两种形态各司其职。</li>
+        </ul>
+        <div class="verdict">
+          代价：返回字面不如「← 回到原触发」具体，靠位置（最左）+ 分隔线 + hover 兜底。<b>这是我会落地的那一版。</b>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     5 · 方案 A2：图标返回
+     ============================================================ -->
+<section id="v4" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 A2 · 返回做成图标按钮 <span class="tag">对照</span></h2>
+      <p class="view-lede">
+        和 A 相同，只是把返回收进 hero 右上角，做成 34px 圆形图标按钮，文字进了 aria-label。省一行，但指向性靠图标本身。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/originals/fragments/fragments</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a class="on">原触发</a><a>摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <a class="anno anno--right m-iconbtn" href="#" aria-label="回到原触发" data-anno="① 右上角图标，只有 34px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </a>
+              <div>
+                <h1 class="m-title">片段</h1>
+                <div class="m-meta">
+                  <span class="item">共 6 篇</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按标签筛选</a>
+                </div>
+              </div>
+            </div>
+
+            <nav class="m-channeltabs" aria-label="原创栏目">
+              <a class="m-chan-tab is-active" href="#" aria-current="page"><span>原点</span><span class="count">6</span></a>
+              <a class="m-chan-tab" href="#"><span>原论</span><span class="count">3</span></a>
+              <a class="m-chan-tab" href="#"><span>原型</span><span class="count">2</span></a>
+            </nav>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/21</span><span>·</span><span class="src">原创</span></div>
+                <h3>本博客正文里引用 / 斜体 / 删除线分别长什么样</h3>
+                <p class="body">写文章时照着对照，免得四种包裹层各写一套。</p>
+                <div class="tags"><span class="t">Markdown</span><span class="t">写作</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/02/26</span><span>·</span><span class="src">原创</span></div>
+                <h3>我认为我们经历的一切都是有意义的，但是真的对吗</h3>
+                <p class="body">如果意义是事后建构的，那它还算不算意义。</p>
+                <div class="tags"><span class="t">思考</span><span class="t">创作</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>最省空间：整块刊头只高一行。</li>
+          <li>图标按钮在页头右上角，容易被当成"关闭""分享"或"返回顶部"。</li>
+          <li>中文环境里「←」单独出现语义仍可读，但失去了"回到哪儿"的具体指向。</li>
+          <li>移动端 34px 圆点比一行文字更好点。</li>
+        </ul>
+        <div class="verdict">
+          代价：<b class="verdict-bad">指向性下降</b>，需要 tooltip 或 aria 兜底。
+          适合"返回"不是主要动作的页面，不适合原创这种栏目间频繁跳转的场景。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     5 · 方案 B：全文字 meta
+     ============================================================ -->
+<section id="v5" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 B · 全文字 meta <span class="tag">最安静</span></h2>
+      <p class="view-lede">
+        把胶囊全部拆掉，与摘录页完全同构：返回和三个分类都退成 meta 行里的文字链接，当前栏目加粗 + 下划线表示位置。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/originals/fragments/fragments</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a class="on">原触发</a><a>摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <p class="m-eyebrow">Fragments</p>
+                <h1 class="m-title">片段</h1>
+                <div class="m-meta">
+                  <span class="item">共 6 篇</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#" style="box-shadow: inset 0 -1px 0 0 currentColor; padding-bottom: 1px;">← 回到原触发</a>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">原论 3</a>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#" style="color: var(--text); font-weight: 700; box-shadow: inset 0 -2px 0 0 var(--text); padding-bottom: 1px;">原点 6</a>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">原型 2</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/21</span><span>·</span><span class="src">原创</span></div>
+                <h3>本博客正文里引用 / 斜体 / 删除线分别长什么样</h3>
+                <p class="body">写文章时照着对照，免得四种包裹层各写一套。</p>
+                <div class="tags"><span class="t">Markdown</span><span class="t">写作</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/02/26</span><span>·</span><span class="src">原创</span></div>
+                <h3>我认为我们经历的一切都是有意义的，但是真的对吗</h3>
+                <p class="body">如果意义是事后建构的，那它还算不算意义。</p>
+                <div class="tags"><span class="t">思考</span><span class="t">创作</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>视觉最干净，与摘录页 100% 同构，改造成本最低。</li>
+          <li>五个可点项连成一条线，<span class="anno anno--inline" data-anno="返回？切栏目？全靠读字">分不清哪个是返回</span>。</li>
+          <li>分类变成"文字里的数字"，切换意图被稀释。</li>
+          <li>段落式阅读压力：一行字越多，越不想读。</li>
+        </ul>
+        <div class="verdict">
+          代价：安静过头，<b class="verdict-bad">指向性最弱</b>。
+          作为"详情页"的 meta 行很合适，作为"频道切换"不合适。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     6 · 方案 C：强化指向性
+     ============================================================ -->
+<section id="v6" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 C · 保留现状，只补指向性 <span class="tag">最小改动</span></h2>
+      <p class="view-lede">
+        排布不动，只做三件事：胶囊去掉阴影和上浮（回归"标签"气质），胶囊组前加一个 muted 的「栏目」小标签说明这组是什么，返回链接加箭头、下划线和 32px 点击区。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/originals/fragments/fragments</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a class="on">原触发</a><a>摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <p class="m-eyebrow">Fragments</p>
+                <h1 class="m-title">片段</h1>
+                <div class="m-meta">
+                  <div class="m-filter">
+                    <a class="anno anno--below m-back" href="#" data-anno="① 下划线 + 32px 点击区">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                      <span style="box-shadow: inset 0 -1px 0 0 currentColor;">回到原触发</span>
+                    </a>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                      <span class="anno m-grouplabel" data-anno="② 给这一组一个名字">栏目</span>
+                      <div class="m-pills">
+                        <a class="m-pill m-pill--quiet" href="#"><span>原论</span><span class="count">3</span></a>
+                        <a class="m-pill m-pill--quiet is-active" href="#"><span>原点</span><span class="count">6</span></a>
+                        <a class="m-pill m-pill--quiet" href="#"><span>原型</span><span class="count">2</span></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/21</span><span>·</span><span class="src">原创</span></div>
+                <h3>本博客正文里引用 / 斜体 / 删除线分别长什么样</h3>
+                <p class="body">写文章时照着对照，免得四种包裹层各写一套。</p>
+                <div class="tags"><span class="t">Markdown</span><span class="t">写作</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/02/26</span><span>·</span><span class="src">原创</span></div>
+                <h3>我认为我们经历的一切都是有意义的，但是真的对吗</h3>
+                <p class="body">如果意义是事后建构的，那它还算不算意义。</p>
+                <div class="tags"><span class="t">思考</span><span class="t">创作</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>改动最小：不挪结构，只调三处样式和一处文案。</li>
+          <li>「栏目」两个字让胶囊组有了名字，不用猜「原论 3」是什么。</li>
+          <li>去阴影后胶囊更像标签，不再抢 H1 的注意力。</li>
+          <li>根因仍在：返回和分类还在同一行两端，窄屏会挤成两行。</li>
+        </ul>
+        <div class="verdict">代价：<b>治标</b>。适合"先把观感救回来、结构以后再说"的一次性修补。</div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     8 · 摘录现状：四个频道
+     ============================================================ -->
+<section id="v8" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>摘录现状 · 四个频道 <span class="tag keep">保持不动</span></h2>
+      <p class="view-lede">
+        这四张就是现在的样子。结论：<strong>不改</strong>。hero 里只有「计数 + 一两个文字链接」，一条信息说完，加任何东西都是净增噪声。
+        四个频道之间确实不能横跳，但摘录主页的四张入口卡已经承担了这件事，多一次点击换取页面干净，这笔账划算。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/{posts,notes,persons,conversations}</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="mini-grid">
+            <div>
+              <p class="mini-cap">文章 · /excerpts/posts/</p>
+              <div class="m-hero">
+                <div>
+                  <p class="m-eyebrow">Posts</p>
+                  <h1 class="m-title">摘录 · 文章</h1>
+                  <div class="m-meta">
+                    <span class="item">共 24 篇</span>
+                    <span class="sep">·</span>
+                    <a class="lnk" href="#">按主题浏览</a>
+                    <span class="sep">·</span>
+                    <a class="lnk" href="#">回到摘录首页</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="mini-cap">短句 · /excerpts/notes/</p>
+              <div class="m-hero">
+                <div>
+                  <p class="m-eyebrow">Notes</p>
+                  <h1 class="m-title">摘录 · 短句</h1>
+                  <div class="m-meta">
+                    <span class="item">共 143 条</span>
+                    <span class="sep">·</span>
+                    <a class="lnk" href="#">按月份浏览</a>
+                    <span class="sep">·</span>
+                    <a class="lnk" href="#">回到摘录首页</a>
+                  </div>
+                </div>
+                <button class="m-random" type="button">随机一条</button>
+              </div>
+            </div>
+
+            <div>
+              <p class="mini-cap">人物 · /excerpts/persons/</p>
+              <div class="m-hero">
+                <div>
+                  <p class="m-eyebrow">Persons</p>
+                  <h1 class="m-title">摘录 · 人物</h1>
+                  <div class="m-meta">
+                    <span class="item">共 38 位</span>
+                    <span class="sep">·</span>
+                    <a class="lnk" href="#">回到摘录首页</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="mini-cap">对话 · /excerpts/conversations/</p>
+              <div class="m-hero">
+                <div>
+                  <p class="m-eyebrow">Conversations</p>
+                  <h1 class="m-title">摘录 · 对话</h1>
+                  <div class="m-meta">
+                    <span class="item">共 12 篇</span>
+                    <span class="sep">·</span>
+                    <a class="lnk" href="#">回到摘录首页</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>为什么不改</h3>
+        <ul>
+          <li>摘录页现在的层次是：<b>导航 → hero → 筛选 → 列表</b>，已经四层；再加一条频道条就是第五层。</li>
+          <li>而原创页的胶囊本来就存在（只是塞在 meta 行里），A′ 是把它<b>搬出去</b>，没有新增层次。</li>
+          <li>摘录频道少而重内容：短句 143 条、人物 38 位，用户进来是为了读，不是为了逛。</li>
+          <li>跨频道入口已经有摘录主页的四张卡，不连通的代价是"多一次点击"，换来的是 hero 干净。</li>
+        </ul>
+        <div class="verdict">
+          结论：<b>保持现状</b>。这条差异是刻意的 —— 同一套组件不代表每个页面都要用。
+          <br /><br />若以后确实要补跨频道入口，最省的做法是在页脚放一行「继续浏览：文章 · 人物 · 对话」，不在顶部加层。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     9 · 方案 E：摘录频道条（短句页完整样张）
+     ============================================================ -->
+<section id="v9" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 E · 摘录频道条 <span class="tag rejected">已否决</span></h2>
+      <p class="view-lede">
+        <strong>这是被否掉的那一版，留档用。</strong>做法本身没错，但摘录页已经有「导航 → hero → 筛选 → 列表」四层，
+        再插一条频道条就是五层 —— 信息没增多，结构却更重了。下面的样张只用来验证"这个方案长什么样"。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <h1 class="m-title">短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <span>按时间归档</span>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <div class="anno" data-anno="① 与原创同一套：返回 + 四个频道">
+              <nav class="m-channeltabs" aria-label="摘录频道">
+                <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+                <span class="m-chan-sep" aria-hidden="true"></span>
+                <a class="m-chan-tab" href="#"><span>文章</span><span class="count">24</span></a>
+                <a class="m-chan-tab is-active" href="#" aria-current="page"><span>短句</span><span class="count">143</span></a>
+                <a class="m-chan-tab" href="#"><span>人物</span><span class="count">38</span></a>
+                <a class="m-chan-tab" href="#"><span>对话</span><span class="count">12</span></a>
+              </nav>
+            </div>
+
+            <div class="anno" data-anno="② 二级入口下沉到筛选行，和最右的链接同一行">
+              <div class="m-filterrow">
+                <div class="m-chips">
+                  <span class="m-chip on">全部</span>
+                  <span class="m-chip">心理</span>
+                  <span class="m-chip">两性</span>
+                  <span class="m-chip">儿童发展</span>
+                  <span class="m-chip">职业</span>
+                  <span class="m-chip">认知</span>
+                </div>
+                <a class="lnk" href="#" style="font-size: .85rem; color: var(--muted); text-decoration: none;">按月份浏览 ↗</a>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span class="src">清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+                <div class="tags"><span class="t">心理</span><span class="t">两性</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/09/18</span><span>·</span><span class="src">原创</span></div>
+                <h3>粗糙游戏与儿童感统训练</h3>
+                <p class="body">有意识的粗糙游戏能高频刺激孩子的前庭觉和本体感觉。</p>
+                <div class="tags"><span class="t">儿童发展</span><span class="t">感统训练</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>四个频道变成平级入口，一次点击直达，不用回主页。</li>
+          <li>「返回」和原创完全同形同位，学一次全站通用。</li>
+          <li>二级入口（按月份浏览）从 meta 行移到筛选行，语义归位。</li>
+          <li>眉标 Notes 删掉：H1 已经是「短句」，英文名重复。</li>
+        </ul>
+        <div class="verdict">
+          代价：频道条多占约 <b>40px</b>；换来的是摘录内部第一次能横向跳转。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     10 · 方案 E：四频道样张
+     ============================================================ -->
+<section id="v10" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 E · 四个频道放在一起 <span class="tag rejected">已否决</span></h2>
+      <p class="view-lede">
+        同一套结构套到四个频道：hero 只有标题 + 统计（短句多一个"随机一条"），下面永远是「返回 ｜ 文章 · 短句 · 人物 · 对话」，当前项加粗填充。
+        <strong>结构上是漂亮的，但四个页面一起变重 ——「一致」本身不构成理由。</strong>
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/{posts,notes,persons,conversations}</span>
+        </div>
+        <div class="frame-body">
+          <div class="mini-grid">
+            <div>
+              <p class="mini-cap">文章</p>
+              <div class="m-main" style="gap: 10px;">
+                <div class="m-hero"><div><h1 class="m-title">文章</h1><div class="m-meta"><span class="item">共 24 篇</span></div></div></div>
+                <nav class="m-channeltabs">
+                  <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+                  <span class="m-chan-sep"></span>
+                  <a class="m-chan-tab is-active" aria-current="page"><span>文章</span><span class="count">24</span></a>
+                  <a class="m-chan-tab"><span>短句</span><span class="count">143</span></a>
+                  <a class="m-chan-tab"><span>人物</span><span class="count">38</span></a>
+                  <a class="m-chan-tab"><span>对话</span><span class="count">12</span></a>
+                </nav>
+              </div>
+              <p class="mini-note">主题入口留在左侧主题栏（现有 aside 不动）</p>
+            </div>
+
+            <div>
+              <p class="mini-cap">短句</p>
+              <div class="m-main" style="gap: 10px;">
+                <div class="m-hero">
+                  <div><h1 class="m-title">短句</h1><div class="m-meta"><span class="item">共 143 条</span></div></div>
+                  <button class="m-random" type="button">随机一条</button>
+                </div>
+                <nav class="m-channeltabs">
+                  <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+                  <span class="m-chan-sep"></span>
+                  <a class="m-chan-tab"><span>文章</span><span class="count">24</span></a>
+                  <a class="m-chan-tab is-active" aria-current="page"><span>短句</span><span class="count">143</span></a>
+                  <a class="m-chan-tab"><span>人物</span><span class="count">38</span></a>
+                  <a class="m-chan-tab"><span>对话</span><span class="count">12</span></a>
+                </nav>
+              </div>
+              <p class="mini-note">按月份浏览 → 移到标签筛选行右侧</p>
+            </div>
+
+            <div>
+              <p class="mini-cap">人物</p>
+              <div class="m-main" style="gap: 10px;">
+                <div class="m-hero"><div><h1 class="m-title">人物</h1><div class="m-meta"><span class="item">共 38 位</span></div></div></div>
+                <nav class="m-channeltabs">
+                  <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+                  <span class="m-chan-sep"></span>
+                  <a class="m-chan-tab"><span>文章</span><span class="count">24</span></a>
+                  <a class="m-chan-tab"><span>短句</span><span class="count">143</span></a>
+                  <a class="m-chan-tab is-active" aria-current="page"><span>人物</span><span class="count">38</span></a>
+                  <a class="m-chan-tab"><span>对话</span><span class="count">12</span></a>
+                </nav>
+              </div>
+              <p class="mini-note">按领域 → 已有 pill 筛选器，标题行同步去掉重复入口</p>
+            </div>
+
+            <div>
+              <p class="mini-cap">对话</p>
+              <div class="m-main" style="gap: 10px;">
+                <div class="m-hero"><div><h1 class="m-title">对话</h1><div class="m-meta"><span class="item">共 12 篇</span></div></div></div>
+                <nav class="m-channeltabs">
+                  <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+                  <span class="m-chan-sep"></span>
+                  <a class="m-chan-tab"><span>文章</span><span class="count">24</span></a>
+                  <a class="m-chan-tab"><span>短句</span><span class="count">143</span></a>
+                  <a class="m-chan-tab"><span>人物</span><span class="count">38</span></a>
+                  <a class="m-chan-tab is-active" aria-current="page"><span>对话</span><span class="count">12</span></a>
+                </nav>
+              </div>
+              <p class="mini-note">按话题 → 同上，pill 筛选器自己带标题</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>为什么否决</h3>
+        <ul>
+          <li>四个页面都会多出一条横带，而它们的 hero 本来是"一句话说完"的体量。</li>
+          <li>摘录页的筛选区（标签 / 主题 / 月份）已经在 hero 下方，频道条会和它连成两排横条，视觉上更像工具栏。</li>
+          <li>这套组件的价值是"把已有的东西搬到对的位置"，不是"到处都放一条"。</li>
+          <li>如果以后一定要补跨频道入口：页脚一行「继续浏览：文章 · 人物 · 对话」，不新增顶部层级。</li>
+        </ul>
+        <div class="verdict">
+          结论：<b class="verdict-bad">不做</b>。组件只给原创三个页面用，摘录保持现在这套「计数 + 一两个文字链接」。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     对比表 + 结论
+     ============================================================ -->
+<section id="summary" class="wrap">
+  <h2>横向对比</h2>
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>方案</th><th>视觉安静</th><th>指向性</th><th>改动成本</th><th>适合</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1 现状 · 原创</td>
+        <td><span class="stars">★★<span class="off">★★★</span></span></td>
+        <td><span class="stars">★★★<span class="off">★★</span></span></td>
+        <td>—</td>
+        <td>不改就是现状问题</td>
+      </tr>
+      <tr>
+        <td>2 现状 · 摘录</td>
+        <td><span class="stars">★★★★★</span></td>
+        <td><span class="stars">★★<span class="off">★★★</span></span></td>
+        <td>—</td>
+        <td>详情型页面的 meta 行</td>
+      </tr>
+      <tr>
+        <td>3 方案 A</td>
+        <td><span class="stars">★★★★★</span></td>
+        <td><span class="stars">★★★★<span class="off">★</span></span></td>
+        <td>中（拆组件）</td>
+        <td>需要保留"回到原触发"文字时</td>
+      </tr>
+      <tr class="pick">
+        <td>4 方案 A′ 极简</td>
+        <td><span class="stars">★★★★★</span></td>
+        <td><span class="stars">★★★★★</span></td>
+        <td>中（拆组件）</td>
+        <td><b>原创三个栏目页（推荐）</b></td>
+      </tr>
+      <tr>
+        <td>5 方案 A2</td>
+        <td><span class="stars">★★★★<span class="off">★</span></span></td>
+        <td><span class="stars">★★<span class="off">★★★</span></span></td>
+        <td>中</td>
+        <td>空间极紧的页面</td>
+      </tr>
+      <tr>
+        <td>6 方案 B</td>
+        <td><span class="stars">★★★★★</span></td>
+        <td><span class="stars">★<span class="off">★★★★</span></span></td>
+        <td>小</td>
+        <td>不推荐用于频道切换</td>
+      </tr>
+      <tr>
+        <td>7 方案 C</td>
+        <td><span class="stars">★★★<span class="off">★★</span></span></td>
+        <td><span class="stars">★★★★<span class="off">★</span></span></td>
+        <td>最小</td>
+        <td>先救观感、结构待定</td>
+      </tr>
+      <tr>
+        <td>E 摘录频道条</td>
+        <td><span class="stars">★★★<span class="off">★★</span></span></td>
+        <td><span class="stars">★★★★★</span></td>
+        <td>中（复用 A′ 组件）</td>
+        <td><b class="verdict-bad">已否决</b>：多一层，摘录不缺入口</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="conclusion">
+    <p><b>只改原创：用 A′。摘录保持现在的样子。</b>这不是"两套标准"，而是两边的起点不同：</p>
+    <p><b>原创的胶囊本来就存在</b>（塞在 hero 的 meta 行里，和返回挤在一起）。A′ 做的是把它<b>搬出去</b>、把返回收进同一条横带 —— 元素没变多，层次也没变多，只是各归其位。</p>
+    <p><b>摘录的 hero 里只有一个计数加一两个文字链接</b>，本来就没有切换器。给它加一条频道条，等于在「导航 → hero → 筛选 → 列表」之上再叠一层，信息没增加、结构变重。四个频道之间的横跳由摘录主页那四张入口卡承担，多一次点击买的是页面干净。</p>
+    <p>由此得出一条可复用的判断标准：<b>能用"搬运"解决的，不要用"新增"解决。</b>这条标准也解释了为什么 A2（多一个图标按钮）和 B（删掉形状只留文字）都不如 A′。</p>
+    <p>如果哪天摘录也需要跨频道入口，最省的做法是页脚一行「继续浏览：文章 · 人物 · 对话」，而不是在顶部加第五层。</p>
+  </div>
+
+  <footer>
+    设计稿占位：所有交互均为死链；颜色 / 圆角 / 字体 token 与 <code>src/styles/global.css</code> 一致。
+  </footer>
+</section>
+
+<script>
+  const views = Array.from(document.querySelectorAll(".view"));
+  const tabbtns = Array.from(document.querySelectorAll(".tabbtn"));
+  const groupbtns = Array.from(document.querySelectorAll(".groupbtn"));
+  const annoToggle = document.getElementById("annoToggle");
+  const kbdHint = document.getElementById("kbdHint");
+
+  let group = "orig";
+
+  const visibleTabs = () => tabbtns.filter((b) => b.dataset.group === group);
+
+  function show(id, scroll) {
+    if (!document.getElementById(id)) return;
+    views.forEach((v) => v.classList.toggle("is-active", v.id === id));
+    tabbtns.forEach((b) =>
+      b.setAttribute("aria-selected", String(b.dataset.target === id))
+    );
+    history.replaceState(null, "", "#" + id);
+    if (scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function setGroup(next, pickFirst = true) {
+    group = next;
+    document.body.dataset.group = next;
+    groupbtns.forEach((b) =>
+      b.setAttribute("aria-selected", String(b.dataset.group === next))
+    );
+
+    // 每个分组内部从 1 开始编号，键盘按的号就是看到的号
+    const tabs = visibleTabs();
+    tabs.forEach((b, i) => {
+      const num = b.querySelector(".num");
+      if (num) num.textContent = String(i + 1);
+    });
+    if (kbdHint) {
+      kbdHint.innerHTML = `按 <kbd>1</kbd>–<kbd>${tabs.length}</kbd> 切换`;
+    }
+
+    const active = views.find((v) => v.classList.contains("is-active"));
+    const belongs = tabs.some((b) => b.dataset.target === (active && active.id));
+    if (pickFirst || !belongs) show(tabs[0].dataset.target, false);
+  }
+
+  tabbtns.forEach((btn) => {
+    btn.addEventListener("click", () => show(btn.dataset.target, false));
+  });
+
+  groupbtns.forEach((btn) => {
+    btn.addEventListener("click", () => setGroup(btn.dataset.group, true));
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea") return;
+
+    const tabs = visibleTabs();
+    const n = Number(e.key);
+    if (n >= 1 && n <= tabs.length) {
+      show(tabs[n - 1].dataset.target, false);
+      return;
+    }
+
+    const ids = tabs.map((b) => b.dataset.target);
+    const activeView = views.find((v) => v.classList.contains("is-active"));
+    const idx = activeView ? ids.indexOf(activeView.id) : -1;
+    if (e.key === "ArrowRight" && idx >= 0 && idx < tabs.length - 1) {
+      show(tabs[idx + 1].dataset.target, false);
+      e.preventDefault();
+    }
+    if (e.key === "ArrowLeft" && idx > 0) {
+      show(tabs[idx - 1].dataset.target, false);
+      e.preventDefault();
+    }
+  });
+
+  function applyAnno() {
+    document.body.classList.toggle("annot", annoToggle.checked);
+  }
+  annoToggle.addEventListener("change", applyAnno);
+  applyAnno();
+
+  // 初始视图：优先看 hash 属于哪个分组
+  const initial = location.hash.replace("#", "");
+  const initTab = tabbtns.find((b) => b.dataset.target === initial);
+  setGroup(initTab ? initTab.dataset.group : "orig", false);
+  if (initial && initTab) show(initial, false);
+  else show(visibleTabs()[0].dataset.target, false);
+</script>
+</body>
+</html>

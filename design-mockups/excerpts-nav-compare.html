@@ -1,0 +1,911 @@
+<!doctype html>
+<!--
+  摘录页「怎么去别的频道」方案对比 —— 一次性设计稿，不参与 Astro 构建，定稿后可删除。
+
+  前提（已定）：
+  - 摘录页现在的 hero 只有「计数 + 一两个文字链接」，非常干净，不要为了统一而加一条频道横条。
+  - 所以这里只探讨「不加常驻层级」的做法：面包屑、按需浮层、侧栏合并、全局导航。
+
+  用键盘 1-5 切换视图。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>摘录页频道入口 · 五种不加层级的做法</title>
+<style>
+  :root {
+    --bg: #fbfbf9;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6d6d72;
+    --rule: rgba(0, 0, 0, 0.1);
+    --mark: #c08a2e;
+    --green: #1a7f37;
+
+    --radius: 18px;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+    --sans: "Inter", "Inter Variable", system-ui, -apple-system, "Segoe UI",
+      "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    --serif: Georgia, "Noto Serif SC", "Source Han Serif CN", "Songti SC",
+      SimSun, serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding-bottom: 80px;
+  }
+
+  @supports (corner-shape: superellipse(2)) {
+    *, ::before, ::after { corner-shape: superellipse(1.8); }
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+
+  /* ---------- 页头 ---------- */
+  .page-head { padding: 52px 0 8px; }
+  .kicker {
+    font-size: 0.78rem; letter-spacing: 0.18em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .page-head h1 {
+    font-family: var(--serif); font-weight: 700; line-height: 1.35;
+    font-size: clamp(1.5rem, 3.2vw, 2.15rem); margin: 0 0 14px;
+  }
+  .lede { color: var(--muted); max-width: 46em; margin: 0 0 14px; }
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  .ground-rule {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: #fdf3e2; border: 1px solid rgba(192, 138, 46, 0.32);
+    border-radius: 14px; padding: 12px 15px; max-width: 52em;
+    font-size: 0.88rem; color: #7d5109;
+  }
+  .ground-rule b { color: #5a3707; }
+
+  /* ---------- 吸顶切换条 ---------- */
+  .toolbar {
+    position: sticky; top: 0; z-index: 60; margin-top: 26px;
+    background: color-mix(in oklab, var(--bg) 90%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule); padding: 10px 0;
+  }
+  .toolbar-inner { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tabbtn {
+    font: inherit; font-size: 0.86rem; cursor: pointer;
+    padding: 6px 13px; border-radius: 999px;
+    border: 1px solid var(--rule); background: var(--surface);
+    color: var(--muted); transition: all 160ms ease;
+  }
+  .tabbtn:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.2); }
+  .tabbtn[aria-selected="true"] { color: #fff; background: #23262b; border-color: #23262b; }
+  .tabbtn .num {
+    font-size: 0.72rem; opacity: 0.55; margin-right: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .toolbar .spacer { flex: 1; }
+  .kbd-hint { font-size: 0.76rem; color: var(--muted); }
+  .kbd-hint kbd {
+    font-family: var(--mono); font-size: 0.72rem;
+    border: 1px solid var(--rule); border-radius: 4px;
+    padding: 1px 5px; background: var(--surface);
+  }
+
+  /* ---------- 视图 ---------- */
+  .view { display: none; padding-top: 26px; }
+  .view.is-active { display: block; }
+  .view-head { margin-bottom: 18px; }
+  .view-head h2 {
+    font-family: var(--serif); font-size: 1.3rem; margin: 0 0 6px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .tag {
+    font-family: var(--sans); font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.04em; padding: 2px 9px; border-radius: 999px;
+    border: 1px solid var(--rule); color: var(--muted); background: var(--surface);
+  }
+  .tag.now { color: #8a5a10; border-color: rgba(192, 138, 46, 0.4); background: #fdf3e2; }
+  .tag.pick { color: var(--green); border-color: rgba(26, 127, 55, 0.32); background: #eaf6ee; }
+  .tag.opt { color: #35526e; border-color: rgba(58, 74, 107, 0.3); background: #eef2f7; }
+  .view-lede { color: var(--muted); margin: 0; max-width: 48em; font-size: 0.92rem; }
+
+  .stage {
+    display: grid; grid-template-columns: minmax(0, 1fr) 292px;
+    gap: 22px; align-items: start; margin-top: 18px;
+  }
+  @media (max-width: 940px) { .stage { grid-template-columns: 1fr; } }
+
+  /* ---------- 模拟窗口 ---------- */
+  .frame {
+    border: 1px solid var(--rule); border-radius: 20px; overflow: hidden;
+    background: var(--bg); box-shadow: 0 18px 44px rgba(0, 0, 0, 0.07);
+  }
+  .frame-top {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 14px; border-bottom: 1px solid var(--rule); background: #f4f3ef;
+  }
+  .frame-top .dot { width: 9px; height: 9px; border-radius: 999px; background: rgba(0, 0, 0, 0.13); }
+  .frame-top .url { margin-left: 10px; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+  .frame-body { padding: 0 20px 22px; }
+
+  /* 站点导航 */
+  .m-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 4px 14px; border-bottom: 1px solid var(--rule); margin-bottom: 18px;
+    position: relative;
+  }
+  .m-brand { font-family: var(--serif); font-weight: 700; font-size: 0.98rem; }
+  .m-links { display: flex; gap: 18px; font-size: 0.82rem; color: var(--muted); align-items: center; }
+  .m-links .on { color: var(--text); font-weight: 600; box-shadow: inset 0 -2px 0 0 var(--text); padding-bottom: 2px; }
+
+  /* 全局导航下拉（方案 5） */
+  .m-navitem { position: relative; }
+  .m-navitem > .on { display: inline-block; }
+  .m-navmenu {
+    position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+    min-width: 132px; padding: 6px; display: grid; gap: 2px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 5;
+  }
+  .m-navmenu a {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 5px 9px; border-radius: 8px; color: var(--muted); text-decoration: none;
+    font-size: 0.82rem;
+  }
+  .m-navmenu a:hover { background: rgba(0, 0, 0, 0.045); color: var(--text); }
+  .m-navmenu a.current { color: var(--text); font-weight: 600; }
+  .m-navmenu .count { font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .m-main { display: grid; gap: 14px; }
+
+  /* ---------- 刊头 ---------- */
+  .m-hero {
+    position: relative;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 32px; padding: 26px 24px;
+    border: 1px solid var(--rule); border-radius: var(--radius);
+    background-color: var(--surface);
+    background-image: radial-gradient(
+      circle at 20% 20%,
+      color-mix(in oklab, var(--bg) 60%, white 40%) 0%,
+      color-mix(in oklab, var(--bg) 25%, var(--surface) 75%) 60%,
+      var(--surface) 100%
+    );
+    box-shadow: var(--shadow);
+  }
+  .m-eyebrow {
+    margin: 0 0 10px; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+  }
+  .m-title {
+    margin: 0; font-family: var(--serif); font-size: 34px;
+    line-height: 1.2; font-weight: 700; letter-spacing: 0.01em;
+  }
+  .m-meta {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;
+    margin-top: 12px; font-size: 0.85rem; color: var(--muted);
+  }
+  .m-meta .item { font-weight: 700; color: var(--text); }
+  .m-meta .sep { opacity: 0.6; }
+  .m-meta .lnk { color: var(--muted); text-decoration: none; }
+  .m-meta .lnk:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* 面包屑式返回（方案 2） */
+  .m-crumb {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin: 0 0 10px; font-size: 0.82rem; font-weight: 500;
+    color: var(--muted); text-decoration: none;
+    min-height: 24px;
+  }
+  .m-crumb:hover { color: var(--text); }
+  .m-crumb .arrow { font-size: 0.9em; opacity: 0.7; }
+
+  /* 切换浮层（方案 3） */
+  .m-switch { position: relative; display: inline-block; }
+  .m-switch > summary {
+    list-style: none; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px 3px 9px; border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--rule) 80%, transparent);
+    font-size: 0.8rem; color: var(--muted); background: transparent;
+  }
+  .m-switch > summary::-webkit-details-marker { display: none; }
+  .m-switch > summary:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.18); }
+  .m-switch[open] > summary { color: var(--text); border-color: rgba(0, 0, 0, 0.22); background: rgba(0, 0, 0, 0.04); }
+  .m-switch__menu {
+    position: absolute; left: 0; top: calc(100% + 8px); z-index: 5;
+    min-width: 148px; margin: 0; padding: 6px; list-style: none;
+    display: grid; gap: 1px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  }
+  .m-switch__menu a {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 5px 9px; border-radius: 8px; font-size: 0.82rem;
+    color: var(--muted); text-decoration: none;
+  }
+  .m-switch__menu a:hover { background: rgba(0, 0, 0, 0.045); color: var(--text); }
+  .m-switch__menu a.current { color: var(--text); font-weight: 600; }
+  .m-switch__menu .count { font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* 随机按钮 */
+  .m-random {
+    flex-shrink: 0; font: inherit; font-size: 0.85rem; cursor: pointer;
+    padding: 7px 14px; border-radius: 999px; min-height: 34px;
+    border: 1px solid var(--rule); background: transparent; color: var(--muted);
+  }
+  .m-random:hover { background: rgba(0, 0, 0, 0.04); color: var(--text); }
+
+  /* ---------- 筛选 / 侧栏 / 列表 ---------- */
+  .m-filterrow {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .m-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .m-chip {
+    padding: 4px 11px; border-radius: 999px; font-size: 0.8rem;
+    border: 1px solid var(--rule); background: var(--surface); color: var(--muted);
+  }
+  .m-chip.on { background: rgba(0, 0, 0, 0.05); color: var(--text); border-color: rgba(0, 0, 0, 0.18); }
+
+  .m-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 720px) { .m-layout { grid-template-columns: 1fr; } }
+
+  .m-side {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
+    display: grid; gap: 14px;
+  }
+  .m-side__group { display: grid; gap: 4px; }
+  .m-side__title {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 2px;
+  }
+  .m-side a {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 5px 9px; border-radius: 8px; text-decoration: none;
+    font-size: 0.86rem; color: var(--muted);
+  }
+  .m-side a:hover { background: rgba(0, 0, 0, 0.04); color: var(--text); }
+  .m-side a.current { color: var(--text); font-weight: 600; background: rgba(0, 0, 0, 0.05); }
+  .m-side .count { font-size: 0.76rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .m-cards { display: grid; gap: 12px; }
+  .m-card {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow);
+  }
+  .m-card h3 { margin: 0 0 6px; font-size: 0.98rem; font-weight: 600; }
+  .m-card .cline {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.76rem; color: var(--muted); margin-bottom: 6px;
+  }
+  .m-card .body { margin: 0; font-size: 0.9rem; color: var(--text); opacity: 0.86; }
+  .m-card .tags { display: flex; gap: 6px; margin-top: 10px; }
+  .m-card .t {
+    font-size: 0.7rem; padding: 3px 8px; border-radius: 999px;
+    background: color-mix(in oklab, var(--bg) 72%, var(--surface));
+    border: 1px solid color-mix(in oklab, var(--rule) 60%, transparent);
+    color: var(--muted);
+  }
+
+  /* ---------- 标注 ---------- */
+  .anno { position: relative; }
+  .anno--inline { display: inline-flex; }
+  body.annot .anno {
+    outline: 1px dashed color-mix(in oklab, var(--mark) 75%, transparent);
+    outline-offset: 4px; border-radius: 999px;
+  }
+  body.annot .anno::after {
+    content: attr(data-anno);
+    position: absolute; left: 0; top: -25px; z-index: 6;
+    font-family: var(--sans); font-size: 10.5px; font-weight: 500; line-height: 1;
+    color: #7d5109; background: #fdf3e2;
+    border: 1px solid rgba(192, 138, 46, 0.38);
+    padding: 3px 6px; border-radius: 6px; white-space: nowrap;
+  }
+  body.annot .anno--below::after { top: auto; bottom: -27px; }
+
+  /* ---------- 右侧说明 ---------- */
+  .takes {
+    position: sticky; top: 74px;
+    border: 1px solid var(--rule); border-radius: 16px;
+    padding: 16px 18px; background: var(--surface);
+    box-shadow: var(--shadow); font-size: 0.87rem;
+  }
+  .takes h3 {
+    margin: 0 0 10px; font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); font-weight: 700;
+  }
+  .takes ul { margin: 0 0 12px; padding-left: 1.05em; }
+  .takes li { margin-bottom: 6px; }
+  .takes li:last-child { margin-bottom: 0; }
+  .takes .verdict {
+    border-top: 1px solid var(--rule); padding-top: 10px;
+    color: var(--muted); font-size: 0.83rem;
+  }
+  .takes .verdict b { color: var(--text); }
+
+  /* ---------- 对比表 ---------- */
+  #summary { padding-top: 44px; }
+  #summary h2 { font-family: var(--serif); font-size: 1.3rem; margin: 0 0 16px; }
+  .matrix { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  .matrix th, .matrix td {
+    text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .matrix th { font-size: 0.78rem; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+  .matrix td:first-child { font-weight: 600; white-space: nowrap; }
+  .matrix tr.pickrow td { background: color-mix(in oklab, var(--mark) 7%, transparent); }
+  .yes { color: var(--green); }
+  .no { color: #9a3412; }
+
+  .conclusion {
+    margin-top: 26px; border-left: 3px solid var(--mark);
+    padding: 2px 0 2px 16px; max-width: 52em;
+  }
+  .conclusion p { margin: 0 0 10px; }
+  .conclusion p:last-child { margin-bottom: 0; }
+
+  footer {
+    margin-top: 46px; padding-top: 16px; border-top: 1px solid var(--rule);
+    color: var(--muted); font-size: 0.8rem;
+  }
+</style>
+</head>
+<body class="annot">
+
+<header class="wrap page-head">
+  <p class="kicker">Design note · 一次性设计稿</p>
+  <h1>摘录页怎么去别的频道（而不加一层）</h1>
+  <p class="lede">
+    先把底线钉住：摘录页现在的 hero 只有<strong>计数 + 一两个文字链接</strong>，已经很干净，不再加常驻的频道横条。
+    下面五种做法都在<strong>已经存在的空间</strong>里找位置 —— 眉标位、meta 行、已有侧栏、全局导航。
+  </p>
+  <div class="ground-rule">
+    <span aria-hidden="true">ⓘ</span>
+    <span><b>判断标准不变：</b>能用「搬运」解决的，不要用「新增」解决。每加一个常驻元素，都要先回答"它替换掉了什么"。</span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="wrap toolbar-inner">
+    <button class="tabbtn" data-target="v1" aria-selected="true"><span class="num">1</span>现状 · 基线</button>
+    <button class="tabbtn" data-target="v2" aria-selected="false"><span class="num">2</span>面包屑换眉标</button>
+    <button class="tabbtn" data-target="v3" aria-selected="false"><span class="num">3</span>切换浮层</button>
+    <button class="tabbtn" data-target="v4" aria-selected="false"><span class="num">4</span>并进侧栏</button>
+    <button class="tabbtn" data-target="v5" aria-selected="false"><span class="num">5</span>全局导航下拉</button>
+    <span class="spacer"></span>
+    <span class="kbd-hint">按 <kbd>1</kbd>–<kbd>5</kbd> 切换</span>
+    <label style="display:inline-flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted);cursor:pointer;">
+      <input type="checkbox" id="annoToggle" checked /> 显示标注
+    </label>
+  </div>
+</div>
+
+<!-- ============================================================
+     1 · 现状（基线）
+     ============================================================ -->
+<section id="v1" class="view is-active">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>现状 · 短句页 <span class="tag now">基线，不改</span></h2>
+      <p class="view-lede">
+        这就是你说"恰到好处"的那一版：三行 —— 眉标、标题、一行两个链接。四项信息（计数 / 月份 / 回首页）刚好铺满一行，不多不少。
+        唯一的问题是「回到摘录首页」混在 meta 行中间，得读完才知道它能点。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <p class="m-eyebrow">Notes</p>
+                <h1 class="m-title">摘录 · 短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                  <span class="sep">·</span>
+                  <a class="anno anno--inline lnk" href="#" data-anno="要读完这四个字才知道能点">回到摘录首页</a>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <div class="m-filterrow">
+              <div class="m-chips">
+                <span class="m-chip on">全部</span>
+                <span class="m-chip">心理</span>
+                <span class="m-chip">两性</span>
+                <span class="m-chip">儿童发展</span>
+                <span class="m-chip">职业</span>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span>清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+                <div class="tags"><span class="t">心理</span><span class="t">两性</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>现状盘点</h3>
+        <ul>
+          <li>层次：导航 → hero → 筛选 → 列表，四层，够用。</li>
+          <li>横向跳频道：没有入口，只能回摘录主页。</li>
+          <li>回上级：藏在 meta 行第 3 项，位置随二级链接数量漂移。</li>
+          <li>眉标 <code>Notes</code> 与标题「短句」重复，信息量接近零。</li>
+        </ul>
+        <div class="verdict">
+          一句话：<b>视觉上不用改，语义上有一处浪费</b> —— 眉标那行空着。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     2 · 面包屑换眉标
+     ============================================================ -->
+<section id="v2" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 1 · 眉标位换成面包屑 <span class="tag pick">推荐</span></h2>
+      <p class="view-lede">
+        把没有信息量的英文眉标 <code>Notes</code> 换成「‹ 摘录」。位置固定在最上方、带方向箭头、点的是**上级的名字**，
+        而且它替换掉了一个已有元素 —— 常驻元素数量不变，meta 行还少一项。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <a class="anno m-crumb" href="#" data-anno="① 占用原眉标位，替换而非新增">
+                  <span class="arrow" aria-hidden="true">‹</span><span>摘录</span>
+                </a>
+                <h1 class="m-title">短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <div class="m-filterrow">
+              <div class="m-chips">
+                <span class="m-chip on">全部</span>
+                <span class="m-chip">心理</span>
+                <span class="m-chip">两性</span>
+                <span class="m-chip">儿童发展</span>
+                <span class="m-chip">职业</span>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span>清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+                <div class="tags"><span class="t">心理</span><span class="t">两性</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>常驻元素<b>不变</b>：眉标换成面包屑，一个换一个。</li>
+          <li>meta 从 3 项降到 2 项，比现在还轻一点。</li>
+          <li>「‹ 摘录」是通用约定，位置固定在最上方，不用读完整句就知道能点。</li>
+          <li>顺带解决命名重复：H1 只写「短句」，眉标不再重复一遍。</li>
+        </ul>
+        <div class="verdict">
+          代价：<b>不解决横向跳频道</b>，只是把"回上级"做对。若横向跳转是真实需求，再叠方案 2/3。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     3 · 切换浮层
+     ============================================================ -->
+<section id="v3" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 2 · meta 行末尾一个「切换 ▾」 <span class="tag opt">按需展开</span></h2>
+      <p class="view-lede">
+        在「共 143 条 · 按月份浏览」后面挂一个小胶囊，点开才出现四个频道。收起时它只有两个字加一个角标，
+        比一条 40px 高的横带便宜得多；展开时它是浮层，不挤压页面。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/　（浮层为展开状态示意）</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <a class="m-crumb" href="#"><span class="arrow" aria-hidden="true">‹</span><span>摘录</span></a>
+                <h1 class="m-title">短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                  <span class="sep">·</span>
+                  <details class="m-switch" open>
+                    <summary>切换 <span aria-hidden="true">▾</span></summary>
+                    <ul class="m-switch__menu">
+                      <li><a href="#"><span>文章</span><span class="count">24</span></a></li>
+                      <li><a class="current" href="#"><span>短句</span><span class="count">143</span></a></li>
+                      <li><a href="#"><span>人物</span><span class="count">38</span></a></li>
+                      <li><a href="#"><span>对话</span><span class="count">12</span></a></li>
+                    </ul>
+                  </details>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <div class="m-filterrow">
+              <div class="m-chips">
+                <span class="m-chip on">全部</span>
+                <span class="m-chip">心理</span>
+                <span class="m-chip">两性</span>
+                <span class="m-chip">儿童发展</span>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span>清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>收起时只多两个字，<b>常驻成本极低</b>；展开是浮层，不改变页面高度。</li>
+          <li>用原生 <code>&lt;details&gt;</code> 就能做，不需要 JS。</li>
+          <li>四个频道终于能横跳，且当前项在浮层里高亮。</li>
+          <li>缺点：藏在浮层里，发现性不如明晃晃的链接；meta 行从 2 项又变成 3 项。</li>
+        </ul>
+        <div class="verdict">
+          代价：多一个"要点的东西"。如果横跳不是高频动作，建议先只做方案 1。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     4 · 并进侧栏
+     ============================================================ -->
+<section id="v4" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 3 · 并进已有的侧栏 <span class="tag opt">搬运</span></h2>
+      <p class="view-lede">
+        文章页已经有一条左侧栏（主题），把「频道」作为它的第一组塞进去 —— 顶部一个字都不用动。
+        短句 / 人物 / 对话 目前没有侧栏，需要新开一列（宽屏显示，窄屏折叠成横向 pill）。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/posts/</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <a class="m-crumb" href="#"><span class="arrow" aria-hidden="true">‹</span><span>摘录</span></a>
+                <h1 class="m-title">文章</h1>
+                <div class="m-meta">
+                  <span class="item">共 24 篇</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-layout">
+              <aside class="m-side anno" data-anno="① 频道组放在原有侧栏顶部">
+                <div class="m-side__group">
+                  <div class="m-side__title">频道</div>
+                  <a class="current" href="#"><span>文章</span><span class="count">24</span></a>
+                  <a href="#"><span>短句</span><span class="count">143</span></a>
+                  <a href="#"><span>人物</span><span class="count">38</span></a>
+                  <a href="#"><span>对话</span><span class="count">12</span></a>
+                </div>
+                <div class="m-side__group">
+                  <div class="m-side__title">主题</div>
+                  <a class="current" href="#"><span>全部</span><span class="count">24</span></a>
+                  <a href="#"><span>技术哲学</span><span class="count">5</span></a>
+                  <a href="#"><span>认知科学</span><span class="count">4</span></a>
+                  <a href="#"><span>教育</span><span class="count">3</span></a>
+                </div>
+              </aside>
+
+              <div class="m-cards">
+                <article class="m-card">
+                  <div class="cline"><span>2026/01/25</span><span>·</span><span>12 分钟阅读</span></div>
+                  <h3>认知偏差的系统性思考</h3>
+                  <p class="body">从确认偏差到锚定效应，理解认知偏差如何系统性地影响我们的决策与判断。</p>
+                  <div class="tags"><span class="t">认知科学</span><span class="t">心理学</span></div>
+                </article>
+                <article class="m-card">
+                  <div class="cline"><span>2026/01/20</span><span>·</span><span>15 分钟阅读</span></div>
+                  <h3>教育系统的异化：当学习变成竞争游戏</h3>
+                  <p class="body">现代教育如何从培养人转变为筛选人。</p>
+                  <div class="tags"><span class="t">教育</span><span class="t">制度批判</span></div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>文章页几乎是免费的：侧栏本来就存在，加一组只是排序问题。</li>
+          <li>短句 / 人物 / 对话 要新开侧栏 —— 但那是<b>纵向</b>结构，不是顶部横条，和"信息过载"的感受不同。</li>
+          <li>窄屏时侧栏折叠成横向 pill，又变回一条横带，优势打折扣。</li>
+          <li>三个页面都要动布局，改动面最大。</li>
+        </ul>
+        <div class="verdict">
+          代价：<b>四个页面各写一套</b>，且短句页现在是无侧栏的单列，改成两列会明显变"重"。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     5 · 全局导航下拉
+     ============================================================ -->
+<section id="v5" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>方案 4 · 挂到全局导航的「摘录」上 <span class="tag opt">页面零改动</span></h2>
+      <p class="view-lede">
+        频道入口不属于页面，属于站点结构：把四个频道挂到顶部「摘录」的下拉菜单里（悬停或点击展开）。
+        页面本身一个字不改，而且「原触发」也能用同一招。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/　（下拉为展开状态示意）</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links">
+              <a>首页</a><a>原触发</a>
+              <span class="m-navitem anno" data-anno="① 全站导航承担频道入口">
+                <a class="on">摘录</a>
+                <div class="m-navmenu">
+                  <a href="#"><span>文章</span><span class="count">24</span></a>
+                  <a class="current" href="#"><span>短句</span><span class="count">143</span></a>
+                  <a href="#"><span>人物</span><span class="count">38</span></a>
+                  <a href="#"><span>对话</span><span class="count">12</span></a>
+                </div>
+              </span>
+              <a>搜索</a><a>关于</a>
+            </span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <p class="m-eyebrow">Notes</p>
+                <h1 class="m-title">摘录 · 短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">回到摘录首页</a>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span>清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>页面<b>零改动</b>，信息密度完全不变 —— 最符合"别再加东西"的约束。</li>
+          <li>全站只在一处定义频道，以后加第五个频道也只改导航。</li>
+          <li>移动端没有 hover，得改成点击展开，多一次点击。</li>
+          <li>"回上级"仍然没解决（还是藏在 meta 行里）。</li>
+        </ul>
+        <div class="verdict">
+          代价：入口离内容远，<b>发现性靠导航习惯</b>；和方案 1 组合最合适。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     对比表 + 结论
+     ============================================================ -->
+<section id="summary" class="wrap">
+  <h2>横向对比</h2>
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>做法</th><th>新增常驻元素</th><th>解决「回上级」</th><th>解决「横向跳频道」</th><th>改动成本</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="pickrow">
+        <td>1 面包屑换眉标</td>
+        <td>0（替换眉标）</td>
+        <td class="yes">✓ 位置固定、有箭头</td>
+        <td class="no">✗</td>
+        <td>小：四个频道页各一行</td>
+      </tr>
+      <tr>
+        <td>2 切换浮层</td>
+        <td>1 个小胶囊</td>
+        <td class="yes">✓（若同时用面包屑）</td>
+        <td class="yes">✓ 需要点开</td>
+        <td>小：一个 details 组件</td>
+      </tr>
+      <tr>
+        <td>3 并进侧栏</td>
+        <td>0（文章页）/ 一列（其余三页）</td>
+        <td class="yes">✓</td>
+        <td class="yes">✓ 常驻可见</td>
+        <td>大：三页要重排布局</td>
+      </tr>
+      <tr>
+        <td>4 全局导航下拉</td>
+        <td>0（页面内）</td>
+        <td class="no">✗</td>
+        <td class="yes">✓ 悬停/点击</td>
+        <td>中：改导航组件 + 移动端交互</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="conclusion">
+    <p><b>建议先只做第 1 个（面包屑换眉标）。</b>它把现在那行没有信息量的英文眉标换成「‹ 摘录」，一个元素换一个元素，
+    常驻成本为零，同时把"回上级"从 meta 行中间挪到固定位置 —— 这是纯粹的修正，不是新增。</p>
+    <p><b>横向跳频道先不做。</b>四个频道之间的跳转目前有摘录主页兜着，属于"低频且可绕行"的动作；
+    真要补，第 2 个方案（「切换 ▾」浮层）是成本最低的补法，收起时只占两个字，不会变成第二条横带。</p>
+    <p>第 3、4 个方案留着备查：侧栏合并对文章页几乎免费，但另外三页要从单列改两列，风险明显更大；
+    全局导航下拉最"干净"，但它把问题挪给了导航习惯，而且移动端体验会打折。</p>
+  </div>
+
+  <footer>
+    设计稿占位：所有交互均为死链；浮层与下拉为静态展开示意；颜色 / 圆角 / 字体 token 与 <code>src/styles/global.css</code> 一致。
+  </footer>
+</section>
+
+<script>
+  const views = Array.from(document.querySelectorAll(".view"));
+  const tabbtns = Array.from(document.querySelectorAll(".tabbtn"));
+  const annoToggle = document.getElementById("annoToggle");
+
+  function show(id) {
+    if (!document.getElementById(id)) return;
+    views.forEach((v) => v.classList.toggle("is-active", v.id === id));
+    tabbtns.forEach((b) =>
+      b.setAttribute("aria-selected", String(b.dataset.target === id))
+    );
+    history.replaceState(null, "", "#" + id);
+  }
+
+  tabbtns.forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.target)));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "summary") return;
+
+    const n = Number(e.key);
+    if (n >= 1 && n <= tabbtns.length) {
+      show(tabbtns[n - 1].dataset.target);
+      return;
+    }
+
+    const current = views.findIndex((v) => v.classList.contains("is-active"));
+    if (e.key === "ArrowRight" && current < tabbtns.length - 1) {
+      show(tabbtns[current + 1].dataset.target);
+      e.preventDefault();
+    }
+    if (e.key === "ArrowLeft" && current > 0) {
+      show(tabbtns[current - 1].dataset.target);
+      e.preventDefault();
+    }
+  });
+
+  function applyAnno() {
+    document.body.classList.toggle("annot", annoToggle.checked);
+  }
+  annoToggle.addEventListener("change", applyAnno);
+  applyAnno();
+
+  const initial = location.hash.replace("#", "");
+  if (initial) show(initial);
+</script>
+</body>
+</html>

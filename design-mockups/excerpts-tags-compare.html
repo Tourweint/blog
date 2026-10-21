@@ -1,0 +1,884 @@
+<!doctype html>
+<!--
+  摘录页「标签区怎么让路」方案对比 —— 一次性设计稿，不参与 Astro 构建，定稿后可删除。
+
+  前提（用户判断）：
+  - 摘录页之所以不能直接套原创页的频道条，是因为顶部已经有一整块标签筛选，会"挡住"。
+  - 所以先把标签重新组织，腾出上方空间，再把原创那套「返回 ｜ 频道」搬过来。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>摘录页标签区重做 · 让出顶部的空间</title>
+<style>
+  :root {
+    --bg: #fbfbf9;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6d6d72;
+    --rule: rgba(0, 0, 0, 0.1);
+    --mark: #c08a2e;
+    --green: #1a7f37;
+
+    --radius: 18px;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+    --sans: "Inter", "Inter Variable", system-ui, -apple-system, "Segoe UI",
+      "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    --serif: Georgia, "Noto Serif SC", "Source Han Serif CN", "Songti SC",
+      SimSun, serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0; font-family: var(--sans); background: var(--bg); color: var(--text);
+    line-height: 1.75; padding-bottom: 80px;
+  }
+
+  @supports (corner-shape: superellipse(2)) {
+    *, ::before, ::after { corner-shape: superellipse(1.8); }
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+
+  /* ---------- 页头 ---------- */
+  .page-head { padding: 52px 0 8px; }
+  .kicker {
+    font-size: 0.78rem; letter-spacing: 0.18em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .page-head h1 {
+    font-family: var(--serif); font-weight: 700; line-height: 1.35;
+    font-size: clamp(1.5rem, 3.2vw, 2.15rem); margin: 0 0 14px;
+  }
+  .lede { color: var(--muted); max-width: 46em; margin: 0 0 14px; }
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; max-width: 760px;
+  }
+  .facts li {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 10px 13px; font-size: 0.84rem; color: var(--muted);
+  }
+  .facts b { display: block; color: var(--text); font-size: 1.05rem; line-height: 1.4; }
+
+  /* ---------- 切换条 ---------- */
+  .toolbar {
+    position: sticky; top: 0; z-index: 60; margin-top: 26px; padding: 10px 0;
+    background: color-mix(in oklab, var(--bg) 90%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .toolbar-inner { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tabbtn {
+    font: inherit; font-size: 0.86rem; cursor: pointer; padding: 6px 13px;
+    border-radius: 999px; border: 1px solid var(--rule); background: var(--surface);
+    color: var(--muted); transition: all 160ms ease;
+  }
+  .tabbtn:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.2); }
+  .tabbtn[aria-selected="true"] { color: #fff; background: #23262b; border-color: #23262b; }
+  .tabbtn .num { font-size: 0.72rem; opacity: 0.55; margin-right: 4px; font-variant-numeric: tabular-nums; }
+  .toolbar .spacer { flex: 1; }
+  .kbd-hint { font-size: 0.76rem; color: var(--muted); }
+  .kbd-hint kbd {
+    font-family: var(--mono); font-size: 0.72rem; border: 1px solid var(--rule);
+    border-radius: 4px; padding: 1px 5px; background: var(--surface);
+  }
+
+  /* ---------- 视图 ---------- */
+  .view { display: none; padding-top: 26px; }
+  .view.is-active { display: block; }
+  .view-head { margin-bottom: 18px; }
+  .view-head h2 {
+    font-family: var(--serif); font-size: 1.3rem; margin: 0 0 6px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .tag {
+    font-family: var(--sans); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.04em;
+    padding: 2px 9px; border-radius: 999px; border: 1px solid var(--rule);
+    color: var(--muted); background: var(--surface);
+  }
+  .tag.now { color: #8a5a10; border-color: rgba(192, 138, 46, 0.4); background: #fdf3e2; }
+  .tag.pick { color: var(--green); border-color: rgba(26, 127, 55, 0.32); background: #eaf6ee; }
+  .tag.opt { color: #35526e; border-color: rgba(58, 74, 107, 0.3); background: #eef2f7; }
+  .view-lede { color: var(--muted); margin: 0; max-width: 48em; font-size: 0.92rem; }
+
+  .stage {
+    display: grid; grid-template-columns: minmax(0, 1fr) 292px;
+    gap: 22px; align-items: start; margin-top: 18px;
+  }
+  @media (max-width: 940px) { .stage { grid-template-columns: 1fr; } }
+
+  /* ---------- 模拟窗口 ---------- */
+  .frame {
+    border: 1px solid var(--rule); border-radius: 20px; overflow: hidden;
+    background: var(--bg); box-shadow: 0 18px 44px rgba(0, 0, 0, 0.07);
+  }
+  .frame-top {
+    display: flex; align-items: center; gap: 6px; padding: 9px 14px;
+    border-bottom: 1px solid var(--rule); background: #f4f3ef;
+  }
+  .frame-top .dot { width: 9px; height: 9px; border-radius: 999px; background: rgba(0, 0, 0, 0.13); }
+  .frame-top .url { margin-left: 10px; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+  .frame-body { padding: 0 20px 22px; }
+
+  .m-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 4px 14px; border-bottom: 1px solid var(--rule); margin-bottom: 18px;
+  }
+  .m-brand { font-family: var(--serif); font-weight: 700; font-size: 0.98rem; }
+  .m-links { display: flex; gap: 18px; font-size: 0.82rem; color: var(--muted); align-items: center; }
+  .m-links .on { color: var(--text); font-weight: 600; box-shadow: inset 0 -2px 0 0 var(--text); padding-bottom: 2px; }
+
+  .m-main { display: grid; gap: 14px; }
+
+  /* 刊头 */
+  .m-hero {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 32px; padding: 24px;
+    border: 1px solid var(--rule); border-radius: var(--radius);
+    background-color: var(--surface);
+    background-image: radial-gradient(
+      circle at 20% 20%,
+      color-mix(in oklab, var(--bg) 60%, white 40%) 0%,
+      color-mix(in oklab, var(--bg) 25%, var(--surface) 75%) 60%,
+      var(--surface) 100%
+    );
+    box-shadow: var(--shadow);
+  }
+  .m-crumb {
+    display: inline-flex; align-items: center; gap: 5px; margin: 0 0 8px;
+    font-size: 0.82rem; font-weight: 500; color: var(--muted); text-decoration: none;
+  }
+  .m-crumb:hover { color: var(--text); }
+  .m-eyebrow {
+    margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .m-title {
+    margin: 0; font-family: var(--serif); font-size: 34px; line-height: 1.2;
+    font-weight: 700; letter-spacing: 0.01em;
+  }
+  .m-meta {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;
+    margin-top: 10px; font-size: 0.85rem; color: var(--muted);
+  }
+  .m-meta .item { font-weight: 700; color: var(--text); }
+  .m-meta .sep { opacity: 0.6; }
+  .m-meta .lnk { color: var(--muted); text-decoration: none; }
+  .m-meta .lnk:hover { color: var(--text); }
+  .m-random {
+    flex-shrink: 0; font: inherit; font-size: 0.85rem; cursor: pointer;
+    padding: 7px 14px; border-radius: 999px; min-height: 34px;
+    border: 1px solid var(--rule); background: transparent; color: var(--muted);
+  }
+  .m-random:hover { background: rgba(0, 0, 0, 0.04); color: var(--text); }
+
+  /* 频道条（与原创页同一套） */
+  .m-channeltabs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .m-chan-tab {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.95rem; border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--rule) 85%, transparent);
+    background: transparent; color: var(--muted); text-decoration: none;
+    font-size: 0.88rem; transition: all 160ms ease;
+  }
+  .m-chan-tab:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.18); background: rgba(0, 0, 0, 0.025); }
+  .m-chan-tab.is-active { color: var(--text); font-weight: 600; border-color: rgba(0, 0, 0, 0.22); background: rgba(0, 0, 0, 0.05); }
+  .m-chan-tab .count { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .m-chan-tab--back { border-color: transparent; padding-left: 0.55rem; padding-right: 0.75rem; }
+  .m-chan-tab--back:hover { border-color: transparent; }
+  .m-chan-sep { width: 1px; height: 16px; background: var(--rule); margin: 0 2px; flex: 0 0 1px; }
+
+  /* ========== 现状：顶部标签卡片 ========== */
+  .m-filtercard {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 24px; padding: 14px 18px; box-shadow: var(--shadow);
+    display: grid; gap: 10px;
+  }
+  .m-filtercard__head { display: flex; align-items: center; justify-content: space-between; }
+  .m-filtercard__title { font-size: 0.85rem; font-weight: 600; }
+  .m-filtercard__toggle { font-size: 0.8rem; color: var(--muted); }
+  .m-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .m-chip {
+    padding: 5px 11px; border-radius: 999px; font-size: 0.8rem;
+    border: 1px solid var(--rule); background: var(--surface); color: var(--muted);
+  }
+  .m-chip.on { background: rgba(0, 0, 0, 0.05); color: var(--text); border-color: rgba(0, 0, 0, 0.18); }
+
+  /* ========== 方案 T1：左栏 ========== */
+  .m-layout { display: grid; grid-template-columns: 218px minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 760px) { .m-layout { grid-template-columns: 1fr; } }
+  .m-side {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+    padding: 13px; box-shadow: var(--shadow); display: grid; gap: 10px; align-content: start;
+  }
+  .m-side__title {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-size: 0.82rem; font-weight: 600; color: var(--text);
+  }
+  .m-side__title span { font-size: 0.72rem; font-weight: 400; color: var(--muted); }
+  .m-search {
+    width: 100%; font: inherit; font-size: 0.8rem; padding: 5px 9px;
+    border: 1px solid var(--rule); border-radius: 8px; background: var(--bg);
+    color: var(--text);
+  }
+  .m-search::placeholder { color: color-mix(in oklab, var(--muted) 70%, transparent); }
+  .m-taglist { display: grid; gap: 1px; }
+  .m-taglist a {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 4px 8px; border-radius: 8px; text-decoration: none;
+    font-size: 0.85rem; color: var(--muted);
+  }
+  .m-taglist a:hover { background: rgba(0, 0, 0, 0.04); color: var(--text); }
+  .m-taglist a.current { background: rgba(0, 0, 0, 0.05); color: var(--text); font-weight: 600; }
+  .m-taglist .count { font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .m-side__more {
+    border-top: 1px solid var(--rule); padding-top: 8px;
+    font-size: 0.78rem; color: var(--muted); text-decoration: none;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .m-side__more:hover { color: var(--text); }
+
+  /* ========== 方案 T2 / T3：顶部一行 ========== */
+  .m-oneline {
+    display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 999px;
+    padding: 5px 6px 5px 14px; box-shadow: var(--shadow); overflow: hidden;
+  }
+  .m-oneline__label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+  .m-oneline__chips { display: flex; gap: 6px; flex: 1; min-width: 0; overflow: hidden; }
+  .m-oneline .m-chip { padding: 3px 9px; font-size: 0.78rem; white-space: nowrap; }
+  .m-oneline__more {
+    flex: 0 0 auto; font-size: 0.78rem; padding: 4px 11px; border-radius: 999px;
+    border: 1px solid var(--rule); background: transparent; color: var(--muted);
+    cursor: pointer; white-space: nowrap;
+  }
+  .m-oneline__more:hover { color: var(--text); border-color: rgba(0, 0, 0, 0.18); }
+
+  /* T3：已选条件 + 筛选按钮 */
+  .m-activebar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 999px;
+    padding: 5px 6px 5px 14px; box-shadow: var(--shadow);
+  }
+  .m-activebar__label { font-size: 0.78rem; color: var(--muted); }
+  .m-active {
+    display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px 3px 10px;
+    border-radius: 999px; background: rgba(0, 0, 0, 0.05); border: 1px solid rgba(0, 0, 0, 0.14);
+    font-size: 0.78rem; color: var(--text);
+  }
+  .m-active .x { color: var(--muted); font-size: 0.9em; }
+  .m-activebar .m-oneline__more { margin-left: auto; }
+
+  /* 浮层（T2 的更多 / T3 的筛选） */
+  .m-pop {
+    position: relative; flex: 0 0 auto; margin-left: auto;
+  }
+  .m-pop__panel {
+    position: absolute; right: 0; top: calc(100% + 10px); z-index: 6;
+    width: 320px; padding: 12px; display: grid; gap: 10px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+  }
+  .m-pop__panel .m-chips { gap: 6px; }
+  .m-pop__panel .m-chip { font-size: 0.76rem; padding: 3px 9px; }
+  .m-pop__foot {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--rule); padding-top: 8px;
+    font-size: 0.75rem; color: var(--muted);
+  }
+
+  /* ========== 列表卡片 ========== */
+  .m-cards { display: grid; gap: 12px; }
+  .m-card {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+    padding: 16px 18px; box-shadow: var(--shadow);
+  }
+  .m-card h3 { margin: 0 0 6px; font-size: 0.98rem; font-weight: 600; }
+  .m-card .cline {
+    display: flex; align-items: center; gap: 8px; font-size: 0.76rem;
+    color: var(--muted); margin-bottom: 6px;
+  }
+  .m-card .body { margin: 0; font-size: 0.9rem; color: var(--text); opacity: 0.86; }
+  .m-card .tags { display: flex; gap: 6px; margin-top: 10px; }
+  .m-card .t {
+    font-size: 0.7rem; padding: 3px 8px; border-radius: 999px;
+    background: color-mix(in oklab, var(--bg) 72%, var(--surface));
+    border: 1px solid color-mix(in oklab, var(--rule) 60%, transparent); color: var(--muted);
+  }
+
+  /* ---------- 标注 ---------- */
+  .anno { position: relative; }
+  .anno--inline { display: inline-flex; }
+  body.annot .anno {
+    outline: 1px dashed color-mix(in oklab, var(--mark) 75%, transparent);
+    outline-offset: 4px; border-radius: 999px;
+  }
+  body.annot .anno::after {
+    content: attr(data-anno);
+    position: absolute; left: 0; top: -25px; z-index: 7;
+    font-family: var(--sans); font-size: 10.5px; font-weight: 500; line-height: 1;
+    color: #7d5109; background: #fdf3e2;
+    border: 1px solid rgba(192, 138, 46, 0.38);
+    padding: 3px 6px; border-radius: 6px; white-space: nowrap;
+  }
+  body.annot .anno--below::after { top: auto; bottom: -27px; }
+  body.annot .anno--right::after { left: auto; right: 0; }
+
+  /* ---------- 说明 ---------- */
+  .takes {
+    position: sticky; top: 74px; border: 1px solid var(--rule); border-radius: 16px;
+    padding: 16px 18px; background: var(--surface); box-shadow: var(--shadow);
+    font-size: 0.87rem;
+  }
+  .takes h3 {
+    margin: 0 0 10px; font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); font-weight: 700;
+  }
+  .takes ul { margin: 0 0 12px; padding-left: 1.05em; }
+  .takes li { margin-bottom: 6px; }
+  .takes li:last-child { margin-bottom: 0; }
+  .takes .verdict {
+    border-top: 1px solid var(--rule); padding-top: 10px;
+    color: var(--muted); font-size: 0.83rem;
+  }
+  .takes .verdict b { color: var(--text); }
+
+  /* ---------- 对比表 ---------- */
+  #summary { padding-top: 44px; }
+  #summary h2 { font-family: var(--serif); font-size: 1.3rem; margin: 0 0 16px; }
+  .matrix { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  .matrix th, .matrix td {
+    text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .matrix th { font-size: 0.78rem; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+  .matrix td:first-child { font-weight: 600; white-space: nowrap; }
+  .matrix tr.pickrow td { background: color-mix(in oklab, var(--mark) 7%, transparent); }
+  .yes { color: var(--green); }
+  .no { color: #9a3412; }
+
+  .conclusion {
+    margin-top: 26px; border-left: 3px solid var(--mark); padding: 2px 0 2px 16px;
+    max-width: 52em;
+  }
+  .conclusion p { margin: 0 0 10px; }
+  .conclusion p:last-child { margin-bottom: 0; }
+
+  footer {
+    margin-top: 46px; padding-top: 16px; border-top: 1px solid var(--rule);
+    color: var(--muted); font-size: 0.8rem;
+  }
+</style>
+</head>
+<body class="annot">
+
+<header class="wrap page-head">
+  <p class="kicker">Design note · 一次性设计稿</p>
+  <h1>把标签挪开，频道条才有地方站</h1>
+  <p class="lede">
+    你的判断是对的：摘录页顶部放不下频道条，不是因为频道条本身重，而是因为<strong>标签区已经占了两三行</strong>。
+    先把标签重新组织，顶部就能回到"刊头 + 一条频道条"，和原创页完全同构。
+  </p>
+  <ul class="facts">
+    <li><b>296</b>短句的标签数（收起 2 行，展开 20+ 行）</li>
+    <li><b>15</b>对话的话题数</li>
+    <li><b>9</b>人物的领域数</li>
+    <li><b>1 行</b>顶部还剩下的高度目标</li>
+  </ul>
+</header>
+
+<div class="toolbar">
+  <div class="wrap toolbar-inner">
+    <button class="tabbtn" data-target="v1" aria-selected="true"><span class="num">1</span>现状 · 标签卡</button>
+    <button class="tabbtn" data-target="v2" aria-selected="false"><span class="num">2</span>T1 左栏筛选</button>
+    <button class="tabbtn" data-target="v3" aria-selected="false"><span class="num">3</span>T2 单行 + 更多</button>
+    <button class="tabbtn" data-target="v4" aria-selected="false"><span class="num">4</span>T3 已选条件 + 筛选</button>
+    <span class="spacer"></span>
+    <span class="kbd-hint">按 <kbd>1</kbd>–<kbd>4</kbd> 切换</span>
+    <label style="display:inline-flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted);cursor:pointer;">
+      <input type="checkbox" id="annoToggle" checked /> 显示标注
+    </label>
+  </div>
+</div>
+
+<!-- ============================================================
+     1 · 现状：标签卡片
+     ============================================================ -->
+<section id="v1" class="view is-active">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>现状 · 顶部标签卡片 <span class="tag now">问题现场</span></h2>
+      <p class="view-lede">
+        短句页：一块 24px 圆角的卡片，里面「标签 + 展开全部」一行，标签两行，再加"加载更多"和列表。
+        如果再插一条频道条，顶部会变成三层横带 —— 这就是你说的"挡住"。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <p class="m-eyebrow">Notes</p>
+                <h1 class="m-title">摘录 · 短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">回到摘录首页</a>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <div class="anno m-filtercard" data-anno="① 收起 2 行，展开 20+ 行，占掉 100px+">
+              <div class="m-filtercard__head">
+                <span class="m-filtercard__title">标签</span>
+                <span class="m-filtercard__toggle">展开全部 (296)</span>
+              </div>
+              <div class="m-chips">
+                <span class="m-chip on">全部</span>
+                <span class="m-chip">心理</span><span class="m-chip">两性</span>
+                <span class="m-chip">儿童发展</span><span class="m-chip">职业</span>
+                <span class="m-chip">认知</span><span class="m-chip">教育</span>
+                <span class="m-chip">关系</span><span class="m-chip">写作</span>
+                <span class="m-chip">阅读</span><span class="m-chip">时间</span>
+                <span class="m-chip">创造力</span>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span>清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+                <div class="tags"><span class="t">心理</span><span class="t">两性</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>问题</h3>
+        <ul>
+          <li>标签区是一块独立卡片，视觉上和刊头同级，抢走了刊头的分量。</li>
+          <li>296 个标签永远收不完：收起 2 行、展开 20+ 行，中间状态没有。</li>
+          <li>再插频道条 → 顶部三层横带（刊头 / 频道 / 标签），确实挡住。</li>
+        </ul>
+        <div class="verdict">
+          结论：<b>标签不解决，频道条就放不进来</b>。所以先动标签。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     2 · T1 左栏筛选
+     ============================================================ -->
+<section id="v2" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>T1 · 标签搬进左栏 <span class="tag pick">推荐</span></h2>
+      <p class="view-lede">
+        顶部只剩「刊头 + 频道条」，标签变成一个窄侧栏：按数量排序、带搜索框、只露前 9 个，剩下的走「全部 296 个标签」。
+        这个结构文章页已经在用了（左侧主题栏），四个频道一次性对齐。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <a class="m-crumb" href="#"><span aria-hidden="true">‹</span><span>摘录</span></a>
+                <h1 class="m-title">短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <div class="anno" data-anno="① 与原创同一套：返回 ｜ 四个频道">
+              <nav class="m-channeltabs" aria-label="摘录频道">
+                <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+                <span class="m-chan-sep" aria-hidden="true"></span>
+                <a class="m-chan-tab" href="#"><span>文章</span><span class="count">24</span></a>
+                <a class="m-chan-tab is-active" href="#" aria-current="page"><span>短句</span><span class="count">143</span></a>
+                <a class="m-chan-tab" href="#"><span>人物</span><span class="count">38</span></a>
+                <a class="m-chan-tab" href="#"><span>对话</span><span class="count">12</span></a>
+              </nav>
+            </div>
+
+            <div class="m-layout">
+              <aside class="m-side anno" data-anno="② 侧栏承接筛选，顶部不再堆标签">
+                <div class="m-side__title">标签 <span>296 个</span></div>
+                <input class="m-search" type="search" placeholder="筛选标签…" />
+                <div class="m-taglist">
+                  <a class="current" href="#"><span>全部</span><span class="count">143</span></a>
+                  <a href="#"><span>心理</span><span class="count">42</span></a>
+                  <a href="#"><span>两性</span><span class="count">18</span></a>
+                  <a href="#"><span>儿童发展</span><span class="count">12</span></a>
+                  <a href="#"><span>职业</span><span class="count">9</span></a>
+                  <a href="#"><span>认知</span><span class="count">8</span></a>
+                  <a href="#"><span>教育</span><span class="count">7</span></a>
+                  <a href="#"><span>关系</span><span class="count">6</span></a>
+                  <a href="#"><span>写作</span><span class="count">5</span></a>
+                </div>
+                <a class="m-side__more" href="#"><span>全部 296 个标签</span><span aria-hidden="true">⌄</span></a>
+              </aside>
+
+              <div class="m-cards">
+                <article class="m-card">
+                  <div class="cline"><span>2026/10/04</span><span>·</span><span>清厝</span></div>
+                  <h3>女生对重复低难度工作的忍耐度更高</h3>
+                  <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+                  <div class="tags"><span class="t">心理</span><span class="t">两性</span></div>
+                </article>
+                <article class="m-card">
+                  <div class="cline"><span>2026/09/18</span><span>·</span><span>原创</span></div>
+                  <h3>粗糙游戏与儿童感统训练</h3>
+                  <p class="body">有意识的粗糙游戏能高频刺激孩子的前庭觉和本体感觉。</p>
+                  <div class="tags"><span class="t">儿童发展</span><span class="t">感统训练</span></div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>顶部只剩两行：刊头 + 频道条，<b>和原创页完全一样</b>。</li>
+          <li>296 个标签靠「搜索 + 全部展开」兜住，不再有"两行还是二十行"的两难。</li>
+          <li>文章页的主题栏已经是这个形态，四个频道一次性统一。</li>
+          <li>短句页从单列变两列，正文列变窄（列表卡片本来就不宽，影响不大）。</li>
+        </ul>
+        <div class="verdict">
+          代价：<b>多一列</b>。窄屏下侧栏要折叠成「筛选 ⌄」按钮，否则挤。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     3 · T2 单行 + 更多
+     ============================================================ -->
+<section id="v3" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>T2 · 压成一行 + 「更多」浮层 <span class="tag opt">顶部最省</span></h2>
+      <p class="view-lede">
+        不加新列：把标签卡片压成一条胶囊状的单行，只露前 5 个，「更多 296 ⌄」点开是带搜索的浮层。
+        顶部变成「刊头 + 频道条 + 一行标签」，三层但最薄的一层只有 36px。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <a class="m-crumb" href="#"><span aria-hidden="true">‹</span><span>摘录</span></a>
+                <h1 class="m-title">短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <nav class="m-channeltabs" aria-label="摘录频道">
+              <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+              <span class="m-chan-sep" aria-hidden="true"></span>
+              <a class="m-chan-tab" href="#"><span>文章</span><span class="count">24</span></a>
+              <a class="m-chan-tab is-active" href="#" aria-current="page"><span>短句</span><span class="count">143</span></a>
+              <a class="m-chan-tab" href="#"><span>人物</span><span class="count">38</span></a>
+              <a class="m-chan-tab" href="#"><span>对话</span><span class="count">12</span></a>
+            </nav>
+
+            <div class="anno m-oneline" data-anno="① 整块标签压成 36px 的一行">
+              <span class="m-oneline__label">标签</span>
+              <div class="m-oneline__chips">
+                <span class="m-chip on">全部</span>
+                <span class="m-chip">心理</span>
+                <span class="m-chip">两性</span>
+                <span class="m-chip">儿童发展</span>
+                <span class="m-chip">职业</span>
+              </div>
+              <button class="m-oneline__more" type="button">更多 296 ⌄</button>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span>清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+                <div class="tags"><span class="t">心理</span><span class="t">两性</span></div>
+              </article>
+              <article class="m-card">
+                <div class="cline"><span>2026/09/18</span><span>·</span><span>原创</span></div>
+                <h3>粗糙游戏与儿童感统训练</h3>
+                <p class="body">有意识的粗糙游戏能高频刺激孩子的前庭觉和本体感觉。</p>
+                <div class="tags"><span class="t">儿童发展</span><span class="t">感统训练</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>不动布局，只压高度：标签从 ~110px 压到 36px。</li>
+          <li>顶部三层，但最薄那层是"一条线"，不像卡片那样抢注意力。</li>
+          <li>296 个标签塞进浮层，需要搜索，浮层交互要自己做（不是原生 details 就够）。</li>
+          <li>横向空间有限：宽屏能露 5 个，窄屏只能露 2–3 个。</li>
+        </ul>
+        <div class="verdict">
+          代价：<b>标签成了"要点开才看得见"的东西</b>，常用标签的顺手程度下降。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     4 · T3 已选条件 + 筛选
+     ============================================================ -->
+<section id="v4" class="view">
+  <div class="wrap">
+    <div class="view-head">
+      <h2>T3 · 只显示"已选的"，其余进筛选浮层 <span class="tag opt">最克制</span></h2>
+      <p class="view-lede">
+        默认一个标签都不露：那一行只显示当前生效的筛选（默认「全部」）+ 右侧「筛选 ⌄」按钮。
+        选中的标签以小胶囊出现、可单个移除。顶部高度和 T2 一样，但视觉噪声最低。
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <div class="frame-top">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">/excerpts/notes/?tag=心理</span>
+        </div>
+        <div class="frame-body">
+          <nav class="m-nav">
+            <span class="m-brand">Tourweint</span>
+            <span class="m-links"><a>首页</a><a>原触发</a><a class="on">摘录</a><a>搜索</a><a>关于</a></span>
+          </nav>
+
+          <div class="m-main">
+            <div class="m-hero">
+              <div>
+                <a class="m-crumb" href="#"><span aria-hidden="true">‹</span><span>摘录</span></a>
+                <h1 class="m-title">短句</h1>
+                <div class="m-meta">
+                  <span class="item">共 143 条</span>
+                  <span class="sep">·</span>
+                  <a class="lnk" href="#">按月份浏览</a>
+                </div>
+              </div>
+              <button class="m-random" type="button">随机一条</button>
+            </div>
+
+            <nav class="m-channeltabs" aria-label="摘录频道">
+              <a class="m-chan-tab m-chan-tab--back" href="#"><span>返回</span></a>
+              <span class="m-chan-sep" aria-hidden="true"></span>
+              <a class="m-chan-tab" href="#"><span>文章</span><span class="count">24</span></a>
+              <a class="m-chan-tab is-active" href="#" aria-current="page"><span>短句</span><span class="count">143</span></a>
+              <a class="m-chan-tab" href="#"><span>人物</span><span class="count">38</span></a>
+              <a class="m-chan-tab" href="#"><span>对话</span><span class="count">12</span></a>
+            </nav>
+
+            <div class="anno m-activebar" data-anno="① 默认只写「全部」，选中项才出现">
+              <span class="m-activebar__label">筛选</span>
+              <span class="m-active"><span>心理</span><span class="x" aria-hidden="true">✕</span></span>
+              <div class="m-pop">
+                <button class="m-oneline__more" type="button">筛选 ⌄</button>
+                <div class="m-pop__panel">
+                  <input class="m-search" type="search" placeholder="搜索标签（296）" />
+                  <div class="m-chips">
+                    <span class="m-chip">全部</span>
+                    <span class="m-chip on">心理</span>
+                    <span class="m-chip">两性</span>
+                    <span class="m-chip">儿童发展</span>
+                    <span class="m-chip">职业</span>
+                    <span class="m-chip">认知</span>
+                    <span class="m-chip">教育</span>
+                    <span class="m-chip">关系</span>
+                  </div>
+                  <div class="m-pop__foot"><span>已选 1 个</span><span>清除</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-cards">
+              <article class="m-card">
+                <div class="cline"><span>2026/10/04</span><span>·</span><span>清厝</span></div>
+                <h3>女生对重复低难度工作的忍耐度更高</h3>
+                <p class="body">重复性工作的专注保持力，是女性相对显著的生理优势。</p>
+                <div class="tags"><span class="t">心理</span><span class="t">两性</span></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="takes">
+        <h3>取舍</h3>
+        <ul>
+          <li>顶部最安静：默认看不到标签，只看到"当前在看什么"。</li>
+          <li>和列表卡片上的小标签呼应：顶部是"筛"，卡片是"标"。</li>
+          <li>代价最大的是<b>发现性</b>：新访客可能完全不知道有标签体系。</li>
+          <li>浮层里要放搜索 + 多选 + 清除，交互最重的一块。</li>
+        </ul>
+        <div class="verdict">
+          代价：<b>把"逛标签"这件事藏起来了</b>。适合以搜索/时间线为主的用法，不适合把标签当导航。
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     对比表 + 结论
+     ============================================================ -->
+<section id="summary" class="wrap">
+  <h2>横向对比</h2>
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>方案</th><th>顶部高度</th><th>标签可见性</th><th>与原创页同构</th><th>改动成本</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>现状 · 标签卡</td>
+        <td>~110px（展开 20+ 行）</td>
+        <td>高</td>
+        <td class="no">✗ 挤不进频道条</td>
+        <td>—</td>
+      </tr>
+      <tr class="pickrow">
+        <td>T1 左栏筛选</td>
+        <td>0（移到侧栏）</td>
+        <td>中（9 个 + 搜索 + 全部）</td>
+        <td class="yes">✓ 完全一致</td>
+        <td>中：短句/人物/对话加两栏</td>
+      </tr>
+      <tr>
+        <td>T2 单行 + 更多</td>
+        <td>36px</td>
+        <td>中（前 5 个 + 浮层）</td>
+        <td class="yes">✓ 顶部一致，多一层细条</td>
+        <td>小：只改筛选组件</td>
+      </tr>
+      <tr>
+        <td>T3 已选 + 筛选</td>
+        <td>36px</td>
+        <td>低（要点开）</td>
+        <td class="yes">✓</td>
+        <td>中：浮层要写搜索/多选</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="conclusion">
+    <p><b>我选 T1。</b>理由很直接：文章页的左侧主题栏已经是这个形态，把它推广到短句 / 人物 / 对话，
+    四个频道就变成完全一致的结构 —— 刊头 → 频道条 → 【筛选左栏 ｜ 列表】。</p>
+    <p>这样频道条放进来的成本是"一次布局统一"，不是"再加一层"：标签的总量没变，只是从横着铺变成竖着排。
+    296 个标签也有了归宿：侧栏只露前 9 个（按数量排序），搜索框负责精确查找，「全部 296 个标签」留着浏览入口。</p>
+    <p><b>T2 是 T1 的退路</b>：如果不想动布局，就把标签压成一行 + 浮层，代价是常用标签变难点了。
+    T3 我不建议：它把标签体系藏得太深，而标签恰好是这个博客里最像"内容索引"的东西。</p>
+    <p>顺带一个问题：四个频道的筛选维度名字不一样（主题 / 标签 / 领域 / 话题），侧栏标题要不要统一成「筛选」？
+    我倾向于保留各自的叫法 —— 它们本来就不是一回事。</p>
+  </div>
+
+  <footer>
+    设计稿占位：所有交互均为死链；浮层为静态展开示意；颜色 / 圆角 / 字体 token 与 <code>src/styles/global.css</code> 一致。
+  </footer>
+</section>
+
+<script>
+  const views = Array.from(document.querySelectorAll(".view"));
+  const tabbtns = Array.from(document.querySelectorAll(".tabbtn"));
+  const annoToggle = document.getElementById("annoToggle");
+
+  function show(id) {
+    if (!document.getElementById(id)) return;
+    views.forEach((v) => v.classList.toggle("is-active", v.id === id));
+    tabbtns.forEach((b) => b.setAttribute("aria-selected", String(b.dataset.target === id)));
+    history.replaceState(null, "", "#" + id);
+  }
+
+  tabbtns.forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.target)));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea") return;
+
+    const n = Number(e.key);
+    if (n >= 1 && n <= tabbtns.length) { show(tabbtns[n - 1].dataset.target); return; }
+
+    const current = views.findIndex((v) => v.classList.contains("is-active"));
+    if (e.key === "ArrowRight" && current < tabbtns.length - 1) { show(tabbtns[current + 1].dataset.target); e.preventDefault(); }
+    if (e.key === "ArrowLeft" && current > 0) { show(tabbtns[current - 1].dataset.target); e.preventDefault(); }
+  });
+
+  function applyAnno() { document.body.classList.toggle("annot", annoToggle.checked); }
+  annoToggle.addEventListener("change", applyAnno);
+  applyAnno();
+
+  const initial = location.hash.replace("#", "");
+  if (initial) show(initial);
+</script>
+</body>
+</html>
