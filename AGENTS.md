@@ -15,6 +15,11 @@ npm run build:silent # 极安静构建：关闭 Astro 日志 + Pagefind 仅输�
 
 当前项目无测试脚本；`npm run build` 会校验所有 frontmatter（依赖 Zod）。
 
+> 注意：`npm run check` 会触发 Vite 重新预构建并重写 `node_modules/.vite/deps`，
+> 若此时有 dev 服务器在跑，页面里仍引用旧依赖 hash，浏览器会拿到
+> `504 (Outdated Optimize Dep)`，整段客户端脚本 import 失败（如短句页的展开 / 标签收起 / 加载更多全部失效）。
+> 处理：重启 dev 服务器；仍不行就删除 `node_modules/.vite` 后重启。
+
 ### 精简构建输出（避免长日志淹没上下文）
 
 - 日常验证优先顺序：`npm run check` → `npm run build:quiet` →（仅排障时）`npm run build`
