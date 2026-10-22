@@ -1,28 +1,14 @@
 ---
 title: 通往通用人工智能的路径
-description: Lex Fridman 与 Sam Altman 的深度对谈，探讨 AGI 的未来与挑战
 pubDate: 2024-06-15
 guests: [sam-altman]
 interviewer: Lex Fridman
 source: Lex Fridman Podcast
 sourceUrl: https://www.youtube.com/watch?v=L_Guz73e6fw
 pullQuote: 我们离 AGI 只有一步之遥，但这一步是深渊。我们需要更谨慎，也需要更大胆。
-readingTime: 45
 tags: [AI, AGI, 未来, 技术, 哲学]
 editorNote: 这是关于 AGI 现状最深刻的对话之一。Sam 谈及 OpenAI 的战略、安全考量，以及他对未来十年的预判。特别是关于"何为真正的智能"的讨论，触及了人类存在的根本问题。推荐对 AI 感兴趣的每一个人。
 ---
-
-## 关于嘉宾与来源
-
-**Lex Fridman** 是人工智能研究员和播客主持人，以深度、有思想的采访著称。
-
-**Sam Altman** 是 OpenAI 的 CEO，曾任 Y Combinator 总裁，是科技行业最有影响力的声音之一。
-
-这场对话录制于 2024 年，是在 GPT-4 发布后最系统的战略讨论。
-
----
-
-## Q&A 内容
 
 ### AI 的现状与突破
 
@@ -33,8 +19,6 @@ editorNote: 这是关于 AGI 现状最深刻的对话之一。Sam 谈及 OpenAI 
 **Lex:** 这让我想起了数学中的相位转变——从一种状态突然跳到另一种。
 
 **Sam:** 完全正确。我们正在经历某种临界质量。规模、数据、计算能力的组合似乎打开了一道门。问题是，这道门的另一边是什么？
-
----
 
 ### AGI 的定义与时间表
 
@@ -54,8 +38,6 @@ editorNote: 这是关于 AGI 现状最深刻的对话之一。Sam 谈及 OpenAI 
 
 **Sam:** 是的。而且这很沉重。
 
----
-
 ### 安全问题
 
 **Lex:** 既然你提到安全，让我们直面这个议题。有人说 OpenAI 优先考虑速度而不是安全。你如何回应？
@@ -69,8 +51,6 @@ editorNote: 这是关于 AGI 现状最深刻的对话之一。Sam 谈及 OpenAI 
 **Sam:** 我担心两件事。其一，误用——一些聪明的坏人可能会用这项技术造成伤害。其二，也是更深层的，是我们对齐问题。当 AI 系统变得足够强大时，确保它们的目标与人类的目标一致变得极其困难。这不是科幻小说。这是现实的数学和工程挑战。
 
 我们在 OpenAI 花费了大量资源研究对齐问题。我相信这将是本世纪最重要的问题。
-
----
 
 ### 对人类未来的思考
 
@@ -88,20 +68,8 @@ editorNote: 这是关于 AGI 现状最深刻的对话之一。Sam 谈及 OpenAI 
 
 但我也充满希望。人类很聪明。我们可以团结起来解决这个问题。
 
----
-
 **Lex:** 最后一个问题：如果你能和未来 30 年后的某个人交谈，了解我们是如何度过这个时代的，你最想知道什么？
 
 **Sam:** _笑了_ 我想知道我们是否活着。 _停顿_ 不，认真的，我想知道我们是否用 AI 来构建我们想要的世界。我想知道是否有更多的幸福、更少的痛苦。我想知道是否有一代年轻人成长在他们的才能真正被看见和欣赏的世界中，而不是因为竞争而被忽视。
 
 我想知道我们是否成功。
-
----
-
-## 原文链接与延伸阅读
-
-**相关推荐：**
-
-- [《超级智能》- 尼克·博斯特罗姆](https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/0198739834)
-- [OpenAI 的对齐研究](https://openai.com/research/alignment)
-- Lex Fridman 的其他 AI 对话（Yann LeCun, Demis Hassabis, Andrej Karpathy）
