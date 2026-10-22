@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import rehypeExternalLinks from 'rehype-external-links';
+import rehypeSpeakerLines from './src/utils/rehype-speaker-lines.mjs';
 import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
 import * as pagefind from 'pagefind';
@@ -47,6 +48,7 @@ export default defineConfig({
     processor: unified({
       rehypePlugins: [
         [rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }],
+        rehypeSpeakerLines,
       ],
     }), // v7 默认处理器为 Sätteri，换回 unified 以保留 rehype 外链插件
   },
