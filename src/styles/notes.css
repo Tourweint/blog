@@ -88,15 +88,44 @@ body.page-excerpts-notes .random-btn:hover {
 
 /* 标签筛选已移到左栏（ExcerptsAside），样式见 excerpts-aside.css */
 
-/* Timeline Headers */
+/* Timeline Headers
+   时间线只有两级：年 → 月。年不是一篇内容的标题，只是一道「时间刻度」，
+   所以不跟月份抢主视觉：降级成一行小号眉标 + 一道向右渐隐的细线，
+   紧贴在月份标题上方，像一个刻度章，而不是顶在列表头上的大标题。 */
 body.page-excerpts-notes .timeline-year {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--notes-text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--notes-text);
-  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 34px 0 2px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  font-variant-numeric: tabular-nums;
+  /* 颜色保持 muted（对比度 4.9:1）：不靠“更浅”降调，靠字号与字距退到背景里 */
+  color: var(--notes-muted);
+}
+
+/* 本页第一条：刻度直接起于列表开头，不在首屏留一段悬空的年份 */
+body.page-excerpts-notes .notes-stream > .timeline-year:first-child {
+  margin-top: 0;
+}
+
+/* 只留一小截刻度线（向右淡出）：不横贯整行，免得和月份那条分隔线打架 */
+body.page-excerpts-notes .timeline-year::after {
+  content: "";
+  flex: none;
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--notes-muted) 45%, transparent),
+    transparent
+  );
+}
+
+/* 年 → 月 是同一组：刻度与月份标题之间只留一道呼吸缝 */
+body.page-excerpts-notes .timeline-year + .timeline-month {
+  margin-top: 2px;
 }
 
 body.page-excerpts-notes .timeline-month {
