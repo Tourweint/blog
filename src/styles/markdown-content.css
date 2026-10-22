@@ -18,6 +18,29 @@
   --md-radius-sm: 2px;
 }
 
+/* =========================================================
+   中文正文排版基线（文章 / 笔记 / 对话 / 人物共用）
+
+   - text-autospace：中文与英文、数字之间自动补约 1/4 空格。
+     站内正文里 "OpenAI""GPT-4""Sam Altman" 密度很高，
+     不做这一步，中西文会粘成一片（pangu.js 的原生替代，Chrome 139+）。
+   - text-spacing-trim：压掉行首标点与连续标点自带的全角空白。
+   - line-break: strict：不让句号、逗号被推到行首。
+   - text-wrap: pretty：避免末行只剩一两个字（孤字）。
+   - 对齐方式（左对齐 / 两端对齐）留给各页面自己定，
+     这里只保证默认左对齐时不出问题。
+   ========================================================= */
+:is(.content, .note-body, .markdown-body) {
+  text-autospace: normal;
+  text-spacing-trim: trim-start;
+  line-break: strict;
+  word-break: normal;
+}
+
+:is(.content, .note-body, .markdown-body) p {
+  text-wrap: pretty;
+}
+
 /* ---------- 引用 blockquote ---------- */
 :is(.content, .note-body, .markdown-body) blockquote {
   margin: 0 0 22px;

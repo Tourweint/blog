@@ -49,7 +49,8 @@ body.page-article .post-layout {
 
 body.page-article .post-main {
     flex: 1;
-    max-width: 900px;
+    /* 720px ≈ 16px 字号下 45 字/行；原来 900px 是 56 字/行，长文很难追行 */
+    max-width: 720px;
     min-width: 0;
     order: 2; /* 让 main 在右侧 */
 }
@@ -81,7 +82,7 @@ body.page-article .post-sidebar .toc-nav {
     min-height: 0;
 }
 
-/* 观看原视频 CTA 的样式集中在 src/components/WatchOriginalLink.astro */
+/* 「查看来源」CTA 的样式集中在 src/components/SourceLink.astro */
 
 /* 在小屏幕上隐藏侧边栏 */
 @media (max-width: 1200px) {
@@ -94,7 +95,7 @@ body.page-article .post-sidebar .toc-nav {
     }
     
     body.page-article .post-main {
-        max-width: 900px;
+        max-width: 720px;
         width: 100%;
     }
 }
@@ -106,7 +107,7 @@ body.page-article .post-sidebar .toc-nav {
 }
 
 body.page-article .post-detail {
-    max-width: 900px;
+    max-width: 720px;
     margin: 0 auto;
 }
 
@@ -161,7 +162,7 @@ body.page-originals-detail.page-article .project-meta-link:focus-visible {
 /* 顶部导航 */
 body.page-article .nav-bar,
 .post-layout .nav-bar {
-    max-width: 900px;
+    max-width: 720px;
     margin: 0 auto 10px;
 }
 body.page-article .back-link,
@@ -223,7 +224,7 @@ body.page-article article {
     }
 
     body.page-article .content {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.8;
     }
 }
@@ -239,7 +240,7 @@ body.page-article article {
     }
 
     body.page-article .content {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.85;
     }
 
@@ -265,9 +266,9 @@ body.page-article article {
         padding: 16px 1rem 40px;
     }
 
-    /* 正文不随窄屏缩小，最低保持 15px 可读字号 */
+    /* 正文不随窄屏缩小，最低保持 16px 可读字号（中文 15px 在高分屏上偏小） */
     body.page-article .content {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.8;
     }
 
@@ -298,7 +299,7 @@ body.page-article article {
 
     /* 极窄屏同样不缩正文，只调整页面留白 */
     body.page-article .content {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.75;
     }
 
@@ -484,7 +485,7 @@ body.page-article .category-tag:hover {
 body.page-article .content {
     font-family: inherit;
     font-size: 16px; /* 正文基础字号 */
-    line-height: 1.9; /* 舒适的阅读行高 */
+    line-height: 1.85; /* 中文正文行高：1.8~1.9 之间，再大会显得松散 */
     color: var(--article-text);
   word-wrap: break-word;
 }
@@ -514,7 +515,8 @@ body.page-article .content h4 { font-size: 1.25em; }
    段落 (Paragraph)
    ========================================= */
 body.page-article .content p {
-  margin-bottom: 16px;
+  /* 段距要明显大于行距留白（行高 1.85 → 行间约 0.85em），否则段落会糊成一片 */
+  margin-bottom: 1.35em;
 }
 
 /* =========================================
@@ -606,13 +608,15 @@ body.page-article .content strong {
 
 
 
-/* 内容样式 */
+/* 内容样式：
+   中文不用 justify —— 混排英文/数字时字距会被拉开，行内出现不均匀的"白洞"，
+   左对齐 + text-wrap: pretty 更稳，也更接近中文长文的阅读习惯 */
 body.page-article .content {
-    text-align: justify;
+    text-align: left;
 }
 
 body.page-article .content p {
-    margin-bottom: 1em;
+    margin-bottom: 1.35em;
 }
 body.page-article .content img {
     max-width: 100%;
@@ -635,9 +639,9 @@ body.page-article .content pre code {
 
 /* 中文正文段落样式 */
 body.page-article .content p {
-    text-align: justify;
-    line-height: 2;
-    margin-bottom: 1em;
+    text-align: left;
+    line-height: 1.85;
+    margin-bottom: 1.35em;
 }
 
 
