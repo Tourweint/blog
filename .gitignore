@@ -39,3 +39,4 @@ pnpm-debug.log*
 *.ogg
 
 .agents/
+dev.log
