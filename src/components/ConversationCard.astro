@@ -9,352 +9,273 @@ interface Props {
 
 const { conversation } = Astro.props;
 const { data } = conversation;
-const conversationSlug = toIdSlug(conversation.id);
+const conversationHref = excerpts.conversationDetail(
+  toIdSlug(conversation.id),
+);
 
-// 通过 slug 查找人物信息
+// 通过 slug 查找人物信息；查不到时回退用 slug 本身（否则该嘉宾会从姓名行消失）
 const allPersons = await getCollection("persons");
-const guestPersons = (data.guests || [])
-  .map((guestSlug: string) =>
-    allPersons.find((p) => toIdSlug(p.id) === guestSlug),
-  )
-  .filter(Boolean);
+const guests = (data.guests ?? []).map((slug) => {
+  const person = allPersons.find((p) => toIdSlug(p.id) === slug);
+  return { name: person?.data.name ?? slug, avatar: person?.data.avatar };
+});
 
-const firstGuestAvatar = guestPersons[0]?.data.avatar;
+/*
+  头像：只取有 avatar 的嘉宾，缺图的人直接跳过（不占位）。
+  单嘉宾 40px 贴右上角；多嘉宾 32px 并排、互相叠压 10px；
+  超过 3 位时第三枚位置换成「+N」，避免头像组无限变宽。
+*/
+const avatars = guests
+  .map((guest) => guest.avatar)
+  .filter((src): src is string => Boolean(src));
+const MAX_AVATARS = 3;
+const visibleAvatars = avatars.slice(0, MAX_AVATARS);
+const hiddenAvatarCount = avatars.length - visibleAvatars.length;
+const isMulti = avatars.length > 1;
+
+// 标题与署名给头像留出的右侧空间（无头像时不留白）
+const reserve =
+  avatars.length === 0
+    ? 0
+    : avatars.length === 1
+      ? 52
+      : 20 + 32 * visibleAvatars.length - 10 * (visibleAvatars.length - 1);
+
+// 没有金句时退回摘要；已有的引号不再重复包裹
+const rawQuote = data.pullQuote ?? data.description ?? null;
+const quoteText = rawQuote
+  ? /^[「“"]/.test(rawQuote)
+    ? rawQuote
+    : `「${rawQuote}」`
+  : null;
+
+const published = new Date(data.pubDate);
+const dateLabel = [
+  published.getFullYear(),
+  String(published.getMonth() + 1).padStart(2, "0"),
+  String(published.getDate()).padStart(2, "0"),
+].join(".");
 ---
 
-<article class="conversation-card">
-  <!-- 卡片头部：嘉宾信息 -->
-  <div class="card-header">
+<article
+  class="conversation-card"
+  style={`--avatar-reserve: ${reserve}px`}
+>
+  <a class="conversation-card__hit" href={conversationHref} aria-label={data.title}>
     {
-      firstGuestAvatar && (
-        <div class="guest-image">
-          <img src={firstGuestAvatar} alt={guestPersons[0]?.data.name} />
+      visibleAvatars.length > 0 && (
+        <div
+          class:list={["conversation-card__avatars", { "is-multi": isMulti }]}
+          aria-hidden="true"
+        >
+          {visibleAvatars.map((src) => (
+            <img src={src} alt="" loading="lazy" />
+          ))}
+          {hiddenAvatarCount > 0 && (
+            <span class="avatar-more">+{hiddenAvatarCount}</span>
+          )}
         </div>
       )
     }
-    <div class="header-content">
-      <div class="participants">
-        {
-          data.interviewer && (
-            <>
-              <span class="role host">{data.interviewer}</span>
-              <span class="separator">×</span>
-            </>
-          )
-        }
-        {
-          guestPersons.map((person) => (
-            <span class="role guest">{person?.data.name}</span>
-          ))
-        }
-      </div>
-      <p class="source-badge">{data.source}</p>
-    </div>
-  </div>
 
-  <!-- 卡片主体：标题和金句 -->
-  <div class="card-body">
-    <h3 class="conversation-title">
-      <a href={excerpts.conversationDetail(conversationSlug)}>{data.title}</a>
-    </h3>
-
-    {
-      data.pullQuote && (
-        <blockquote class="pull-quote">
-          <svg class="quote-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-4.25-2.5-7-2.5S0 3.75 0 5c0 5 0 7 1 14s2 8 5 8z" />
-          </svg>
-          <p>{data.pullQuote}</p>
-        </blockquote>
-      )
-    }
-
-    {data.description && <p class="description">{data.description}</p>}
-  </div>
-
-  <!-- 卡片底部：元数据 -->
-  <div class="card-footer">
-    <div class="meta">
+    <p class="conversation-card__who">
       {
-        data.readingTime && (
-          <span class="reading-time">
-            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-              <polyline
-                points="12 6 12 12 16 14"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-            </svg>
-            {data.readingTime} min
-          </span>
+        data.interviewer && (
+          <>
+            <span class="p-host">{data.interviewer}</span>
+            <span class="p-sep">×</span>
+          </>
         )
       }
-      <span class="pub-date">
-        {
-          new Date(data.pubDate).toLocaleDateString("zh-CN", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })
-        }
-      </span>
-    </div>
-    {
-      data.tags && data.tags.length > 0 && (
-        <div class="tags">
-          {data.tags.slice(0, 3).map((tag) => (
-            <span class="tag">{tag}</span>
-          ))}
-        </div>
-      )
-    }
-  </div>
+      {
+        guests.map((guest, index) => (
+          <>
+            {index > 0 && <span class="p-sep">×</span>}
+            <span class="p-guest">{guest.name}</span>
+          </>
+        ))
+      }
+    </p>
 
-  <a href={excerpts.conversationDetail(conversationSlug)} class="card-link"></a>
+    <h3 class="conversation-card__title">{data.title}</h3>
+
+    {quoteText && <p class="conversation-card__quote">{quoteText}</p>}
+
+    <p class="conversation-card__meta">
+      {data.source && <span>{data.source}</span>}
+      {data.readingTime && <span>{data.readingTime} 分钟</span>}
+      <span>{dateLabel}</span>
+    </p>
+  </a>
 </article>
 
 <style>
+  /*
+    对话卡：右上角嘉宾头像（单枚 / 叠压并排）+ 署名眉标 / 19px 标题 /
+    一行金句 / 一行出处。标签与内部分割线不进卡片，金句留给详情页。
+  */
   .conversation-card {
     position: relative;
+    height: 100%;
     background: var(--c-surface);
     border: 1px solid var(--c-rule);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-    transition: border-color var(--c-dur) var(--c-ease);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    border-radius: var(--c-radius);
+    box-shadow: var(--c-shadow);
+    transition:
+      transform var(--c-dur) var(--c-ease),
+      border-color var(--c-dur) var(--c-ease),
+      box-shadow var(--c-dur) var(--c-ease);
   }
 
   .conversation-card:hover {
-    border-color: color-mix(in oklab, var(--c-rule) 60%, var(--c-text));
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--c-rule) 180%, transparent);
+    box-shadow: var(--c-shadow-hover);
   }
 
-  .card-header {
+  .conversation-card__hit {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--c-rule);
-    background: transparent;
-  }
-
-  .guest-image {
-    flex-shrink: 0;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: color-mix(in oklab, var(--c-text) 6%, transparent);
-  }
-
-  .guest-image img {
-    width: 100%;
+    flex-direction: column;
     height: 100%;
-    object-fit: cover;
+    min-height: 190px;
+    padding: 20px 22px;
+    border-radius: inherit;
+    color: inherit;
+    text-decoration: none;
   }
 
-  .header-content {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .participants {
+  /* ===== 头像：单枚 40px / 多枚 32px 叠压 ===== */
+  .conversation-card__avatars {
+    position: absolute;
+    top: 18px;
+    right: 18px;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: 600;
+    z-index: 1;
   }
 
-  .role {
-    padding: 0.25rem 0.75rem;
-    border-radius: 16px;
+  .conversation-card__avatars img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: color-mix(in oklab, var(--c-text) 8%, transparent);
+    border: 1px solid color-mix(in oklab, var(--c-rule) 140%, transparent);
+  }
+
+  .conversation-card__avatars.is-multi {
+    top: 20px;
+  }
+
+  .conversation-card__avatars.is-multi img {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--c-surface);
+  }
+
+  .conversation-card__avatars.is-multi img + img,
+  .conversation-card__avatars.is-multi img + .avatar-more {
+    margin-left: -10px;
+  }
+
+  .avatar-more {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--c-surface);
+    background: color-mix(in oklab, var(--c-text) 78%, var(--c-surface));
+    color: var(--c-surface);
+    font-size: 10px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ===== 文字 ===== */
+  /* 多嘉宾时署名会变长，放开到两行，避免名字被单行截断 */
+  .conversation-card__who {
+    margin: 0;
+    padding-right: var(--avatar-reserve, 0);
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: 0.03em;
+    color: var(--c-muted);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .p-host {
+    color: var(--c-text);
+  }
+
+  .p-sep {
+    margin: 0 5px;
+    opacity: 0.6;
+  }
+
+  .conversation-card__title {
+    margin: 10px 0 0;
+    padding-right: var(--avatar-reserve, 0);
+    font-family: var(--t-font-serif);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.42;
+    letter-spacing: 0.01em;
+    color: var(--c-text);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  .conversation-card__quote {
+    margin: 10px 0 0;
+    font-family: var(--t-font-serif);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--c-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .role.host {
-    background: color-mix(in oklab, var(--c-text) 9%, transparent);
-    color: var(--c-text);
-  }
-
-  .role.guest {
-    background: color-mix(in oklab, var(--c-text) 6%, transparent);
-    color: var(--c-muted);
-  }
-
-  .separator {
-    color: var(--c-muted);
-    font-weight: normal;
-  }
-
-  .source-badge {
-    font-size: 0.8rem;
-    color: var(--c-muted);
-    margin: 0;
-    font-weight: 500;
-  }
-
-  .card-body {
-    padding: 1.5rem;
-    flex: 1;
+  .conversation-card__meta {
+    margin: auto 0 0;
+    padding-top: 14px;
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .conversation-title {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 700;
-    line-height: 1.4;
-    color: var(--c-text);
-    font-family: var(--t-font-serif);
-  }
-
-  .conversation-title a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .conversation-title a:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .pull-quote {
-    margin: 0;
-    padding: 1rem;
-    background: color-mix(in oklab, var(--c-text) 3%, transparent);
-    border-left: 3px solid color-mix(in oklab, var(--c-text) 18%, transparent);
-    border-radius: 4px;
-    font-style: italic;
-    color: var(--c-muted);
-    position: relative;
-  }
-
-  .pull-quote p {
-    margin: 0;
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-
-  .quote-icon {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 20px;
-    height: 20px;
-    opacity: 0.3;
-  }
-
-  .description {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--c-muted);
-    line-height: 1.5;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .card-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--c-rule);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .meta {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 0.85rem;
-    color: var(--c-muted);
-  }
-
-  .reading-time {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  .icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .pub-date {
-    font-weight: 500;
-  }
-
-  .tags {
-    display: flex;
-    gap: 0.5rem;
     flex-wrap: wrap;
-  }
-
-  .tag {
-    display: inline-block;
-    padding: 0.25rem 0.6rem;
-    background: color-mix(in oklab, var(--c-text) 6%, transparent);
+    align-items: center;
+    font-size: 11.5px;
+    line-height: 1.6;
     color: var(--c-muted);
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
+    font-variant-numeric: tabular-nums;
   }
 
-  .card-link {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
+  .conversation-card__meta span + span::before {
+    content: "·";
+    margin: 0 6px;
+    opacity: 0.55;
   }
 
-  @media (max-width: 640px) {
-    .card-header {
-      padding: 1rem;
-      gap: 0.75rem;
+  @media (max-width: 480px) {
+    .conversation-card__hit {
+      padding: 18px;
     }
 
-    .guest-image {
-      width: 50px;
-      height: 50px;
+    .conversation-card__avatars {
+      top: 16px;
+      right: 16px;
     }
 
-    .participants {
-      font-size: 0.85rem;
-    }
-
-    .card-body {
-      padding: 1rem;
-      gap: 0.75rem;
-    }
-
-    .conversation-title {
-      font-size: 1.1rem;
-    }
-
-    .card-footer {
-      padding: 0.75rem 1rem;
-      flex-direction: column;
-      align-items: flex-start;
+    .conversation-card__avatars.is-multi {
+      top: 18px;
     }
   }
 </style>
