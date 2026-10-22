@@ -100,8 +100,6 @@ editorNote: 这是关于 AGI 现状最深刻的对话之一。Sam 谈及 OpenAI 
 
 ## 原文链接与延伸阅读
 
-**完整视频：** [Lex Fridman Podcast #423 - Sam Altman](https://www.youtube.com/watch?v=L_Guz73e6fw)
-
 **相关推荐：**
 
 - [《超级智能》- 尼克·博斯特罗姆](https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/0198739834)
