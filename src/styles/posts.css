@@ -71,10 +71,6 @@ body.page-article .post-sidebar {
 }
 
 /* sticky + flex 布局下，让目录区域可滚动 */
-body.page-article .post-sidebar .watch-video-section {
-    margin-bottom: 0;
-}
-
 body.page-article .post-sidebar .toc-container {
     flex: 1 1 auto;
     min-height: 0;
@@ -85,64 +81,7 @@ body.page-article .post-sidebar .toc-nav {
     min-height: 0;
 }
 
-/* 观看原视频：小框 CTA —— 圆角取最方一档（10px，同返回摘录页），
-   底色与代码块/返回链接同族，边线用软化后的 --article-rule */
-body.page-article .watch-video-section {
-    background: transparent;
-    border: 0;
-    padding: 0;
-    box-shadow: none;
-    margin-bottom: 20px;
-}
-
-body.page-article .watch-video-link {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    padding: 7px 12px;
-    color: var(--article-muted);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: 1px solid var(--article-rule);
-    border-radius: 10px;
-    background: color-mix(in oklab, var(--c-bg) 70%, var(--bg-card));
-    transition: color var(--c-dur) var(--c-ease),
-        border-color var(--c-dur) var(--c-ease),
-        background-color var(--c-dur) var(--c-ease);
-}
-
-body.page-article .watch-video-link:hover {
-    color: var(--t-link);
-    border-color: color-mix(in oklab, var(--t-link) 30%, var(--article-rule));
-    background: color-mix(in oklab, var(--c-bg) 55%, var(--bg-card));
-}
-
-body.page-article .watch-video-link:focus-visible {
-    outline: 3px solid var(--article-focus);
-    outline-offset: 3px;
-}
-
-body.page-article .watch-video-link .video-icon {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    color: currentColor;
-}
-
-body.page-article .watch-video-link .external-icon {
-    width: 14px;
-    height: 14px;
-    opacity: 0.9;
-    flex-shrink: 0;
-    color: var(--article-muted);
-}
-
-body.page-article .watch-video-link span {
-    flex: none;
-    text-align: left;
-}
+/* 观看原视频 CTA 的样式集中在 src/components/WatchOriginalLink.astro */
 
 /* 在小屏幕上隐藏侧边栏 */
 @media (max-width: 1200px) {

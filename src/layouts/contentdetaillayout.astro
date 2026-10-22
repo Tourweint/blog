@@ -2,6 +2,7 @@
 import MainLayout from "./mainlayout.astro";
 import TableOfContents from "../components/TableOfContents.astro";
 import BackLink from "../components/BackLink.astro";
+import WatchOriginalLink from "../components/WatchOriginalLink.astro";
 import { excerpts } from "../utils/excerptsPaths";
 import type { ContentDetailLayoutProps } from "./contentdetail.types";
 
@@ -58,21 +59,7 @@ const hasSidebar = Boolean(sourceUrl) || (headings && headings.length > 0);
     {
       hasSidebar && (
         <div class="post-sidebar">
-          {sourceUrl && (
-            <section class="watch-video-section">
-              <a
-                href={sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="watch-video-link"
-              >
-                <svg class="video-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <span>观看原视频</span>
-              </a>
-            </section>
-          )}
+          {sourceUrl && <WatchOriginalLink href={sourceUrl} />}
 
           {headings && headings.length > 0 && (
             <TableOfContents headings={headings} />

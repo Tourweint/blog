@@ -5,6 +5,7 @@ import MainLayout from "./mainlayout.astro";
 import PersonCardMini from "../components/PersonCardMini.astro";
 import TableOfContents from "../components/TableOfContents.astro";
 import BackLink from "../components/BackLink.astro";
+import WatchOriginalLink from "../components/WatchOriginalLink.astro";
 import { excerpts } from "../utils/excerptsPaths";
 import "../styles/conversations.css";
 
@@ -172,23 +173,7 @@ const guestRoles = guestPersons
 
       <!-- 侧边栏：嘉宾信息 -->
       <aside class="article-sidebar">
-        {
-          data.sourceUrl && (
-            <section class="watch-video-section">
-              <a
-                href={data.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="watch-video-link"
-              >
-                <svg class="video-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <span>观看原视频</span>
-              </a>
-            </section>
-          )
-        }
+        {data.sourceUrl && <WatchOriginalLink href={data.sourceUrl} />}
 
         {
           guestPersons.length > 0 && (
@@ -205,9 +190,7 @@ const guestRoles = guestPersons
 
         {
           headings && headings.length > 0 && (
-            <section class="toc-section">
-              <TableOfContents headings={headings} />
-            </section>
+            <TableOfContents headings={headings} />
           )
         }
 

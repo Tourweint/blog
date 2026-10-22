@@ -1,0 +1,64 @@
+---
+/*
+  观看原视频 CTA：文章页与对话页共用，样式只在这里维护一份。
+
+  圆角按「竖直线段占总高的 15%~25%」取值：
+  盒子高度 h ≈ 41px（padding 7+7、行高约 23、边线 2），
+  r = (1 - 0.2) / 2 × h ≈ 16.4px，取 17px → 竖直线段约 7px，占 17%。
+  水平方向宽约 260px，直线段必然很长，所以只按垂直方向定值。
+
+  超椭圆(1.8)的曲率是从切点开始逐渐增大的，不像正圆弧一进入圆角就拉满 1/r，
+  同一半径看上去会更「方」，因此取区间里偏圆的一端（17px 而不是 15px）。
+*/
+interface Props {
+  href: string;
+  label?: string;
+}
+
+const { href, label = "观看原视频" } = Astro.props;
+---
+
+<a class="watch-video-link" href={href} target="_blank" rel="noopener noreferrer">
+  <svg class="video-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M8 5v14l11-7z"></path>
+  </svg>
+  <span>{label}</span>
+</a>
+
+<style>
+  .watch-video-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid color-mix(in oklab, var(--c-rule) 70%, transparent);
+    border-radius: 17px;
+    background: color-mix(in oklab, var(--c-bg) 70%, var(--c-surface));
+    color: var(--c-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      color var(--c-dur) var(--c-ease),
+      border-color var(--c-dur) var(--c-ease),
+      background-color var(--c-dur) var(--c-ease);
+  }
+
+  .watch-video-link:hover {
+    color: var(--t-link);
+    border-color: color-mix(in oklab, var(--t-link) 30%, var(--c-rule));
+    background: color-mix(in oklab, var(--c-bg) 55%, var(--c-surface));
+  }
+
+  .watch-video-link:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  .video-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: currentColor;
+  }
+</style>
