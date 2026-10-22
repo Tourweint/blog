@@ -24,6 +24,10 @@ const guests = (data.guests ?? []).map((slug) => {
   头像：只取有 avatar 的嘉宾，缺图的人直接跳过（不占位）。
   单嘉宾 40px 贴右上角；多嘉宾 32px 并排、互相叠压 10px；
   超过 3 位时第三枚位置换成「+N」，避免头像组无限变宽。
+
+  顺序规则：按 frontmatter 的 guests 数组顺序，第一位在最左。
+  采访者刻意不进卡片——列表要回答的是「谁被访」，主持人往往是固定栏目角色，
+  每张卡都带一次没有信息量；真要加，也应排在嘉宾之后（最右）。
 */
 const avatars = guests
   .map((guest) => guest.avatar)
@@ -41,8 +45,8 @@ const reserve =
       ? 52
       : 20 + 32 * visibleAvatars.length - 10 * (visibleAvatars.length - 1);
 
-// 没有金句时退回摘要；已有的引号不再重复包裹
-const rawQuote = data.pullQuote ?? data.description ?? null;
+// 卡片只认金句；没有就留空，不再用摘要兜底
+const rawQuote = data.pullQuote ?? null;
 const quoteText = rawQuote
   ? /^[「“"]/.test(rawQuote)
     ? rawQuote
@@ -103,7 +107,6 @@ const dateLabel = [
 
     <p class="conversation-card__meta">
       {data.source && <span>{data.source}</span>}
-      {data.readingTime && <span>{data.readingTime} 分钟</span>}
       <span>{dateLabel}</span>
     </p>
   </a>

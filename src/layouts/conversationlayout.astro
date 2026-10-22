@@ -2,10 +2,10 @@
 import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import MainLayout from "./mainlayout.astro";
-import PersonCardMini from "../components/PersonCardMini.astro";
+import GuestCardMini from "../components/GuestCardMini.astro";
 import TableOfContents from "../components/TableOfContents.astro";
 import BackLink from "../components/BackLink.astro";
-import WatchOriginalLink from "../components/WatchOriginalLink.astro";
+import SourceLink from "../components/SourceLink.astro";
 import { excerpts } from "../utils/excerptsPaths";
 import "../styles/conversations.css";
 
@@ -25,15 +25,44 @@ const guestPersons = (data.guests || [])
   .map((slug: string) => allPersons.find((p) => toPersonSlug(p.id) === slug))
   .filter((p): p is CollectionEntry<"persons"> => p !== undefined);
 const guestNames = guestPersons.map((p) => p?.data.name).join(" × ");
-const guestRoles = guestPersons
-  .map((p) => p?.data.role)
-  .filter(Boolean)
-  .join(" / ");
+
+// frontmatter 里的描述字段已取消：SEO 描述取编者按（截断）
+const seoDescription = (data.editorNote ?? data.pullQuote ?? data.title).slice(
+  0,
+  120,
+);
+
+// 正文里的说话人标签通常只写名（"**Lex:**"），frontmatter 里是全名（"Lex Fridman"）。
+// 找出与 interviewer 对应的那个名字，用来把「提问段」单独排版。
+const speakerNames = [
+  ...new Set(
+    [...(post.body ?? "").matchAll(/^\*\*([^*:：]{1,24})[:：]\*\*/gm)].map((m) =>
+      m[1].trim(),
+    ),
+  ),
+];
+const interviewerKey = (data.interviewer ?? "").split(/\s+/)[0];
+const hostSpeaker = interviewerKey
+  ? speakerNames.find(
+      (name) =>
+        name === data.interviewer ||
+        name === interviewerKey ||
+        name.startsWith(interviewerKey) ||
+        interviewerKey.startsWith(name),
+    )
+  : undefined;
+
+// readingTime 字段已取消，改用正文字数（中文字符 + 英文单词/数字）
+const bodyText = post.body ?? "";
+const charCount =
+  (bodyText.match(/[\u4e00-\u9fa5]/g) ?? []).length +
+  (bodyText.match(/[a-zA-Z0-9]+/g) ?? []).length;
+const charLabel = charCount > 0 ? `约 ${charCount.toLocaleString("zh-CN")} 字` : null;
 ---
 
 <MainLayout
   title={data.title}
-  description={data.description}
+  description={seoDescription}
   type="article"
   publishedTime={data.pubDate}
   tags={data.tags}
@@ -45,50 +74,19 @@ const guestRoles = guestPersons
     <!-- 文章头部 -->
 
     <header class="article-header">
-      <div class="header-meta">
-        <div class="participants-bar">
-          <span class="participant-label">对话嘉宾</span>
-          <span class="participants-list">
-            {
-              data.interviewer && (
-                <>
-                  <span class="interviewer">{data.interviewer}</span>
-                  <span class="separator">×</span>
-                </>
-              )
-            }
-            {guestNames}
-          </span>
-        </div>
-        {guestRoles && <div class="guest-roles">{guestRoles}</div>}
-      </div>
-
       <h1 class="article-title">{data.title}</h1>
 
       <div class="article-meta">
-        <span class="source-link">
-          来源：
+        <span class="byline">
           {
-            data.sourceUrl ? (
-              <a
-                href={data.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {data.source}
-                <svg
-                  class="external-icon"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7z" />
-                  <path d="M11 3v2h3.59L9 12.59 10.41 14 17 7.41V11h2V3z" />
-                </svg>
-              </a>
-            ) : (
-              <span>{data.source}</span>
+            data.interviewer && (
+              <>
+                <span class="byline-name">{data.interviewer}</span>
+                <span class="byline-sep">×</span>
+              </>
             )
           }
+          <span class="byline-name">{guestNames}</span>
         </span>
         <span class="pub-date">
           {
@@ -99,11 +97,7 @@ const guestRoles = guestPersons
             })
           }
         </span>
-        {
-          data.readingTime && (
-            <span class="reading-time">约 {data.readingTime} 分钟阅读</span>
-          )
-        }
+        {charLabel && <span class="word-count">{charLabel}</span>}
       </div>
 
       {
@@ -136,21 +130,6 @@ const guestRoles = guestPersons
         <footer class="article-footer">
           <div class="footer-content">
             {
-              data.sourceUrl && (
-                <div class="original-link">
-                  <strong>原文链接：</strong>
-                  <a
-                    href={data.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {data.sourceUrl}
-                  </a>
-                </div>
-              )
-            }
-
-            {
               data.tags && data.tags.length > 0 && (
                 <div class="article-tags">
                   <strong>相关话题：</strong>
@@ -173,7 +152,7 @@ const guestRoles = guestPersons
 
       <!-- 侧边栏：嘉宾信息 -->
       <aside class="article-sidebar">
-        {data.sourceUrl && <WatchOriginalLink href={data.sourceUrl} />}
+        {data.sourceUrl && <SourceLink href={data.sourceUrl} />}
 
         {
           guestPersons.length > 0 && (
@@ -181,7 +160,7 @@ const guestRoles = guestPersons
               <h3>对话嘉宾</h3>
               <div class="guests-list">
                 {guestPersons.map((person) => (
-                  <PersonCardMini person={person} />
+                  <GuestCardMini person={person} />
                 ))}
               </div>
             </section>
@@ -244,18 +223,43 @@ const guestRoles = guestPersons
   </article>
 </MainLayout>
 
-<style is:global>
-  /* 确保 Q&A 样式在正文中工作 */
-  .conversation-article .markdown-body strong {
-    font-weight: 700;
-  }
+{
+  hostSpeaker && (
+    <style
+      is:inline
+      set:html={`
+        /*
+          问题当「准标题」：语义仍是段落（不进目录、不破坏 h3 主题层级），
+          但视觉上比回答重一档——字号略大、字重 600、颜色回到正文色。
+        */
+        .conversation-article .markdown-body > p[data-speaker="${hostSpeaker}"] {
+          margin-top: 2.6em;
+          margin-bottom: 0.5em;
+          padding-left: 16px;
+          border-left: 3px solid color-mix(in oklab, var(--c-text) 32%, transparent);
+          font-size: 1.04em;
+          font-weight: 600;
+          color: var(--c-text);
+          line-height: 1.75;
+        }
 
-  .conversation-article .markdown-body strong:first-child {
-    /* Q: 或 A: 的样式 */
-  }
+        /* 章节标题后的第一个问题：紧贴标题，别把标题和内容拉开 */
+        .conversation-article .markdown-body > h3 + p[data-speaker="${hostSpeaker}"] {
+          margin-top: 1.1em;
+        }
 
-  /* 提问的段落 */
-  .conversation-article .markdown-body p:has(> strong:first-child)::before {
-    content: attr(data-q);
-  }
-</style>
+        /* 问题前的人名：与回答的人名、与正文同号，只靠颜色和字重区分 */
+        .conversation-article .markdown-body > p[data-speaker="${hostSpeaker}"] > strong.speaker-name {
+          font-size: 1.125rem;
+          font-weight: 600;
+          letter-spacing: 0.02em;
+          color: var(--color-text-secondary);
+        }
+
+        .conversation-article .markdown-body > p[data-speaker]:not([data-speaker="${hostSpeaker}"]) {
+          margin-top: 1.2em;
+        }
+      `}
+    />
+  )
+}

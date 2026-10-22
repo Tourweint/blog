@@ -154,43 +154,6 @@ body.page-excerpts-conversations {
   }
 }
 
-/* 信息区 */
-.conversations-info {
-  background: var(--color-bg-tertiary);
-  padding: 3rem 1.5rem;
-  margin-top: 3rem;
-  border-radius: var(--c-radius);
-  border: 1px solid var(--color-border);
-  max-width: 1052px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.conversations-info h2 {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
-}
-
-.info-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-
-.info-item h3 {
-  margin-top: 0;
-  margin-bottom: 0.75rem;
-  font-size: 1.1rem;
-}
-
-.info-item p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-}
-
 /* ============================================
    对话内容页面 - conversationlayout.astro
    ============================================ */
@@ -236,117 +199,48 @@ body.page-excerpts-conversations {
 }
 
 
-.header-meta {
-  margin-bottom: 1.5rem;
-}
-
-.participants-bar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
-}
-
-.participant-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-secondary);
-}
-
-.participants-list {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.interviewer,
-.participants-list > span:not(.separator) {
-  display: inline;
-  padding: 0;
-  background: none;
+/* 署名行：采访者 × 嘉宾，与日期、字数共用一行 */
+.byline {
   color: var(--color-text);
-  border-radius: 0;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 500;
 }
 
-.interviewer {
-  color: var(--t-link);
-}
-
-.separator {
+.byline-sep {
+  margin: 0 0.4em;
   font-weight: 300;
   color: var(--color-text-tertiary);
 }
 
-.guest-roles {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  font-style: italic;
-}
-
 .article-title {
-  margin: 0 0 1.5rem 0;
-  font-size: 3rem; /* 提升字号，营造杂志感 */
-  font-weight: 800;
-  line-height: 1.2;
+  margin: 0 0 1.2rem 0;
+  /* 与文章页 .post-title 一致：全站大标题用衬线，卡片标题也是衬线 */
+  font-family: var(--t-font-serif);
+  font-size: 2.4rem; /* 3rem 会把首屏撑满，且与正文层级拉开太远 */
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: -0.01em;
   color: var(--color-text);
+  text-wrap: balance;
 }
 
 .article-meta {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.1rem;
   flex-wrap: wrap;
   font-size: 0.9rem;
   color: var(--color-text-secondary); /* 灰色弱化 */
 }
 
 .article-meta > *:not(:last-child)::after {
-  content: " ·"; /* 使用小圆点分隔 */
-  margin-left: 1rem;
+  content: "·";
+  margin-left: 1.1rem;
   color: var(--color-text-tertiary);
+  opacity: 0.6;
 }
 
-.source-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.source-link a {
-  color: var(--t-link);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  border-bottom: 1px solid color-mix(in oklab, var(--t-link) 25%, transparent);
-  transition: var(--transition);
-  overflow-wrap: anywhere;
-}
-
-.source-link a:hover {
-  border-bottom-color: var(--t-link);
-}
-
-.external-icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.7;
-}
-
-.pub-date,
-.reading-time {
+.pub-date {
   white-space: nowrap;
-}
-
-/* Footer URLs can be long; allow wrapping to avoid horizontal overflow */
-.original-link a {
-  overflow-wrap: anywhere;
 }
 
 .featured-quote {
@@ -395,9 +289,9 @@ body.page-excerpts-conversations {
   box-shadow: none;
   border-radius: 0;
   padding: 0.25rem 0 0;
-  margin: 0 auto 2.4rem;
-  max-width: 36em;
-  text-align: center;
+  margin: 0 0 2.4rem;
+  max-width: 37em;
+  text-align: left;
 }
 
 .note-title {
@@ -423,19 +317,30 @@ body.page-excerpts-conversations {
   color: var(--color-text);
 }
 
+/* 章节标题用衬线：与「问题」（无衬线加粗）区分开，避免两级都像小标题 */
 .markdown-body h2 {
-  margin: 2.6rem 0 1.1rem 0;
+  margin: 3.4rem 0 1.1rem 0;
+  font-family: var(--t-font-serif);
   font-size: 1.5rem;
   font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
   color: var(--color-text);
   padding: 0;
   border: none;
+  text-wrap: balance;
 }
 
 .markdown-body h3 {
-  margin: 1.5rem 0 0.75rem 0;
-  font-size: 1.2rem;
+  /* 上间距远大于下间距：标题要贴着自己的内容，而不是贴着上一段 */
+  margin: 3.4em 0 0;
+  font-family: var(--t-font-serif);
+  font-size: 1.3rem;
   font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+  text-wrap: balance;
 }
 
 .markdown-body h4 {
@@ -445,8 +350,9 @@ body.page-excerpts-conversations {
 }
 
 .markdown-body p {
-  margin: 1.5em 0; /* 段间距增大 */
-  text-align: justify;
+  /* 段距要明显大于行距留白，段落才分得清；中文不做两端对齐，避免混排字距被拉开 */
+  margin: 0 0 1.35em;
+  text-align: left;
 }
 
 .markdown-body a {
@@ -461,31 +367,35 @@ body.page-excerpts-conversations {
   color: color-mix(in oklab, var(--t-link) 78%, black);
 }
 
-/* Q&A 样式：只作用于顶层的「提问行」。
-   限定直接子级，避免命中引用块里的加粗引语（否则引用会被拆成小号灰字）。 */
-.markdown-body > p > strong:first-child {
-  display: block;
-  margin-bottom: 0.4rem;
+/*
+  Q&A：只处理真正的说话人段落（由 rehype 插件打上 data-speaker）。
+  原规则按「段首加粗」判断，连 "**Lex Fridman** 是人工智能研究员…" 这种
+  介绍段也被拆成小号标签 + 另起一行，是版头之后最大的噪音来源。
+*/
+.markdown-body > p[data-speaker] {
+  margin-top: 2.2em;
+  padding-left: 16px;
+}
+
+/* 回答的续段、正文里的普通段落，与提问文本左对齐（左侧留出细线的位置） */
+.markdown-body > p:not([data-speaker]) {
+  padding-left: 16px;
+}
+
+.markdown-body > h3 {
+  padding-left: 16px;
+}
+
+.markdown-body > p[data-speaker] > strong.speaker-name {
+  display: inline;
+  margin: 0 0.45em 0 0;
   padding: 0;
   border: none;
-  letter-spacing: 0.12em;
-  font-size: 0.78rem;
+  /* 与正文同号（正文 .markdown-body 是 1.125rem），靠颜色和字重区分，不再缩小 */
+  font-size: 1.125rem;
   font-weight: 600;
-  color: var(--color-text-tertiary);
-}
-
-.markdown-body > p:has(> strong:first-child) {
-  margin-top: 2rem;
-  padding: 0;
-  font-weight: 600;
-}
-
-.markdown-body > p:has(> strong:first-child) + p {
-  margin-top: 0.75rem;
-  font-weight: normal;
-  color: var(--color-text);
-  text-align: left;
-  line-height: 1.8;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
 }
 
 /* 引用块：视觉统一由 markdown-content.css 提供（金色软卡 + 衬线大字）。
@@ -570,18 +480,10 @@ body.page-excerpts-conversations {
   gap: 1.5rem;
 }
 
-.original-link {
-  font-size: 0.95rem;
-}
 
-.original-link a {
-  color: var(--t-link);
-  text-decoration: none;
-  word-break: break-all;
-}
 
-.original-link a:hover {
-  text-decoration: underline;
+.word-count {
+  font-variant-numeric: tabular-nums;
 }
 
 .article-tags {
@@ -635,7 +537,9 @@ body.page-excerpts-conversations {
   height: fit-content;
 }
 
-/* 观看原视频 CTA 的样式集中在 src/components/WatchOriginalLink.astro */
+
+
+/* 「查看来源」CTA 的样式集中在 src/components/SourceLink.astro */
 
 /* 侧栏分区标题：与共享目录组件的“目 录”同级，安静的小号宽字距 */
 .guests-section h3,
@@ -649,10 +553,11 @@ body.page-excerpts-conversations {
   color: var(--color-text-tertiary);
 }
 
-/* 嘉宾条目由 PersonCardMini 组件自理（含条目间居中短横线） */
+/* 嘉宾条目由 GuestCardMini 组件自理（带边框的小卡，多嘉宾纵向排列） */
 .guests-list {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
 /* 目录：与文章页一致，直接使用共享 TableOfContents 组件（样式由组件自理） */
@@ -745,9 +650,6 @@ body.page-excerpts-conversations {
     align-items: flex-start;
   }
 
-  .participant-label {
-    width: 100%;
-  }
 }
 
 @media (max-width: 480px) {

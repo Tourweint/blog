@@ -1,0 +1,113 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { excerpts, toIdSlug } from "../utils/excerptsPaths";
+
+interface Props {
+  person: CollectionEntry<"persons">;
+}
+
+const { person } = Astro.props;
+const { data } = person;
+const personHref = excerpts.personDetail(toIdSlug(person.id));
+const initial = data.name.trim().slice(0, 1);
+---
+
+<!--
+  对话页侧栏的嘉宾小卡：超椭圆边框，与「查看来源」按钮同一套边线、底色与悬停反馈。
+  默认是极淡的边线，悬停时边线转靛青、底色微沉——静态画面里只留一个框，
+  hover 时第二个框才浮出来，避免竖排两个胶囊互相抢。
+-->
+<a
+  class="guest-card"
+  href={personHref}
+  aria-label={data.role ? `${data.name}，${data.role}` : data.name}
+>
+  {
+    data.avatar ? (
+      <img class="guest-card__avatar" src={data.avatar} alt="" loading="lazy" />
+    ) : (
+      <span class="guest-card__avatar guest-card__avatar--fallback" aria-hidden="true">
+        {initial}
+      </span>
+    )
+  }
+  <span class="guest-card__info">
+    <span class="guest-card__name">{data.name}</span>
+    {data.role && <span class="guest-card__role">{data.role}</span>}
+  </span>
+</a>
+
+<style>
+  .guest-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid color-mix(in oklab, var(--c-rule) 70%, transparent);
+    border-radius: 18px;
+    background: color-mix(in oklab, var(--c-bg) 70%, var(--c-surface));
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color var(--c-dur) var(--c-ease),
+      background-color var(--c-dur) var(--c-ease);
+  }
+
+  /* 与 .source-link 完全一致：hover 边线转靛青、底色微沉 */
+  .guest-card:hover {
+    border-color: color-mix(in oklab, var(--t-link) 30%, var(--c-rule));
+    background: color-mix(in oklab, var(--c-bg) 55%, var(--c-surface));
+  }
+
+  .guest-card:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  .guest-card__avatar {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: color-mix(in oklab, var(--c-text) 6%, transparent);
+  }
+
+  .guest-card__avatar--fallback {
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--c-rule);
+    font-family: var(--t-font-serif);
+    font-size: 14px;
+    color: var(--c-muted);
+  }
+
+  .guest-card__info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .guest-card__name {
+    font-family: var(--t-font-serif);
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--c-text);
+    transition: color var(--c-dur) var(--c-ease);
+  }
+
+  .guest-card:hover .guest-card__name {
+    color: var(--t-link);
+  }
+
+  .guest-card__role {
+    font-size: 11.5px;
+    line-height: 1.4;
+    color: var(--c-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
