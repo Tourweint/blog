@@ -29,6 +29,7 @@ const notes = defineCollection({
     text: z.string().optional(),         // 旧字段兼容
     description: z.string().optional(),  // 钩子/摘要
     source: z.string().optional(),       // 出处/自语
+    authorUrl: z.string().optional(),    // 创作者主页链接
     sourceLine: z.string().optional(),   // 正文底部「来源」行（Markdown 原文，由渲染层拼回正文末尾）
     tags: z.array(z.string()).default([]),
     mood: z.string().optional(),         // 用来配色
@@ -41,14 +42,12 @@ const conversations = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/excerpts/conversations" }),
   schema: z.object({
     title: z.string(),                          // 对话标题
-    description: z.string().optional(),         // 描述
     pubDate: z.coerce.date(),                   // 发布日期
     guests: z.array(z.string()).default([]),    // 嘉宾 slug 列表，人物页统一维护
     interviewer: z.string().optional(),         // 提问者
     source: z.string(),                         // 来源（如 YC Podcast）
     sourceUrl: z.string().optional(),           // 原文链接
     pullQuote: z.string().optional(),           // 金句
-    readingTime: z.number().optional(),         // 阅读时间（分钟）
     tags: z.array(z.string()).default([]),      // 标签/话题
     editorNote: z.string().optional(),          // 编者按
     // toc 移除：目录由正文自动生成
