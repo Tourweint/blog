@@ -5,7 +5,9 @@ import { marked } from "marked";
 
 marked.setOptions({ gfm: true });
 
-const BODIES_URL = "/excerpts/notes/bodies.json";
+// v2：短句 key 从「数组下标」换成「内容派生」后，旧缓存的 bodies.json 与新页面的
+// data-note-key 对不上，正文会渲染成空。用查询参数强制换一份新缓存。
+const BODIES_URL = "/excerpts/notes/bodies.json?v=2";
 let bodiesPromise: Promise<Record<string, string>> | null = null;
 
 /** 拉取全部笔记正文（只拉一次，复用同一 Promise） */

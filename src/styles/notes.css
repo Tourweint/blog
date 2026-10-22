@@ -157,6 +157,8 @@ body.page-excerpts-notes .note-card {
   border-radius: 24px;
   padding: 22px 26px;
   box-shadow: var(--notes-shadow);
+  /* 跨页跳转带锚点时，别让卡片顶到吸顶导航下面 */
+  scroll-margin-top: calc(var(--nav-height) + 24px);
   transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
@@ -318,13 +320,29 @@ body.page-excerpts-notes .tag-row {
   flex-wrap: wrap;
 }
 
+/* 标签胶囊：可点击，跳到该标签的短句列表 */
 body.page-excerpts-notes .tag-pill {
+  display: inline-block;
   font-size: 0.75rem;
   padding: 4px 8px;
   border-radius: 4px;
   background: color-mix(in oklab, var(--c-bg) 72%, var(--notes-card));
   color: var(--notes-muted);
   font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color var(--c-dur) var(--c-ease),
+    color var(--c-dur) var(--c-ease);
+}
+
+body.page-excerpts-notes .tag-pill:hover {
+  background: color-mix(in oklab, var(--c-bg) 55%, var(--notes-card));
+  color: var(--notes-text);
+}
+
+body.page-excerpts-notes .tag-pill:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 2px;
 }
 
 body.page-excerpts-notes .toggle-body {
@@ -344,36 +362,7 @@ body.page-excerpts-notes .toggle-body:hover {
   background: var(--notes-accent-light);
 }
 
-/* Load More */
-body.page-excerpts-notes .load-more-container {
-  display: flex;
-  justify-content: center;
-  margin: 36px 0 10px;
-}
-
-body.page-excerpts-notes .load-more-btn {
-  padding: 10px 20px;
-  border: 1px solid var(--notes-border);
-  /* 与标签胶囊同形 */
-  border-radius: 999px;
-  background: transparent;
-  color: var(--notes-muted);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-body.page-excerpts-notes .load-more-btn:hover {
-  background: var(--notes-card);
-  border-color: var(--notes-border-hover);
-  color: var(--notes-text);
-}
-
-body.page-excerpts-notes .load-more-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+/* 加载更多已被静态分页取代，短句页不再有「加载更多」按钮 */
 
 /* Months Index：刊头由共享组件 ChannelHero 提供 */
 

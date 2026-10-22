@@ -1,0 +1,41 @@
+---
+import MainLayout from "../../../../../layouts/mainlayout.astro";
+import NotesChannel from "../../../../../components/excerpts/NotesChannel.astro";
+import { excerpts } from "../../../../../utils/excerptsPaths";
+import {
+  buildNoteTagItems,
+  filterNotesByTag,
+  getNoteTagCounts,
+  getNoteViews,
+  NOTES_PAGE_SIZE,
+} from "../../../../../utils/notesData";
+
+/** 只有两条以上的标签才单独建页；只有一条的标签在左栏直接跳锚点 */
+export async function getStaticPaths() {
+  const notes = await getNoteViews();
+  const counts = getNoteTagCounts(notes);
+  return [...counts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([tag]) => ({ params: { tag }, props: { tag } }));
+}
+
+const { tag } = Astro.props as { tag: string };
+const notes = await getNoteViews();
+const scopeNotes = filterNotesByTag(notes, tag);
+const tagItems = buildNoteTagItems(notes, tag);
+---
+
+<MainLayout
+  title={`短句 · ${tag} - Tourweint/多鸣`}
+  description={`标签「${tag}」下的全部短句，共 ${scopeNotes.length} 条`}
+>
+  <NotesChannel
+    scopeNotes={scopeNotes}
+    page={1}
+    pageSize={NOTES_PAGE_SIZE}
+    urlFor={(page: number) => excerpts.notesTag(tag, page)}
+    tagItems={tagItems}
+    totalCount={notes.length}
+    scopeTitle={tag}
+  />
+</MainLayout>

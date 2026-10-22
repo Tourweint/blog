@@ -1,0 +1,55 @@
+---
+import MainLayout from "../../../../../../layouts/mainlayout.astro";
+import NotesChannel from "../../../../../../components/excerpts/NotesChannel.astro";
+import { excerpts } from "../../../../../../utils/excerptsPaths";
+import {
+  buildNoteTagItems,
+  filterNotesByTag,
+  getNoteTagCounts,
+  getNoteViews,
+  NOTES_PAGE_SIZE,
+} from "../../../../../../utils/notesData";
+
+/** 标签页的第 1 页是 /excerpts/notes/tag/<标签>，这里只生成第 2 页及以后 */
+export async function getStaticPaths() {
+  const notes = await getNoteViews();
+  const counts = getNoteTagCounts(notes);
+
+  const paths: {
+    params: { tag: string; page: string };
+    props: { tag: string; page: number };
+  }[] = [];
+
+  for (const [tag, count] of counts) {
+    const totalPages = Math.ceil(count / NOTES_PAGE_SIZE);
+    for (let page = 2; page <= totalPages; page += 1) {
+      paths.push({
+        params: { tag, page: String(page) },
+        props: { tag, page },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { tag, page } = Astro.props as { tag: string; page: number };
+const notes = await getNoteViews();
+const scopeNotes = filterNotesByTag(notes, tag);
+const tagItems = buildNoteTagItems(notes, tag);
+---
+
+<MainLayout
+  title={`短句 · ${tag} - 第 ${page} 页 - Tourweint/多鸣`}
+  description={`标签「${tag}」下的短句，第 ${page} 页`}
+>
+  <NotesChannel
+    scopeNotes={scopeNotes}
+    page={page}
+    pageSize={NOTES_PAGE_SIZE}
+    urlFor={(p: number) => excerpts.notesTag(tag, p)}
+    tagItems={tagItems}
+    totalCount={notes.length}
+    scopeTitle={tag}
+  />
+</MainLayout>

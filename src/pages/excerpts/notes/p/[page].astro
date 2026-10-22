@@ -1,0 +1,37 @@
+---
+import MainLayout from "../../../../layouts/mainlayout.astro";
+import NotesChannel from "../../../../components/excerpts/NotesChannel.astro";
+import { excerpts } from "../../../../utils/excerptsPaths";
+import {
+  buildNoteTagItems,
+  getNoteViews,
+  NOTES_PAGE_SIZE,
+} from "../../../../utils/notesData";
+
+/** 第 1 页是 /excerpts/notes，这里只生成第 2 页及以后 */
+export async function getStaticPaths() {
+  const notes = await getNoteViews();
+  const totalPages = Math.ceil(notes.length / NOTES_PAGE_SIZE);
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => ({
+    params: { page: (index + 2).toString() },
+  }));
+}
+
+const page = Number(Astro.params.page);
+const notes = await getNoteViews();
+const tagItems = buildNoteTagItems(notes, "全部");
+---
+
+<MainLayout
+  title={`短句 - 第 ${page} 页 - Tourweint/多鸣`}
+  description={`短句列表，第 ${page} 页`}
+>
+  <NotesChannel
+    scopeNotes={notes}
+    page={page}
+    pageSize={NOTES_PAGE_SIZE}
+    urlFor={excerpts.notesPage}
+    tagItems={tagItems}
+    totalCount={notes.length}
+  />
+</MainLayout>

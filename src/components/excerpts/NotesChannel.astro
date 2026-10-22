@@ -1,0 +1,223 @@
+---
+/*
+  短句频道主体：刊头 + 频道条 + 【标签左栏 ｜ 时间线列表 + 分页】
+
+  四个路由（/excerpts/notes、/excerpts/notes/p/N、/excerpts/notes/tag/<标签>、
+  /excerpts/notes/tag/<标签>/p/N）共用这一个组件，只通过 props 区分：
+  - scopeNotes：当前作用域（全部 / 某个标签）下的短句，按日期倒序
+  - page / pageSize：作用域内分页
+  - urlFor：作用域内第 N 页的 URL
+  - tagItems：左栏标签（已排好序，含「全部」）
+*/
+import ChannelHero from "../ChannelHero.astro";
+import ExcerptsTabs from "./ExcerptsTabs.astro";
+import ExcerptsAside from "./ExcerptsAside.astro";
+import Pagination from "../Pagination.astro";
+import { excerpts } from "../../utils/excerptsPaths";
+import {
+  buildNoteGroups,
+  NOTES_PAGE_SIZE,
+  type NoteGroup,
+  type NoteTagItem,
+  type NoteView,
+} from "../../utils/notesData";
+import "../../styles/notes.css";
+import "../../styles/excerpts-aside.css";
+
+type Props = {
+  /** 当前作用域下的全部短句（全部 / 某个标签），按日期倒序 */
+  scopeNotes: NoteView[];
+  /** 当前页码，从 1 开始 */
+  page: number;
+  /** 每页条数 */
+  pageSize?: number;
+  /** 作用域内第 N 页的 URL */
+  urlFor: (page: number) => string;
+  /** 左栏标签项（已排序，含「全部」，带 active 标记） */
+  tagItems: NoteTagItem[];
+  /** 全站短句总数 */
+  totalCount: number;
+  /** 作用域标题（标签页显示标签名，主页留空） */
+  scopeTitle?: string;
+};
+
+const {
+  scopeNotes,
+  page,
+  pageSize = NOTES_PAGE_SIZE,
+  urlFor,
+  tagItems,
+  totalCount,
+  scopeTitle,
+} = Astro.props;
+
+const totalPages = Math.max(1, Math.ceil(scopeNotes.length / pageSize));
+const start = (page - 1) * pageSize;
+const pageNotes = scopeNotes.slice(start, start + pageSize);
+const groups: NoteGroup[] = buildNoteGroups(pageNotes);
+
+// 标签胶囊与左栏共用同一套链接：单条标签直接跳到锚点，不会 404
+const tagHref = new Map(tagItems.map((item) => [item.label, item.href]));
+
+// 「随机一条」的索引：作用域内每一页的 URL + 每条短句落在第几页
+// 客户端据此能定位到任意一页的任意一条，并跳过去自动展开、高亮。
+const scopeUrls = Array.from({ length: totalPages }, (_, i) => urlFor(i + 1));
+const randomItems: [string, number][] = scopeNotes.map((note, index) => [
+  note.key,
+  Math.floor(index / pageSize) + 1,
+]);
+const randomIndexJson = JSON.stringify({
+  urls: scopeUrls,
+  items: randomItems,
+}).replace(/</g, "\\u003c");
+
+const tagCount = tagItems.length - 1;
+const heroTitle = scopeTitle ? `短句 · ${scopeTitle}` : "短句";
+---
+
+<main class="channel-page">
+  <ChannelHero title={heroTitle}>
+    <span slot="meta">
+      <span class="meta-item">共 {totalCount} 条</span>
+      {
+        scopeTitle && (
+          <>
+            <span class="meta-sep">·</span>
+            <span class="meta-item">
+              标签「{scopeTitle}」{scopeNotes.length} 条
+            </span>
+          </>
+        )
+      }
+      {
+        totalPages > 1 && (
+          <>
+            <span class="meta-sep">·</span>
+            <span class="meta-item">
+              第 {page} / {totalPages} 页
+            </span>
+          </>
+        )
+      }
+      <span class="meta-sep">·</span>
+      <a class="meta-link" href={excerpts.notesMonthsIndex}>按月份浏览</a>
+    </span>
+    <button slot="actions" class="random-btn" id="random-note" type="button">
+      <span>随机一条</span>
+    </button>
+  </ChannelHero>
+
+  <ExcerptsTabs active="notes" />
+
+  <div class="excerpts-layout">
+    <ExcerptsAside
+      title="标签"
+      unit={`${tagCount} 个`}
+      searchable={true}
+      moreLabel={`全部 ${tagCount} 个标签`}
+    >
+      {
+        tagItems.map((item) => (
+          <a
+            class={`aside-item${item.active ? " is-active" : ""}`}
+            href={item.href}
+            data-tag={item.label}
+            aria-current={item.active ? "page" : undefined}
+          >
+            <span class="aside-item__label">{item.label}</span>
+            <span class="aside-item__count">{item.count}</span>
+          </a>
+        ))
+      }
+    </ExcerptsAside>
+
+    <div class="excerpts-main">
+      <div class="notes-stream" id="note-list">
+        {
+          groups.map((item) => {
+            if (item.type === "year") {
+              return (
+                <h2 class="timeline-year" data-type="year-header">
+                  {item.value}
+                </h2>
+              );
+            }
+            if (item.type === "month") {
+              return (
+                <h3 class="timeline-month" data-type="month-header">
+                  <a
+                    href={excerpts.notesMonth(item.year, item.rawValue)}
+                    class="month-link"
+                  >
+                    {item.value}
+                    <span class="link-icon">↗</span>
+                  </a>
+                </h3>
+              );
+            }
+
+            const note = item.note;
+            return (
+              <article
+                class="note-card"
+                id={`note-${note.key}`}
+                data-tags={note.tags.join(",")}
+                data-year={note.year}
+                data-month={note.month}
+                data-note-key={note.key}
+              >
+                <div class="note-meta">
+                  <time datetime={note.dateISO}>{note.dateLabel}</time>
+                  <span>·</span>
+                  <span class="note-source">{note.source}</span>
+                </div>
+                <h2 class="note-title">{note.title}</h2>
+                <p class="note-hook">{note.hook}</p>
+                <div class="note-body content" hidden></div>
+                <div class="note-footer">
+                  <div class="tag-row">
+                    {note.tags.map((tag: string) => (
+                      <a
+                        class="tag-pill"
+                        href={tagHref.get(tag) ?? excerpts.notesTag(tag)}
+                      >
+                        {tag}
+                      </a>
+                    ))}
+                  </div>
+                  <button
+                    class="toggle-body"
+                    data-label-open="展开"
+                    data-label-close="收起"
+                    aria-expanded="false"
+                  >
+                    展开
+                  </button>
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        getPageUrl={urlFor}
+      />
+    </div>
+  </div>
+</main>
+
+<script
+  is:inline
+  type="application/json"
+  id="notes-random-index"
+  set:html={randomIndexJson}
+/>
+
+<script>
+  import { initNotesChannel } from "../../scripts/notesChannel";
+
+  initNotesChannel();
+</script>
