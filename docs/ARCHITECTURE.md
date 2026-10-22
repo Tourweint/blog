@@ -2,7 +2,7 @@
 
 > 本文描述当前站点的整体架构与关键设计决策，供后续修改前快速建立上下文。
 > 各专题的深入记录见：[EXCERPTS_CONTENT_COLLECTIONS.md](./EXCERPTS_CONTENT_COLLECTIONS.md)、
-> [NOTES_PERF_OPTIMIZATION.md](./NOTES_PERF_OPTIMIZATION.md)、[THEME_GUIDE.md](./THEME_GUIDE.md)、[SEO.md](./SEO.md)。
+> [THEME_GUIDE.md](./THEME_GUIDE.md)、[SEO.md](./SEO.md)。
 
 ## 1. 技术栈与构建
 
@@ -32,19 +32,26 @@
 - 所有摘录 URL（列表/详情/翻页/返回链接）必须经 `src/utils/excerptsPaths.ts` 生成，禁止硬编码 `/excerpts/*`。
 - 原创 URL 目前未走该工具：列表页 `/originals/{systems|fragments|projects}`，详情页 `/originals/{category}/{slug}`。
 
-## 4. 渲染策略：三层拆分（笔记页是范本）
+## 4. 渲染策略：静态分页 + 正文延迟加载
 
-大集合页面采用「SSG 首屏 + 数据岛 + 空闲加载」模式，避免把全量内容烘进 HTML：
+大集合页面采用「静态分页 + 正文懒加载」模式，避免把全量内容烘进 HTML：
 
-1. **首屏 SSR**：笔记列表页只服务端渲染最近 18 张卡片，其余 ~124 张卡片的元数据放进
-   `<script type="application/json">` 数据岛，客户端即时从岛内补齐。
+1. **静态分页**：短句频道按 18 条一页切成 `/excerpts/notes` 与 `/excerpts/notes/p/N`，
+   标签维度另有 `/excerpts/notes/tag/<标签>[/p/N]`；四个路由共用
+   `src/components/excerpts/NotesChannel.astro`，只靠 props 区分作用域与页码。
+   分页控件复用 `src/components/Pagination.astro`（与文章页同一套）。
 2. **正文延迟加载**：全部笔记正文单独走 `/excerpts/notes/bodies.json`（由
    `src/pages/excerpts/notes/bodies.json.ts` 生成），客户端 idle 时拉取；
    展开某条笔记时才用 `marked` 渲染正文（`src/scripts/noteBody.ts`）。
-3. **共享视图模型**：列表页/月度页/JSON 端点共用 `src/utils/notesData.ts`，排序、
-   分月、key 生成只写一遍。
+3. **共享视图模型**：列表页/分页页/标签页/月度页/JSON 端点共用 `src/utils/notesData.ts`，
+   排序、分月、标签统计、内容派生 key 只写一遍。
+4. **跨页随机**：刊头「随机一条」读页面里的 `#notes-random-index`（作用域内每页 URL +
+   每条短句所在页码），命中别的页就带 `#note-<key>` 跳过去，目标页自动展开、高亮、滚动定位。
 
-背景与测量过程见 NOTES_PERF_OPTIMIZATION.md。**往 posts 等大集合加功能时优先考虑这个模式。**
+> 历史：短句页最初是「SSR 首屏 18 张 + 数据岛补齐全量 + 加载更多」。
+> 分页化后不再需要数据岛，页面体积反而更小（91KB → 92KB/页，但总量从 1 页 143 张变成 8 页 × 18 张）。
+
+> 经验：dev 下 Astro 会给每个 DOM 元素注入 `data-astro-source-*` 源码定位注解，「一次性渲染上百张卡片」的页面卡顿主因是**服务端节点数量**（已用对照实验量化），而非数据量或 Markdown 编译；生产构建无此开销。
 
 ## 5. 搜索（Pagefind）
 
@@ -69,7 +76,7 @@
 |---|---|---|
 | `src/pages/originals/**` + `src/content/config.ts` | `originals` 仍用旧版 content API（`type: 'content'`） | 与其余集合 API 不一致，新代码易混用两套 slug/render 语义 |
 | `/originals/fragments/fragments` 等列表 URL | 目录名与页面名撞车，`mainlayout.astro` 靠 `pathSegments[1] === pathSegments[2]` 特判区分列表/详情 | 改路由或新增分类时极易漏改特判 |
-| `src/utils/notesData.ts`（`getNoteViews` 的 `key: String(index)`） | 笔记正文的 key 是**日期排序后的数组下标** | 增删笔记或改日期会导致 `bodies.json` 与卡片整体错位；应改为内容派生 key |
+| `src/utils/notesData.ts`（`getNoteViews` 的 key） | 笔记 key 已改成**文件路径哈希**（内容派生） | 增删笔记不会再让 `bodies.json` 与卡片错位；换 key 规则时记得同步 `bodies.json?v=N` 的缓存版本号 |
 | `mainlayout.astro` frontmatter | 由 pathname 字符串匹配推导 ~15 个 body class | 新路由不挂类就没有对应页面作用域样式，需手动补 if 分支 |
 | `src/styles/home.css` | 重复定义 `--font-serif/--font-sans` 等别名，与 `--t-*`/`--c-*` token 层并存 | 主题 token 双轨，见 THEME_GUIDE.md，待收敛 |
 | `bodies.json`（`bodies.json.ts`） | `Cache-Control: max-age=300` 且文件名无哈希 | 部署后客户端可能拿到过期/缺失正文；可改内容哈希 + 长缓存 |

@@ -21,6 +21,9 @@
 - [x] **组件链接复查**：PersonCard/ConversationCard 及摘录入口 PageEntry 已统一通过 `src/utils/excerptsPaths.ts` 生成链接，无直接硬编码 `/excerpts/*` 路径。
 - [x] **导航当前态高亮**：在 MainLayout 中基于 `Astro.url.pathname` 为桌面与移动端导航链接增加 active class，并以下划线与品牌色做克制高亮。
 - [x] **设计 Token 收敛**：将全局导航/页脚与多个共享组件（PersonCard/ConversationCard/Pagination 等）的灰阶颜色与分隔线收敛到 `--t-*` / `--c-*` 及基于 tokens 的 `color-mix` 表达式。
+- [x] **短句频道静态分页**：短句列表按 18 条一页切成 `/excerpts/notes` + `/excerpts/notes/p/N`，标签维度另有 `/excerpts/notes/tag/<标签>[/p/N]`；复用 `Pagination` 组件，四个路由共用 `NotesChannel.astro`。
+- [x] **短句「随机一条」跨页**：刊头按钮从当前作用域（全部 / 某标签）的全量短句里随机抽一条，命中别的页就带 `#note-<key>` 跳转，目标页自动展开、高亮并滚动定位。
+- [x] **短句左栏标签改为链接**：标签从「客户端过滤」改为链接到标签视图（与文章页「主题→分类页」同构），避免分页后筛选语义破裂；只有一条的标签直接定位到该短句锚点，不单独建页。
 
 ## P2（增强项）
 
@@ -38,7 +41,7 @@
 
 - [ ] `originals` 集合迁移到 glob loader（统一新旧两套 content API）。
 - [ ] 三个分页列表页（`posts/index`、`posts/p/[page]`、`category/[category]`）抽成共享组件（各自重复约 190 行）。
-- [ ] 笔记 `bodies.json` 的 key 从数组下标改为内容派生 id，避免调整日期后正文错位。
+- [x] 笔记 `bodies.json` 的 key 从数组下标改为内容派生 id（文件路径哈希），避免调整日期后正文错位；换规则时同步 `bodies.json?v=N`。
 - [ ] 阅读时长估算逻辑抽取为 util（当前复制了 4 份）。
 - [ ] `home.css` 中 `--font-*` 别名与全局 `--t-*` token 收敛。
 - [ ] 制作专用 OG 分享图（当前用 96×96 favicon，`summary_large_image` 卡片效果差）。

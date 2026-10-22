@@ -42,6 +42,9 @@
   - `/excerpts/category/:category(/:page)`
 - notes：
   - `/excerpts/notes`
+  - `/excerpts/notes/p/:page`
+  - `/excerpts/notes/tag/:tag`
+  - `/excerpts/notes/tag/:tag/p/:page`
   - `/excerpts/notes/months`
   - `/excerpts/notes/:year/:month`
 - persons：
