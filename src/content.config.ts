@@ -29,6 +29,7 @@ const notes = defineCollection({
     text: z.string().optional(),         // 旧字段兼容
     description: z.string().optional(),  // 钩子/摘要
     source: z.string().optional(),       // 出处/自语
+    sourceLine: z.string().optional(),   // 正文底部「来源」行（Markdown 原文，由渲染层拼回正文末尾）
     tags: z.array(z.string()).default([]),
     mood: z.string().optional(),         // 用来配色
     pubDate: z.coerce.date().optional(), // 新字段
