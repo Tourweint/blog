@@ -1,0 +1,84 @@
+---
+/*
+  来源 / 原视频 CTA：文章页与对话页共用。
+
+  「观看原视频」这个说法只对视频源成立，对话里还有文字稿、播客、抖音等来源，
+  所以默认文案改成中性的「查看来源」，图标也换成外链箭头；
+  视频来源仍可传 label="观看原视频" + icon="play"。
+
+  圆角按「竖直线段占总高的 15%~25%」取值：h ≈ 41px → r = 17px，
+  竖直线段约 7px（17%）。超椭圆的曲率是渐增的，同一半径看起来更「方」，
+  所以取区间里偏圆的一端。
+*/
+interface Props {
+  href: string;
+  label?: string;
+  icon?: "external" | "play";
+}
+
+const { href, label = "查看来源", icon = "external" } = Astro.props;
+---
+
+<a class="source-link" href={href} target="_blank" rel="noopener noreferrer">
+  {
+    icon === "play" ? (
+      <svg class="source-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M8 5v14l11-7z" />
+      </svg>
+    ) : (
+      <svg
+        class="source-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M14 4h6v6" />
+        <path d="M20 4 10 14" />
+        <path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
+      </svg>
+    )
+  }
+  <span>{label}</span>
+</a>
+
+<style>
+  .source-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid color-mix(in oklab, var(--c-rule) 70%, transparent);
+    border-radius: 17px;
+    background: color-mix(in oklab, var(--c-bg) 70%, var(--c-surface));
+    color: var(--c-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      color var(--c-dur) var(--c-ease),
+      border-color var(--c-dur) var(--c-ease),
+      background-color var(--c-dur) var(--c-ease);
+  }
+
+  .source-link:hover {
+    color: var(--t-link);
+    border-color: color-mix(in oklab, var(--t-link) 30%, var(--c-rule));
+    background: color-mix(in oklab, var(--c-bg) 55%, var(--c-surface));
+  }
+
+  .source-link:focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  .source-icon {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    color: currentColor;
+  }
+</style>
